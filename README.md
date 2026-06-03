@@ -1,5 +1,7 @@
 ProofRail™
 
+Status: early public documentation repository. Specifications, profiles, sanitized attestations, and examples will be published here. Raw deployment evidence and security-sensitive operational details remain private.
+
 ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control.
 
 As AI agents gain access to tools, APIs, workflows, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
