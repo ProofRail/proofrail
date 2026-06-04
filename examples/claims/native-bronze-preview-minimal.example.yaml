@@ -1,0 +1,138 @@
+# Purpose: This is a non-operational, illustrative Bronze claim showing the full object shape for a ProofRail-native stack.
+#
+# This is an example only. Not a conformance claim.
+# Values are illustrative and do not describe a real deployment.
+
+proofrail_bronze_claim:
+  schema_version: "v0.1"
+  claim_id: "bronze-native-demo-20260601-001"
+  claim_type: "native_bronze_preview"
+  claim_status: "draft"
+
+  profile:
+    name: "ProofRail Bronze"
+    version: "v0.1-draft"
+    baseline_reference:
+      name: "ProofRail Iron-plus"
+      version: "v1.0.2-final"
+      spec_version: "v0.1.5"
+
+  claim_subject:
+    organization: "Example Enterprise"
+    environment: "demo"
+    deployment_name: "bronze-native-demo"
+    deployment_id: "demo-002"
+    claim_scope_summary: "MCP tool-call mediation for a declared protected actuator set using ProofRail-native controls"
+
+  protected_actuator_set:
+    name: "bronze-demo-protected-actuators"
+    version: "v0.1"
+    manifest_path: "evidence/protected_actuator_set.json"
+    hash_algorithm: "sha256"
+    hash: "sha256:example"
+    actuator_count: 4
+    surfaces:
+      - "mcp"
+
+  declared_control_surfaces:
+    - surface_id: "proofrail-proxy-001"
+      surface_type: "proofrail_proxy"
+      substrate: "ProofRail-native"
+      role: "primary_mediation_point"
+      configuration_evidence:
+        config_snapshot_path: "evidence/proxy/config_snapshot.yaml"
+        config_hash: "sha256:example"
+
+  identity_treatment:
+    identity_model: "static_agent_id"
+    identity_confidence_policy:
+      default_confidence: "low"
+      tier_2_minimum: "medium"
+      tier_3_minimum: "medium"
+    captured_fields:
+      - "agent_id"
+      - "session_id"
+      - "correlation_id"
+
+  enforcement_decision_model:
+    decision_vocabulary:
+      - "allow"
+      - "block"
+      - "degrade"
+      - "rate_limit"
+      - "require_approval"
+      - "emergency_stop"
+    policy_model:
+      policy_source: "proofrail_native_policy"
+      policy_version: "policy-v0.1"
+      policy_hash: "sha256:example"
+      policy_snapshot_path: "evidence/policy/policy_snapshot.yaml"
+
+  rate_limit_or_circuit_breaker:
+    implemented: true
+    control_type: "rate_limit"
+    scope: "per_agent"
+    test_results_path: "evidence/rate_limit/rate_limit_test_results.md"
+
+  emergency_stop:
+    implemented: true
+    activation_method: "admin_api"
+    resume_method: "explicit_confirmation"
+    evidence:
+      runbook_path: "docs/runbook.md"
+      emergency_stop_test_path: "evidence/emergency_stop/test_results.md"
+
+  bypass_prevention:
+    claim_level: "deployment"
+    evidence:
+      bypass_results_path: "evidence/bypass/bypass_results.md"
+      network_diagram_path: "docs/architecture/network_topology.md"
+      credential_placement_path: "evidence/bypass/credential_placement.md"
+
+  audit_evidence:
+    audit_schema: "proofrail_audit_v0"
+    audit_sinks:
+      - sink_type: "jsonl"
+        path_or_target: "evidence/audit/sample_audit.jsonl"
+    normalized_mapping:
+      mapping_target: "ECS"
+      mapping_path: "evidence/ecs_mapping.json"
+    required_event_types:
+      - "tool_call.attempt"
+      - "tool_call.decision"
+      - "tool_call.result"
+      - "policy.change"
+      - "degradation.mode_change"
+      - "emergency.stop"
+      - "emergency.resume"
+
+  performance_evidence:
+    required: true
+    metric: "p95_added_latency_ms"
+    threshold_ms: 100
+    test_method: "paired_upstream_vs_controlled_path"
+    results:
+      p95_added_latency_ms: null
+      error_count: null
+      pass: null
+
+  ownership_and_runbook:
+    platform_owner: "Example Platform Team"
+    security_owner: "Example Security Team"
+    system_owner: "Example System Owner"
+    incident_commander: "Example Incident Role"
+    runbook_path: "docs/runbook.md"
+
+  evidence_bundle:
+    bundle_id: "bronze-native-demo-evidence-20260601"
+    bundle_path: "evidence/bronze-native-demo-evidence.zip"
+    bundle_hash_algorithm: "sha256"
+    bundle_hash: "sha256:example"
+
+  validation:
+    validation_type: "self_attested_demo"
+    validator: "Example Reviewer"
+    validation_date_utc: "2026-06-01"
+    validation_result: "draft"
+    known_limitations:
+      - "Example only; not a real conformance claim."

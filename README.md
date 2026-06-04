@@ -23,3 +23,14 @@ Bronze claim schemas and conformance profiles;
 composed Bronze stacks using existing gateway and observability components.
 
 Raw deployment evidence, credentials, private topology, and security-sensitive operational details are not published here. Public materials are limited to specifications, profiles, sanitized attestations, examples, and implementation guidance.
+
+Bronze Claim Tool
+
+The Bronze claim tool (scripts/proofrail_claim.py) performs structural validation of Bronze claim YAML files. It can generate claim scaffolds, validate claim structure and evidence references, and produce human-readable summaries. It does not certify deployments or verify full semantic conformance.
+
+Usage:
+
+    pip install -r requirements.txt
+    python scripts/proofrail_claim.py init --profile bronze --type composed --out claim.yaml
+    python scripts/proofrail_claim.py validate claim.yaml
+    python scripts/proofrail_claim.py summarize claim.yaml
