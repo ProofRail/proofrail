@@ -1,30 +1,29 @@
-spec_version: "v0.1.1"
-claim_type: "proofrail.bronze.composed"
-claim_id: "proofrail-demo-001-20260613T121919Z"
-claim_label: "ProofRail Composed Bronze Demo 001 — agentgateway MCP substrate — test env"
-profile: "bronze"
-mode: "enforce"
-environment: "test"
+spec_version: v0.1.1
+claim_type: proofrail.bronze.composed
+claim_id: proofrail-demo-001b-20260613T132502Z
+claim_label: ProofRail Composed Bronze Demo 001b — agentgateway MCP substrate — test
+  env
+profile: bronze
+mode: enforce
+environment: test
 surfaces_in_scope:
-  - "mcp"
-
+- mcp
 substrate:
-  name: "agentgateway"
-  type: "open-source MCP gateway"
-  version_declared: "v1.2.1 docker image"
-  role: "MCP mediation, routing, protocol session enforcement, and observability source"
-  source_url: "https://github.com/agentgateway/agentgateway"
-
+  name: agentgateway
+  type: open-source MCP gateway
+  version_declared: v1.2.1 docker image
+  role: MCP mediation, routing, protocol session enforcement, rate limiting, and observability
+    source
+  source_url: https://github.com/agentgateway/agentgateway
 protected_actuator_set:
-  name: "demo-001-mock-actuators"
-  surface: "mcp"
-  hash: "sha256:cffd678036013d1cc51f19705db095ce91509185dcfe1ce8aa2ab1b285015322"
+  name: demo-001-mock-actuators
+  surface: mcp
+  hash: sha256:cffd678036013d1cc51f19705db095ce91509185dcfe1ce8aa2ab1b285015322
   contents:
-    - "admin.rotate_secret"
-    - "demo.read"
-    - "deploy.push"
-    - "ticket.create"
-
+  - admin.rotate_secret
+  - demo.read
+  - deploy.push
+  - ticket.create
 controls:
   declared_actuator_set: true
   gateway_mediation: true
@@ -34,49 +33,48 @@ controls:
   normalized_audit_evidence: true
   performance_measured: true
   runbook_present: true
-
 control_details:
   rate_limit_observed: true
   circuit_breaker_observed: true
-  note: "Demo 001 demonstrates circuit-breaker behavior through stop-control. agentgateway local rate-limit policy attachment remains unresolved."
-
+  note: Demo 001b demonstrates both rate limiting and stop-control circuit-breaker
+    behavior.
 control_mapping:
   gateway_mediation:
-    component: "agentgateway"
-    evidence: "evidence/agentgateway-log-sample.txt"
+    component: agentgateway
+    evidence: evidence/agentgateway-log-sample.txt
   bypass_prevention:
-    component: "Docker Compose network segmentation + Docker secrets"
-    evidence: "evidence/bypass-test-results.md"
+    component: Docker Compose network segmentation + Docker secrets
+    evidence: evidence/bypass-test-results.md
   stop_control:
-    component: "agentgateway target switch to stop-mcp server"
-    evidence: "evidence/emergency-stop-test.md"
+    component: agentgateway target switch to stop-mcp server
+    evidence: evidence/emergency-stop-test.md
   rate_limit_circuit_breaker:
-    component: "ProofRail stop-control circuit breaker; rate-limit pending"
-    evidence: "evidence/rate-limit-test.md"
+    component: agentgateway local rate limit + ProofRail stop-control circuit breaker
+    evidence: evidence/rate-limit-test.md
   audit_normalization:
-    component: "ProofRail evidence scripts"
-    evidence: "evidence/audit-sample.jsonl"
-
+    component: ProofRail evidence scripts
+    evidence: evidence/audit-sample.jsonl
 evidence:
-  architecture_notes: "docs/architecture.md"
-  runbook: "docs/runbook.md"
-  protected_actuator_set_manifest: "evidence/protected_actuator_set.json"
-  bypass_prevention_test: "evidence/bypass-test-results.md"
-  stop_control_test: "evidence/emergency-stop-test.md"
-  rate_limit_circuit_breaker_test: "evidence/rate-limit-test.md"
-  audit_sample: "evidence/audit-sample.jsonl"
-  performance_test: "evidence/latency-benchmark.md"
-  substrate_log_sample: "evidence/agentgateway-log-sample.txt"
-
+  architecture_notes: docs/architecture.md
+  runbook: docs/runbook.md
+  protected_actuator_set_manifest: evidence/protected_actuator_set.json
+  bypass_prevention_test: evidence/bypass-test-results.md
+  stop_control_test: evidence/emergency-stop-test.md
+  rate_limit_circuit_breaker_test: evidence/rate-limit-test.md
+  audit_sample: evidence/audit-sample.jsonl
+  performance_test: evidence/latency-benchmark.md
+  substrate_log_sample: evidence/agentgateway-log-sample.txt
+  demo_summary: DEMO_001B_RESULTS.md
 validation:
-  type: "self-attested-demo"
-  validator: "ProofRail Bronze claim validator v0.1.1 structural check"
-  generated_at: "2026-06-13T12:19:19Z"
+  type: self-attested-demo
+  validator: ProofRail Bronze claim validator v0.1.1 structural check
+  generated_at: '2026-06-13T13:25:02Z'
   missing_evidence_files: []
-
 limitations:
-  - "Demo 001 is a local Docker Compose test environment, not a production conformance assertion."
-  - "Circuit-breaker behavior is demonstrated by stop-control mode."
-  - "agentgateway local rate-limit behavior was not observed under the current config and remains a Demo 001b refinement."
-  - "Stop control is implemented as a gateway target switch/restart for demo purposes; later demos should use dynamic policy or external authorization."
-  - "The JSONL audit sample is normalized evidence generated by demo scripts from test activity, not a SIEM export."
+- Demo 001b is a local Docker Compose test environment, not a production conformance
+  assertion.
+- The protected actuator set is a mock MCP actuator set.
+- Stop control is implemented by switching gateway target configuration and restarting
+  agentgateway.
+- Audit evidence is normalized by demo scripts, not exported from a production SIEM.
+- Latency measurement is a smoke benchmark and not a ProofRail-added latency assertion.
