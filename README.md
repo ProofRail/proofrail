@@ -34,3 +34,5 @@ Usage:
     python scripts/proofrail_claim.py init --profile bronze --type composed --out claim.yaml
     python scripts/proofrail_claim.py validate claim.yaml
     python scripts/proofrail_claim.py summarize claim.yaml
+
+A demo (Demo 001B) of the claims tool on a simplified composed Bronze stack is available in the demos/composed-bronze-demo-001 folder.
