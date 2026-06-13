@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
+mkdir -p state
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 MODE="${1:-status}"

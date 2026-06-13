@@ -131,7 +131,7 @@ log_audit "tool_call.decision" "deploy.push" "allowed" "gateway_route" "call-dep
   echo "This test sends 8 quick requests and records whether the gateway returns any throttle response."
   throttled=0
   for i in $(seq 1 8); do
-    RESP="$(call_from_agent "{\"jsonrpc\":\"2.0\",\"id\":\"rate-$i\",\"method\":\"tools/call\",\"params\":{\"name\":\"demo.read\",\"arguments\":{\"n\":$i}}}" || true)"
+    RESP=$(ALLOW_THROTTLE=1 call_from_agent "{\"jsonrpc\":\"2.0\",\"id\":\"rate-$i\",\"method\":\"tools/call\",\"params\":{\"name\":\"demo.read\",\"arguments\":{\"key\":\"rate-$i\"}}}" || true)
     echo "[$i] $RESP"
     if echo "$RESP" | grep -Eiq "429|too many requests|throttle|rate.?limit|localratelimit|quota"; then throttled=1; fi
   done
@@ -166,4 +166,4 @@ log_audit "tool_call.decision" "deploy.push" "allowed" "gateway_route" "call-dep
 # Preserve a small gateway log sample if available.
 docker compose logs --no-color --tail=200 agentgateway > evidence/agentgateway-log-sample.txt || true
 
-echo "Evidence generation complete. Next: python3 scripts/generate_bronze_claim.py && python3 scripts/validate_claim_v0_1.py claims/bronze-claim-demo-001.yaml"
+echo "Evidence generation complete. Next: python3 scripts/generate_bronze_claim.py && python3 scripts/validate_claim_v0_1_1.py claims/bronze-claim-demo-001.yaml"
