@@ -49,7 +49,7 @@ def main() -> None:
 
     rate_limit_or_circuit_breaker = rate_limit_observed or circuit_breaker_observed
 
-    yaml = f'''spec_version: "v0.1"
+    yaml = f'''spec_version: "v0.1.1"
 claim_type: "proofrail.bronze.composed"
 claim_id: "proofrail-demo-001-{now.replace(':','').replace('-','')}"
 claim_label: "ProofRail Composed Bronze Demo 001 — agentgateway MCP substrate — test env"
@@ -118,7 +118,7 @@ evidence:
     yaml += f'''
 validation:
   type: "self-attested-demo"
-  validator: "ProofRail claim validator v0.1 structural check"
+  validator: "ProofRail Bronze claim validator v0.1.1 structural check"
   generated_at: "{now}"
   missing_evidence_files: {json.dumps(missing)}
 

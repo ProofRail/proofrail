@@ -1,6 +1,6 @@
-spec_version: "v0.1"
+spec_version: "v0.1.1"
 claim_type: "proofrail.bronze.composed"
-claim_id: "proofrail-demo-001-20260613T040458Z"
+claim_id: "proofrail-demo-001-20260613T121919Z"
 claim_label: "ProofRail Composed Bronze Demo 001 — agentgateway MCP substrate — test env"
 profile: "bronze"
 mode: "enforce"
@@ -70,8 +70,8 @@ evidence:
 
 validation:
   type: "self-attested-demo"
-  validator: "ProofRail claim validator v0.1 structural check"
-  generated_at: "2026-06-13T04:04:58Z"
+  validator: "ProofRail Bronze claim validator v0.1.1 structural check"
+  generated_at: "2026-06-13T12:19:19Z"
   missing_evidence_files: []
 
 limitations:
