@@ -35,4 +35,4 @@ Usage:
     python scripts/proofrail_claim.py validate claim.yaml
     python scripts/proofrail_claim.py summarize claim.yaml
 
-A demo (Demo 001B) of the claims tool on a simplified composed Bronze stack is available in the demos/composed-bronze-demo-001 folder.
+A demo (Demo 001B) of the claims tool on a simplified composed Bronze stack is available in the demos/composed-bronze-demo-001 [https://github.com/ProofRail/proofrail/tree/main/demos/composed-bronze-demo-001] folder.
