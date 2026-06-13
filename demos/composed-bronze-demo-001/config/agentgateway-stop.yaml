@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://agentgateway.dev/schema/config
+# ProofRail Composed Bronze Demo 001 — stop mode
+# All MCP traffic is routed to a stop server that returns a JSON-RPC error.
+
+mcp:
+  port: 3000
+  targets:
+    - name: proofrail-stop-actuator
+      mcp:
+        host: http://stop-mcp:3006/mcp/

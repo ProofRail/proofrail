@@ -1,0 +1,8 @@
+secrets/
+logs/
+state/
+*.tgz
+evidence-freeze/
+__pycache__/
+*.pyc
+.DS_Store

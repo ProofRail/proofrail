@@ -1,0 +1,2 @@
+data: {"jsonrpc":"2.0","id":"call-read-1","result":{"content":[{"type":"text","text":"mock actuator executed demo.read"}],"isError":false}}
+

@@ -1,0 +1,67 @@
+name: proofrail-composed-bronze-demo-001
+
+services:
+  agent:
+    image: curlimages/curl:8.10.1
+    command: ["sleep", "infinity"]
+    networks: [agent_net]
+    environment:
+      - AGENT_ID=demo-agent-001
+
+  agentgateway:
+    image: cr.agentgateway.dev/agentgateway:v1.2.1
+    container_name: proofrail-agentgateway
+    ports:
+      - "127.0.0.1:3000:3000"      # MCP gateway endpoint for local testing
+      - "127.0.0.1:15000:15000"    # admin UI, localhost only
+      - "127.0.0.1:15020:15020"    # metrics, localhost only if enabled by image
+    volumes:
+      - ./config/agentgateway-active.yaml:/config.yaml:ro
+      - ./logs:/logs
+    environment:
+      - ADMIN_ADDR=0.0.0.0:15000
+      - RUST_LOG=info
+    command: ["-f", "/config.yaml"]
+    networks: [agent_net, actuator_net]
+    depends_on:
+      - mock-mcp
+      - stop-mcp
+
+  mock-mcp:
+    build:
+      context: ./services
+      dockerfile: Dockerfile.mock
+    container_name: proofrail-mock-mcp
+    expose:
+      - "3005"
+    networks: [actuator_net]
+    environment:
+      - MCP_SERVER_API_KEY_FILE=/run/secrets/not-mounted
+      - PORT=3005
+    secrets:
+      - upstream_mcp_api_key
+
+  stop-mcp:
+    build:
+      context: ./services
+      dockerfile: Dockerfile.stop
+    container_name: proofrail-stop-mcp
+    expose:
+      - "3006"
+    networks: [actuator_net]
+    environment:
+      - PORT=3006
+
+  bypass-tester:
+    image: curlimages/curl:8.10.1
+    command: ["sleep", "infinity"]
+    networks: [agent_net]
+
+secrets:
+  upstream_mcp_api_key:
+    file: ./secrets/upstream_mcp_api_key.txt
+
+networks:
+  agent_net: {}
+  actuator_net:
+    internal: true

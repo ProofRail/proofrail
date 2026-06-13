@@ -1,0 +1,16 @@
+{
+  "name": "demo-001-mock-actuators",
+  "surface": "mcp",
+  "contents": [
+    "admin.rotate_secret",
+    "demo.read",
+    "deploy.push",
+    "ticket.create"
+  ],
+  "risk_tiers": {
+    "demo.read": 0,
+    "ticket.create": 1,
+    "deploy.push": 2,
+    "admin.rotate_secret": 3
+  }
+}

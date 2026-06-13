@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://agentgateway.dev/schema/config
+# ProofRail Composed Bronze Demo 001 — normal mode
+# Validate against the installed agentgateway version before relying on this file.
+
+# Prefer simplified MCP format from agentgateway docs.
+mcp:
+  port: 3000
+  targets:
+    - name: proofrail-mock-actuators
+      mcp:
+        host: http://mock-mcp:3005/mcp/

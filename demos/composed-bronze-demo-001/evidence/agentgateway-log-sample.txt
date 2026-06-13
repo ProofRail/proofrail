@@ -1,0 +1,200 @@
+proofrail-agentgateway  |     retries: 9
+proofrail-agentgateway  |   connectTimeout: 10s
+proofrail-agentgateway  |   poolIdleTimeout: 1m30s
+proofrail-agentgateway  |   poolMaxSize: null
+proofrail-agentgateway  | mcp:
+proofrail-agentgateway  |   sessionTtl: 30m0s
+proofrail-agentgateway  | 	
+proofrail-agentgateway  | 2026-06-13T04:04:42.628293Z	info	management::hyper_helpers	listener established	address=[::]:15021 component="readiness"
+proofrail-agentgateway  | 2026-06-13T04:04:42.629809Z	info	state_manager	Watching config file: /config.yaml	
+proofrail-agentgateway  | 2026-06-13T04:04:42.634162Z	info	state_manager	loaded config from File("/config.yaml")	
+proofrail-agentgateway  | 2026-06-13T04:04:42.636298Z	info	app	serving UI at http://0.0.0.0:15000/ui	
+proofrail-agentgateway  | 2026-06-13T04:04:42.637019Z	info	proxy::gateway	started bind	bind="bind/3000"
+proofrail-agentgateway  | 2026-06-13T04:04:42.637069Z	info	agent_core::readiness	Task 'agentgateway' complete (17.025201ms), still awaiting 1 tasks	
+proofrail-agentgateway  | 2026-06-13T04:04:42.637092Z	info	management::hyper_helpers	listener established	address=0.0.0.0:15000 component="admin"
+proofrail-agentgateway  | 2026-06-13T04:04:42.637150Z	info	management::hyper_helpers	listener established	address=[::]:15020 component="stats"
+proofrail-agentgateway  | 2026-06-13T04:04:42.637608Z	info	agent_core::readiness	Task 'state manager' complete (17.56296ms), marking server ready	
+proofrail-agentgateway  | 2026-06-13T04:04:45.901913Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52280 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=0ee3ab10-6014-43ae-a58b-d20179633656 duration=4ms
+proofrail-agentgateway  | 2026-06-13T04:04:45.919337Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52288 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjAxNTY4ZmQ2LTEyNzMtNDcyYy05NWQzLWZhMzk1Y2E5N2FkNyJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:46.194485Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52290 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=c45b379a-b117-400d-9404-4b2229762fd2 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:46.212001Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52300 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImRhZTMyOWZlLTc2MmUtNGY4NS1hNjUwLTczNzI1YjU3ZWM4NiJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:46.476771Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52312 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=55de2e12-d331-4997-92d5-f8ec382ae74f duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:46.492213Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52314 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=429 protocol=http error="rate limit exceeded" reason=RateLimit duration=0ms
+proofrail-agentgateway  | 2026-06-13T04:04:46.772843Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52328 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=429 protocol=http error="rate limit exceeded" reason=RateLimit duration=0ms
+proofrail-agentgateway  | 2026-06-13T04:04:47.55461Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52338 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=429 protocol=http error="rate limit exceeded" reason=RateLimit duration=0ms
+proofrail-agentgateway  | 2026-06-13T04:04:47.337655Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52342 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=429 protocol=http error="rate limit exceeded" reason=RateLimit duration=0ms
+proofrail-agentgateway  | 2026-06-13T04:04:47.624161Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52358 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=429 protocol=http error="rate limit exceeded" reason=RateLimit duration=0ms
+proofrail-agentgateway  | 2026-06-13T04:04:47.891352Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:52370 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=429 protocol=http error="rate limit exceeded" reason=RateLimit duration=0ms
+proofrail-agentgateway  | 2026-06-13T04:04:48.174936Z	info	agent_core::signal::imp	received signal SIGTERM, starting shutdown	
+proofrail-agentgateway  | 2026-06-13T04:04:48.175975Z	info	proxy::gateway	stop listening for binds; drain started	
+proofrail-agentgateway  | 2026-06-13T04:04:48.176060Z	info	management::hyper_helpers	listener drained	address=[::]:15021 component="readiness"
+proofrail-agentgateway  | 2026-06-13T04:04:48.176132Z	info	agent_core::drain	drain started, waiting 0ns-5s for any connections to complete	component="bind bind/3000"
+proofrail-agentgateway  | 2026-06-13T04:04:48.176171Z	info	management::hyper_helpers	listener drained	address=0.0.0.0:15000 component="admin"
+proofrail-agentgateway  | 2026-06-13T04:04:48.176295Z	info	management::hyper_helpers	listener drained	address=[::]:15020 component="stats"
+proofrail-agentgateway  | 2026-06-13T04:04:48.177237Z	info	agent_core::drain	minimum drain completed, waiting, not accepting new connections and waiting 5s for any connections to complete	component="bind bind/3000"
+proofrail-agentgateway  | 2026-06-13T04:04:48.177280Z	info	agent_core::drain	shutdown complete	component="bind bind/3000"
+proofrail-agentgateway  | 2026-06-13T04:04:48.177331Z	info	proxy::gateway	bind complete Ok(Ok(()))	
+proofrail-agentgateway  | 2026-06-13T04:04:48.177335Z	info	proxy::gateway	binds drained	
+proofrail-agentgateway  | 2026-06-13T04:04:49.016448Z	info	agentgateway_app::commands::run	version: {
+proofrail-agentgateway  |   "version": "1.2.1",
+proofrail-agentgateway  |   "git_revision": "6a2d02dbb35a289738d0fdba88e5a474e432a72a",
+proofrail-agentgateway  |   "rust_version": "1.95.0",
+proofrail-agentgateway  |   "build_profile": "release",
+proofrail-agentgateway  |   "build_target": "x86_64-unknown-linux-gnu"
+proofrail-agentgateway  | }	
+proofrail-agentgateway  | 2026-06-13T04:04:49.018240Z	info	agentgateway_app::commands::run	running with config: ipv6Enabled: true
+proofrail-agentgateway  | network: ''
+proofrail-agentgateway  | selfIdentity: null
+proofrail-agentgateway  | terminationMaxDeadline: 5s
+proofrail-agentgateway  | terminationMinDeadline: 0s
+proofrail-agentgateway  | numWorkerThreads: 1
+proofrail-agentgateway  | adminAddr:
+proofrail-agentgateway  |   SocketAddr: 0.0.0.0:15000
+proofrail-agentgateway  | statsAddr:
+proofrail-agentgateway  |   SocketAddr: '[::]:15020'
+proofrail-agentgateway  | readinessAddr:
+proofrail-agentgateway  |   SocketAddr: '[::]:15021'
+proofrail-agentgateway  | selfAddr:
+proofrail-agentgateway  |   gateway: default
+proofrail-agentgateway  |   namespace: default
+proofrail-agentgateway  | hbone:
+proofrail-agentgateway  |   windowSize: 4194304
+proofrail-agentgateway  |   connectionWindowSize: 16777216
+proofrail-agentgateway  |   frameSize: 1048576
+proofrail-agentgateway  |   poolMaxStreamsPerConn: 100
+proofrail-agentgateway  |   poolUnusedReleaseTimeout:
+proofrail-agentgateway  |     secs: 300
+proofrail-agentgateway  |     nanos: 0
+proofrail-agentgateway  | xds:
+proofrail-agentgateway  |   address: null
+proofrail-agentgateway  |   auth: none
+proofrail-agentgateway  |   caCert: Default
+proofrail-agentgateway  |   namespace: default
+proofrail-agentgateway  |   gateway: default
+proofrail-agentgateway  |   localConfig: /config.yaml
+proofrail-agentgateway  | ca: null
+proofrail-agentgateway  | tracing: null
+proofrail-agentgateway  | metrics:
+proofrail-agentgateway  |   metric_fields:
+proofrail-agentgateway  |     add: {}
+proofrail-agentgateway  |   excluded_metrics: []
+proofrail-agentgateway  | logging:
+proofrail-agentgateway  |   filter: null
+proofrail-agentgateway  |   fields:
+proofrail-agentgateway  |     remove: []
+proofrail-agentgateway  |     add: {}
+proofrail-agentgateway  |   level: ''
+proofrail-agentgateway  |   format: text
+proofrail-agentgateway  | dns:
+proofrail-agentgateway  |   resolverCfg:
+proofrail-agentgateway  |     domain: null
+proofrail-agentgateway  |     search:
+proofrail-agentgateway  |     - .
+proofrail-agentgateway  |     name_servers:
+proofrail-agentgateway  |     - ip: 127.0.0.11
+proofrail-agentgateway  |       trust_negative_responses: true
+proofrail-agentgateway  |       connections:
+proofrail-agentgateway  |       - port: 53
+proofrail-agentgateway  |         protocol:
+proofrail-agentgateway  |           type: udp
+proofrail-agentgateway  |         bind_addr: null
+proofrail-agentgateway  |       - port: 53
+proofrail-agentgateway  |         protocol:
+proofrail-agentgateway  |           type: tcp
+proofrail-agentgateway  |         bind_addr: null
+proofrail-agentgateway  |   resolverOpts:
+proofrail-agentgateway  |     ndots: 0
+proofrail-agentgateway  |     timeout: 5
+proofrail-agentgateway  |     attempts: 2
+proofrail-agentgateway  |     edns0: true
+proofrail-agentgateway  |     ip_strategy: Ipv4thenIpv6
+proofrail-agentgateway  |     cache_size: 8192
+proofrail-agentgateway  |     use_hosts_file: Auto
+proofrail-agentgateway  |     positive_min_ttl: null
+proofrail-agentgateway  |     negative_min_ttl: null
+proofrail-agentgateway  |     positive_max_ttl: null
+proofrail-agentgateway  |     negative_max_ttl: null
+proofrail-agentgateway  |     num_concurrent_reqs: 2
+proofrail-agentgateway  |     max_active_requests: 32
+proofrail-agentgateway  |     preserve_intermediates: true
+proofrail-agentgateway  |     try_tcp_on_error: false
+proofrail-agentgateway  |     server_ordering_strategy: QueryStatistics
+proofrail-agentgateway  |     recursion_desired: true
+proofrail-agentgateway  |     avoid_local_udp_ports: []
+proofrail-agentgateway  |     os_port_selection: false
+proofrail-agentgateway  |     case_randomization: false
+proofrail-agentgateway  |     trust_anchor: null
+proofrail-agentgateway  |     allow_answers: []
+proofrail-agentgateway  |     deny_answers: []
+proofrail-agentgateway  |     edns_payload_len: 1232
+proofrail-agentgateway  | proxyMetadata:
+proofrail-agentgateway  |   instanceIp: null
+proofrail-agentgateway  |   podName: ''
+proofrail-agentgateway  |   podNamespace: ''
+proofrail-agentgateway  |   nodeName: ''
+proofrail-agentgateway  |   role: '~'
+proofrail-agentgateway  |   nodeId: agentgateway~1.1.1.1~.~.svc.cluster.local
+proofrail-agentgateway  | threadingMode: multithreaded
+proofrail-agentgateway  | sessionEncoder: base64
+proofrail-agentgateway  | oidcCookieEncoder: null
+proofrail-agentgateway  | backend:
+proofrail-agentgateway  |   keepalives:
+proofrail-agentgateway  |     enabled: true
+proofrail-agentgateway  |     time: 3m0s
+proofrail-agentgateway  |     interval: 3m0s
+proofrail-agentgateway  |     retries: 9
+proofrail-agentgateway  |   connectTimeout: 10s
+proofrail-agentgateway  |   poolIdleTimeout: 1m30s
+proofrail-agentgateway  |   poolMaxSize: null
+proofrail-agentgateway  | mcp:
+proofrail-agentgateway  |   sessionTtl: 30m0s
+proofrail-agentgateway  | 	
+proofrail-agentgateway  | 2026-06-13T04:04:49.020047Z	info	management::hyper_helpers	listener established	address=[::]:15021 component="readiness"
+proofrail-agentgateway  | 2026-06-13T04:04:49.021188Z	info	state_manager	Watching config file: /config.yaml	
+proofrail-agentgateway  | 2026-06-13T04:04:49.022788Z	info	state_manager	loaded config from File("/config.yaml")	
+proofrail-agentgateway  | 2026-06-13T04:04:49.024578Z	info	app	serving UI at http://0.0.0.0:15000/ui	
+proofrail-agentgateway  | 2026-06-13T04:04:49.024610Z	info	agent_core::readiness	Task 'agentgateway' complete (8.651272ms), still awaiting 1 tasks	
+proofrail-agentgateway  | 2026-06-13T04:04:49.024623Z	info	management::hyper_helpers	listener established	address=0.0.0.0:15000 component="admin"
+proofrail-agentgateway  | 2026-06-13T04:04:49.024759Z	info	management::hyper_helpers	listener established	address=[::]:15020 component="stats"
+proofrail-agentgateway  | 2026-06-13T04:04:49.027825Z	info	proxy::gateway	started bind	bind="bind/3000"
+proofrail-agentgateway  | 2026-06-13T04:04:49.028103Z	info	agent_core::readiness	Task 'state manager' complete (12.142196ms), marking server ready	
+proofrail-agentgateway  | 2026-06-13T04:04:52.304597Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57796 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=d36fb4c3-2f27-4c3c-ace6-b7068b81d3f6 duration=4ms
+proofrail-agentgateway  | 2026-06-13T04:04:52.321812Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57800 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImNlNDFiZTIyLWQ5N2MtNDZiNi04YmU0LTJhZjk4YjJlNmE5MyJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:52.606097Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57808 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=3810404d-37be-4868-b4e5-e3bd5447c633 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:52.622969Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57824 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6Ijg0NGFmZDQ3LTg3ZDEtNDdkOS04NWFkLTVkYTZhMTQ2NTAwOSJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:52.920315Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57840 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=a5eca4a1-fbd9-42f1-bd90-a562e60ce909 duration=5ms
+proofrail-agentgateway  | 2026-06-13T04:04:52.942434Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57854 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImQ0OWFhNzE2LWVmOTMtNGZmOS05NjU2LWZhYzYyN2E2ODZlMSJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:53.215973Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57858 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=2b30985e-650b-4a28-a2d1-6929b7d4e7a4 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:53.235957Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57866 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjY0YWZjZDBiLTFiZmEtNDRhNC1iMWQ1LTcwNGEyMDFhNjdlOSJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:53.534622Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57868 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=1cc221ea-ce38-405d-a894-334dba597016 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:53.553574Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57874 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImNiNjA0YTUzLTM4MjItNDVkOC1iMDdkLThlZGExNWUwNTkyZCJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:53.858376Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57876 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=ebba5dfe-d97d-429e-a9d3-defc1d58b887 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:53.876381Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57878 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjkwNDk0ZjU0LTdjNmEtNGNkNi04ZDRmLWY5YTczYTRhM2Q5MSJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:54.150151Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57888 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=3a1df196-0ce4-4e29-8004-b1d14e1124da duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:54.168064Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57902 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImE5ZjczNTgyLTEwYzQtNDM1My04NjFhLTZkM2NmN2IwYzQ5YiJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:54.432265Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57916 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=0d22fcb2-778e-469b-87fc-ccbc8153d43b duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:54.448464Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57924 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjA4NWQwOWI1LTYzMjMtNDU5ZS1iZWQ5LTU4MjE0NGY4MzVlOCJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:54.718508Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57936 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=96494b78-28f7-4591-92d1-577b942dd6b4 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:54.737565Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57938 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjVkMWViZGMzLTQxZWItNDk5NC1hNjRmLTM4ZjZmMmI3MmJiOCJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:55.28971Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57948 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=2f3de819-cad1-4b48-a6d5-c0ce7e65ad79 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:55.46791Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57954 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjhiOGVlNDgyLTlhMjEtNGI4YS04MzNiLWU2OTcxOGEwZWRkZCJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:55.326522Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57970 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=c2cb05ae-b059-499b-868a-664fc148812a duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:55.341075Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57974 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjFkYmQwM2RhLTA2NGYtNDczZS05ZTg2LTFhYzY1ZmIxNzEwNSJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:55.606254Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57980 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=1c71433e-e1c7-412b-bd34-83499134576d duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:55.622550Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57988 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImExOWNmNzY4LWM4NjktNGRiZC1iOTY4LTgwZWNjNmI4MTc3NSJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:55.879682Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:57998 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=04e4cddc-8062-47e7-8311-26c35afe42e3 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:55.897352Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58014 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjNhMjJhYjAwLWZlMzAtNDhjZC1iMTY1LWM5ZDMyYTlkOTVkZCJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:56.180468Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58020 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=18969657-6792-4ae2-91cd-ef64feb6200b duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:56.198444Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58026 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImYyMmVhMTMyLTNlZDItNDBhOS05ZTA4LWIwYWQ2MTY4MzY0OSJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:56.471656Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58028 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=d5dfb1b2-db5e-4e72-bdc7-0ec88476ba93 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:56.490250Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58032 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjBkNjRhMDNmLTg3MGEtNGUwNS1iZTUxLWM2ZGQxYWY4M2EyMCJ9 duration=3ms
+proofrail-agentgateway  | 2026-06-13T04:04:56.759691Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58036 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=19f87b07-e1d0-4aa0-9269-411f46f44566 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:56.776725Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58050 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImU2NTBhZmM5LTBmZDYtNGM4Ni05YzFjLWIyMDI4NGNmNzM4YSJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:57.47765Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58064 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=b7b4edc6-0ce1-4ab4-a16c-f0e5b630f0cf duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:57.67450Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58072 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjkxN2Q3Njc4LTlmN2EtNDVmOS05ZmFlLTYzNGJkNGEwOGQ2ZCJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:57.548036Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58088 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=0fc98b76-50f0-44dc-ae33-c5801c0d7be9 duration=3ms
+proofrail-agentgateway  | 2026-06-13T04:04:57.584210Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58096 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjQzZTg2YTUwLTJjNzAtNDU2YS1iNDU0LTI0NmJlMzI4ZDNmYyJ9 duration=4ms
+proofrail-agentgateway  | 2026-06-13T04:04:57.917657Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58104 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=666d096a-afe0-41f1-9bb5-d14d26234e11 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:57.934779Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58114 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6IjU4OWQ4MWVkLWIyNTAtNGMwNy05YWRjLTZkMDc0MWFiODJhNiJ9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:58.248740Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58116 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=initialize mcp.session.id=2f301b7c-cfbd-4805-8de8-42ee4b52e9a9 duration=2ms
+proofrail-agentgateway  | 2026-06-13T04:04:58.267815Z	info	request gateway=default/default listener=mcp route=internal/default src.addr=172.20.0.2:58130 http.method=POST http.host=agentgateway http.path=/mcp http.version=HTTP/1.1 http.status=200 protocol=mcp mcp.method.name=tools/call mcp.target=proofrail-mock-actuators mcp.resource.type=tool gen_ai.tool.name=demo.read mcp.session.id=eyJ0IjoibWNwIiwicyI6W3sidCI6InByb29mcmFpbC1tb2NrLWFjdHVhdG9ycyJ9XSwiciI6ImRlYmY2ZDlhLTI3NzktNDcxYS1hNzM5LWIzZDFlZDdhMTc0YyJ9 duration=3ms

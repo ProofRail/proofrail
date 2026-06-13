@@ -1,0 +1,2 @@
+data: {"jsonrpc":"2.0","id":"call-deploy-1","result":{"content":[{"type":"text","text":"mock actuator executed deploy.push"}],"isError":false}}
+
