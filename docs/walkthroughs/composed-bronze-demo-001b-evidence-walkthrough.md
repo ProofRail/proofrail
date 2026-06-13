@@ -1,9 +1,3 @@
-Save this as:
-
-```text
-docs/walkthroughs/composed-bronze-demo-001b-evidence-walkthrough.md
-```
-
 # ProofRail Composed Bronze Demo 001b — Evidence Walkthrough
 
 **Demo:** Composed Bronze Demo 001b
