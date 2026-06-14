@@ -1,0 +1,58 @@
+bundle:
+  manifest_version: "v0.1.3"
+  bundle_id: "proofrail-demo-001b-evidence-bundle"
+  bundle_label: "ProofRail Composed Bronze Demo 001b Evidence Bundle"
+  profile: "bronze"
+  environment: "test"
+  subject_claim: "claims/bronze-claim-demo-001.yaml"
+  generated_by: "tools/claims/generate_evidence_bundle_manifest_v0_1_3.py"
+
+files:
+  - path: "claims/bronze-claim-demo-001.yaml"
+    role: "claim"
+    required: true
+  - path: "evidence/protected_actuator_set.json"
+    role: "protected_actuator_set_manifest"
+    required: true
+  - path: "evidence/bypass-test-results.md"
+    role: "bypass_evidence"
+    required: true
+  - path: "evidence/emergency-stop-test.md"
+    role: "stop_control_evidence"
+    required: true
+  - path: "evidence/rate-limit-test.md"
+    role: "rate_limit_evidence"
+    required: true
+  - path: "evidence/audit-sample.jsonl"
+    role: "audit_sample"
+    required: true
+  - path: "evidence/latency-benchmark.md"
+    role: "performance_evidence"
+    required: true
+  - path: "evidence/agentgateway-log-sample.txt"
+    role: "substrate_log_sample"
+    required: true
+  - path: "docs/architecture.md"
+    role: "architecture_notes"
+    required: true
+  - path: "docs/runbook.md"
+    role: "runbook"
+    required: true
+  - path: "DEMO_001B_RESULTS.md"
+    role: "demo_summary"
+    required: true
+  - path: "../../schemas/bronze-claim-schema-v0.1.2.md"
+    role: "claim_schema"
+    required: true
+  - path: "../../schemas/bronze-evidence-bundle-manifest-v0.1.3.md"
+    role: "bundle_manifest_schema"
+    required: true
+  - path: "../../tools/claims/generate_bronze_claim_v0_1_2.py"
+    role: "claim_generator"
+    required: true
+  - path: "../../tools/claims/validate_bronze_claim_v0_1_2.py"
+    role: "claim_validator"
+    required: true
+  - path: "../../tools/claims/verify_bronze_claim_evidence_v0_1_2.py"
+    role: "claim_evidence_verifier"
+    required: true

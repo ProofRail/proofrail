@@ -32,3 +32,33 @@ python3 tools/claims/verify_bronze_claim_evidence_v0_1_2.py \
 ```
 
 The verifier exits 0 on success, 1 on checksum mismatch or missing files, and 2 on usage error.
+
+## Evidence Bundle Manifest (v0.1.3)
+
+### Bundle Manifest Generator
+
+The bundle manifest generator checksums the entire portable evidence package — claim file, evidence files, schema documents, tooling scripts, and documentation — producing a standalone manifest YAML.
+
+```bash
+python3 tools/claims/generate_evidence_bundle_manifest_v0_1_3.py \
+  demos/composed-bronze-demo-001
+
+python3 tools/claims/generate_evidence_bundle_manifest_v0_1_3.py \
+  demos/composed-bronze-demo-001 \
+  --input bundle-input-v0.1.3.yaml \
+  --output evidence-bundle-manifest-v0.1.3.yaml
+```
+
+The generator exits 0 on success, 1 if required files are missing (unless `--allow-missing`), and 2 on usage error.
+
+### Bundle Manifest Verifier
+
+The bundle manifest verifier recomputes SHA-256 checksums and file sizes for all files listed in a bundle manifest and verifies they match the recorded values.
+
+```bash
+python3 tools/claims/verify_evidence_bundle_manifest_v0_1_3.py \
+  demos/composed-bronze-demo-001/evidence-bundle-manifest-v0.1.3.yaml \
+  demos/composed-bronze-demo-001
+```
+
+The verifier exits 0 on success, 1 on checksum mismatch, size mismatch, or missing files, and 2 on usage error.
