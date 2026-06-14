@@ -1,0 +1,21 @@
+silver:
+  assertion_version: "v0.1.0"
+  assertion_type: "proofrail.silver.signed_bundle_assertion"
+  assertion_id: "proofrail-silver-demo-001"
+  assertion_label: "ProofRail Minimal Silver Demo 001 — signed Bronze v0.1.3 bundle manifest"
+
+issuer:
+  issuer_id: "proofrail-demo-issuer-a"
+  issuer_label: "ProofRail Demo Issuer A"
+  key_id: "proofrail-demo-issuer-a-ed25519-001"
+  algorithm: "ed25519"
+
+subject:
+  bundle_manifest: "../composed-bronze-demo-001/evidence-bundle-manifest-v0.1.3.yaml"
+  bundle_manifest_type: "proofrail.bronze.evidence_bundle"
+  expected_manifest_version: "v0.1.3"
+
+validity:
+  validity_days: 90
+
+generated_by: "tools/silver/sign_bundle_manifest_v0_1_0.py"

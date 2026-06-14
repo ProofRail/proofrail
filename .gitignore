@@ -8,3 +8,6 @@ evidence-freezes/
 # Python caches
 __pycache__/
 *.pyc
+
+# Silver demo runtime artifacts (keys, signed assertions, reports)
+demos/silver-demo-001/runtime/
