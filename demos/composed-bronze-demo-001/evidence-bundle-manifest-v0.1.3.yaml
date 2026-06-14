@@ -1,0 +1,93 @@
+manifest_version: v0.1.3
+manifest_type: proofrail.bronze.evidence_bundle
+bundle_id: proofrail-demo-001b-evidence-bundle
+bundle_label: ProofRail Composed Bronze Demo 001b Evidence Bundle
+profile: bronze
+environment: test
+subject_claim: claims/bronze-claim-demo-001.yaml
+generated_at: '2026-06-14T14:13:22Z'
+generated_by: tools/claims/generate_evidence_bundle_manifest_v0_1_3.py
+files:
+- path: claims/bronze-claim-demo-001.yaml
+  role: claim
+  required: true
+  sha256: sha256:d2a993dadb75d933e62a0c4379f28e29237e1fff63643026f351f18cbbe52c92
+  size_bytes: 4055
+- path: evidence/protected_actuator_set.json
+  role: protected_actuator_set_manifest
+  required: true
+  sha256: sha256:d7d97f891dad6dce039bf0d99f7dd55ffdc24c1e7fa5a46b5deb23da34570459
+  size_bytes: 282
+- path: evidence/bypass-test-results.md
+  role: bypass_evidence
+  required: true
+  sha256: sha256:009837c6adb765ddf853ea01bbb8ba19e5da912dcda3b31f984c0ed086985c1e
+  size_bytes: 1064
+- path: evidence/emergency-stop-test.md
+  role: stop_control_evidence
+  required: true
+  sha256: sha256:19ed753af9715a7211899572e0534c79d005acb04f3e1fa65be6165d80b373a8
+  size_bytes: 312
+- path: evidence/rate-limit-test.md
+  role: rate_limit_evidence
+  required: true
+  sha256: sha256:b199056ad7b867c0a70b8471873e553ba70108fd8ea60718d361bcb8e80ca40e
+  size_bytes: 584
+- path: evidence/audit-sample.jsonl
+  role: audit_sample
+  required: true
+  sha256: sha256:4fcd2f10a6ab424835a64c7460e1ffbc7ed7d024a41e027d232238c9c631a0d9
+  size_bytes: 2075
+- path: evidence/latency-benchmark.md
+  role: performance_evidence
+  required: true
+  sha256: sha256:f59a5104c4f011dac0732d2e887e5fa384b23467f1beefcdbcefaffcd2a7e288
+  size_bytes: 141
+- path: evidence/agentgateway-log-sample.txt
+  role: substrate_log_sample
+  required: true
+  sha256: sha256:7e9c7ebd7838743d239873e8b8296394b638d7ce491791ccfd6086d7ca336049
+  size_bytes: 30912
+- path: docs/architecture.md
+  role: architecture_notes
+  required: true
+  sha256: sha256:e5a632c8af4e860810c0f37ab84fbd73a2898a40f43a3920589e40430afdb5ea
+  size_bytes: 1400
+- path: docs/runbook.md
+  role: runbook
+  required: true
+  sha256: sha256:9e7a05b17442aeffe1bab5e02175f7b19bcd7c4596d23a48eda4ea791dfb8480
+  size_bytes: 1146
+- path: DEMO_001B_RESULTS.md
+  role: demo_summary
+  required: true
+  sha256: sha256:d989de929a2f7fc3696c5a8a552df823a25696849043de8f36d91128d016feb8
+  size_bytes: 8685
+- path: ../../schemas/bronze-claim-schema-v0.1.2.md
+  role: claim_schema
+  required: true
+  sha256: sha256:01580883a2257fd30d180d2529e217af52fe02bf11622ceadb52eaf45e1f7840
+  size_bytes: 28088
+- path: ../../schemas/bronze-evidence-bundle-manifest-v0.1.3.md
+  role: bundle_manifest_schema
+  required: true
+  sha256: sha256:127410853112472ef451718903729d433edf2d103cd3f18ec2a0cbd11a7c51cf
+  size_bytes: 9736
+- path: ../../tools/claims/generate_bronze_claim_v0_1_2.py
+  role: claim_generator
+  required: true
+  sha256: sha256:01d478958511ee151865ddd3546992733b06aaf1e938a22b5477d6521e4e5fa7
+  size_bytes: 6142
+- path: ../../tools/claims/validate_bronze_claim_v0_1_2.py
+  role: claim_validator
+  required: true
+  sha256: sha256:25280bfb677eef7940f557101094f6c585f750051cad0823a93038d85739898a
+  size_bytes: 7967
+- path: ../../tools/claims/verify_bronze_claim_evidence_v0_1_2.py
+  role: claim_evidence_verifier
+  required: true
+  sha256: sha256:326a0dc3575748290ca21090245b46c4ffc655e4046786f3ebdd3b89275f973f
+  size_bytes: 1959
+validation:
+  missing_files: []
+  file_count: 16

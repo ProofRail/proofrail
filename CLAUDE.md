@@ -24,6 +24,7 @@ python -m pytest tests/test_proofrail_claim.py
 # Run regression tests
 bash tests/test_bronze_claim_v0_1_1.sh
 bash tests/test_bronze_claim_v0_1_2.sh
+bash tests/test_bronze_evidence_bundle_v0_1_3.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -43,6 +44,16 @@ make verify-bronze-demo-001b-evidence
 
 # Verify evidence checksums standalone
 python3 tools/claims/verify_bronze_claim_evidence_v0_1_2.py <claim.yaml> <package-root>
+
+# Generate and verify evidence bundle manifest (Makefile targets)
+make bundle-bronze-demo-001b
+make verify-bronze-demo-001b-bundle
+
+# Generate evidence bundle manifest standalone
+python3 tools/claims/generate_evidence_bundle_manifest_v0_1_3.py <package-root>
+
+# Verify evidence bundle manifest standalone
+python3 tools/claims/verify_evidence_bundle_manifest_v0_1_3.py <manifest.yaml> <package-root>
 ```
 
 ## Architecture
@@ -66,6 +77,8 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 - `generate_bronze_claim_v0_1_2.py` — Deterministic claim assembly with evidence checksum computation
 - `validate_bronze_claim_v0_1_2.py` — Structural validator shim (v0.1.2)
 - `verify_bronze_claim_evidence_v0_1_2.py` — Evidence checksum verifier (recomputes and compares SHA-256 digests)
+- `generate_evidence_bundle_manifest_v0_1_3.py` — Evidence bundle manifest generator (checksums entire portable package)
+- `verify_evidence_bundle_manifest_v0_1_3.py` — Evidence bundle manifest verifier (recomputes and compares bundle checksums)
 
 ### Demo Stack: `demos/composed-bronze-demo-001/`
 
