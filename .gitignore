@@ -1,0 +1,10 @@
+
+# Local OS/editor artifacts
+.DS_Store
+
+# Local evidence archives / frozen packages
+evidence-freezes/
+
+# Python caches
+__pycache__/
+*.pyc
