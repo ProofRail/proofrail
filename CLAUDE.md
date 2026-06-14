@@ -23,6 +23,7 @@ python -m pytest tests/test_proofrail_claim.py
 
 # Run regression tests
 bash tests/test_bronze_claim_v0_1_1.sh
+bash tests/test_bronze_claim_v0_1_2.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -38,6 +39,10 @@ python3 scripts/proofrail_claim.py summarize <claim.yaml>
 # Generate and validate demo claim (Makefile targets)
 make generate-bronze-demo-001b
 make validate-bronze-demo-001b
+make verify-bronze-demo-001b-evidence
+
+# Verify evidence checksums standalone
+python3 tools/claims/verify_bronze_claim_evidence_v0_1_2.py <claim.yaml> <package-root>
 ```
 
 ## Architecture
@@ -48,9 +53,9 @@ The primary CLI tool (~815 lines) with three subcommands: `init`, `validate`, `s
 
 Validation flow: `YAML file → yaml.safe_load() → validate_claim() → errors/warnings/checks → format_text()/format_json()`
 
-### Claim Schema (v0.1.1)
+### Claim Schema (v0.1.1 / v0.1.2)
 
-Claims are YAML files with 16+ required top-level sections defined in `REQUIRED_TOP_LEVEL_SECTIONS`. The schema specification lives in `schemas/bronze-claim-schema-v0.1.1.md`.
+Claims are YAML files with 16+ required top-level sections defined in `REQUIRED_TOP_LEVEL_SECTIONS`. The schema specifications live in `schemas/bronze-claim-schema-v0.1.1.md` and `schemas/bronze-claim-schema-v0.1.2.md`. v0.1.2 adds an optional `evidence_checksums` mapping for post-generation evidence integrity verification.
 
 Two claim types: `composed_bronze` (uses existing infrastructure) and `native_bronze_preview` (ProofRail-native, future).
 
@@ -58,6 +63,9 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 
 - `generate_bronze_claim_v0_1_1.py` — Deterministic claim assembly from a `claim-input-v0.1.1.yaml` template
 - `validate_bronze_claim_v0_1_1.py` — Structural validator shim
+- `generate_bronze_claim_v0_1_2.py` — Deterministic claim assembly with evidence checksum computation
+- `validate_bronze_claim_v0_1_2.py` — Structural validator shim (v0.1.2)
+- `verify_bronze_claim_evidence_v0_1_2.py` — Evidence checksum verifier (recomputes and compares SHA-256 digests)
 
 ### Demo Stack: `demos/composed-bronze-demo-001/`
 

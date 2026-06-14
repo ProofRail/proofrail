@@ -1,6 +1,6 @@
-spec_version: v0.1.1
+spec_version: v0.1.2
 claim_type: proofrail.bronze.composed
-claim_id: proofrail-demo-001b-20260613T152301Z
+claim_id: proofrail-demo-001b-20260614T112552Z
 claim_label: ProofRail Composed Bronze Demo 001b — agentgateway MCP substrate — test
   env
 profile: bronze
@@ -65,12 +65,22 @@ evidence:
   performance_test: evidence/latency-benchmark.md
   substrate_log_sample: evidence/agentgateway-log-sample.txt
   demo_summary: DEMO_001B_RESULTS.md
+evidence_checksums:
+  DEMO_001B_RESULTS.md: sha256:d989de929a2f7fc3696c5a8a552df823a25696849043de8f36d91128d016feb8
+  docs/architecture.md: sha256:e5a632c8af4e860810c0f37ab84fbd73a2898a40f43a3920589e40430afdb5ea
+  docs/runbook.md: sha256:9e7a05b17442aeffe1bab5e02175f7b19bcd7c4596d23a48eda4ea791dfb8480
+  evidence/agentgateway-log-sample.txt: sha256:7e9c7ebd7838743d239873e8b8296394b638d7ce491791ccfd6086d7ca336049
+  evidence/audit-sample.jsonl: sha256:4fcd2f10a6ab424835a64c7460e1ffbc7ed7d024a41e027d232238c9c631a0d9
+  evidence/bypass-test-results.md: sha256:009837c6adb765ddf853ea01bbb8ba19e5da912dcda3b31f984c0ed086985c1e
+  evidence/emergency-stop-test.md: sha256:19ed753af9715a7211899572e0534c79d005acb04f3e1fa65be6165d80b373a8
+  evidence/latency-benchmark.md: sha256:f59a5104c4f011dac0732d2e887e5fa384b23467f1beefcdbcefaffcd2a7e288
+  evidence/protected_actuator_set.json: sha256:d7d97f891dad6dce039bf0d99f7dd55ffdc24c1e7fa5a46b5deb23da34570459
+  evidence/rate-limit-test.md: sha256:b199056ad7b867c0a70b8471873e553ba70108fd8ea60718d361bcb8e80ca40e
 validation:
   type: self-attested-demo
-  validator: ProofRail Bronze claim validator v0.1.1 structural check
-  generated_at: '2026-06-13T15:23:01Z'
-  missing_evidence_files:
-  - evidence/bypass-test-results.md
+  validator: ProofRail Bronze claim validator v0.1.2 structural check
+  generated_at: '2026-06-14T11:25:52Z'
+  missing_evidence_files: []
 limitations:
 - Demo 001b is a local Docker Compose test environment, not a production conformance
   assertion.
