@@ -61,9 +61,56 @@ The verifier checks:
 
 Exit codes: 0 (pass), 1 (verification failed), 2 (usage error).
 
+## Demo Revocation List Generator
+
+Generates a local demo revocation list for relying-party trust withdrawal.
+
+```bash
+# Empty revocation list
+python3 tools/silver/generate_demo_revocation_list_v0_1_0.py demos/silver-demo-001
+
+# Revoke an assertion ID
+python3 tools/silver/generate_demo_revocation_list_v0_1_0.py demos/silver-demo-001 \
+  --revoke-assertion proofrail-silver-demo-001 --reason "demo assertion revocation"
+
+# Revoke an issuer key (issuer_id:key_id format)
+python3 tools/silver/generate_demo_revocation_list_v0_1_0.py demos/silver-demo-001 \
+  --revoke-issuer-key proofrail-demo-issuer-a:proofrail-demo-issuer-a-ed25519-001 \
+  --reason "demo key revocation"
+
+# Revoke a bundle hash
+python3 tools/silver/generate_demo_revocation_list_v0_1_0.py demos/silver-demo-001 \
+  --revoke-bundle-sha256 sha256:<64 hex> --reason "demo bundle revocation"
+```
+
+The `--force` flag overwrites an existing revocation list. Output is written to `demos/silver-demo-001/runtime/verifier-b/revocation-list.yaml` by default.
+
+The generator exits 0 on success, 1 if the output exists without `--force`, and 2 on usage error.
+
+### Verifier Revocation List Support
+
+The verifier accepts an optional `--revocation-list` flag:
+
+```bash
+python3 tools/silver/verify_signed_bundle_assertion_v0_1_0.py \
+  demos/silver-demo-001/runtime/silver-signed-bundle-assertion-v0.1.0.yaml \
+  demos/silver-demo-001/runtime/verifier-b/trust-policy.yaml \
+  --silver-root demos/silver-demo-001 \
+  --bronze-package-root demos/composed-bronze-demo-001 \
+  --revocation-list demos/silver-demo-001/runtime/verifier-b/revocation-list.yaml
+```
+
+When a revocation list is supplied, the verifier rejects the assertion if:
+
+- The assertion ID is listed in `revoked_assertions` → `FAIL: assertion revoked`
+- The issuer/key pair is listed in `revoked_issuer_keys` → `FAIL: issuer key revoked`
+- The bundle manifest hash is listed in `revoked_bundles` → `FAIL: bundle revoked`
+
+When no `--revocation-list` is supplied, existing behavior is unchanged.
+
 ## Security Notes
 
 - This is a demo signing system. Do not use generated keys for production.
 - Private keys are runtime-only and must not be committed to version control.
-- No revocation mechanism is provided in this version.
+- Revocation is local demo revocation — local relying-party policy, not production PKI revocation, public certificate revocation, OCSP, or transparency-log-backed revocation.
 - This is Minimal Silver, not full Silver governance.

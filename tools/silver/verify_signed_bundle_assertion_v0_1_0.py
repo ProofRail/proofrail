@@ -45,6 +45,7 @@ def parse_args():
     parser.add_argument("trust_policy", help="Path to trust policy YAML")
     parser.add_argument("--silver-root", required=True, help="Silver demo root directory")
     parser.add_argument("--bronze-package-root", required=True, help="Bronze evidence package root directory")
+    parser.add_argument("--revocation-list", default=None, help="Path to revocation list YAML (optional)")
     parser.add_argument("--report", default=None, help="Path to write JSON verification report")
     return parser.parse_args()
 
@@ -177,7 +178,81 @@ def main() -> int:
         return 1
     record("checksum_check", True, actual_sha)
 
-    # --- 5. Signature verification ---
+    # --- 5. Revocation check (optional) ---
+    revocation_list_path = getattr(args, "revocation_list", None)
+    if revocation_list_path:
+        rev_path = Path(revocation_list_path)
+        if not rev_path.exists():
+            print(f"ERROR: revocation list not found: {revocation_list_path}", file=sys.stderr)
+            report["revocation_check"] = {"performed": False, "status": "not_performed"}
+            _write_report(args.report, report)
+            return 2
+
+        rev_list = yaml.safe_load(rev_path.read_text())
+        if not isinstance(rev_list, dict):
+            print("FAIL: revocation list root must be a mapping")
+            report["revocation_check"] = {"performed": True, "status": "fail", "reason": "invalid_format"}
+            _write_report(args.report, report)
+            return 1
+
+        assertion_id = assertion.get("assertion_id", "")
+
+        # Check revoked assertions
+        for entry in rev_list.get("revoked_assertions", []):
+            if entry.get("assertion_id") == assertion_id:
+                msg = f"FAIL: assertion revoked (assertion_id={assertion_id})"
+                print(msg)
+                record("revocation_check", False, msg)
+                report["revocation_check"] = {
+                    "performed": True,
+                    "revocation_list": str(revocation_list_path),
+                    "status": "fail",
+                    "reason": "assertion_revoked",
+                }
+                _write_report(args.report, report)
+                return 1
+
+        # Check revoked issuer keys
+        for entry in rev_list.get("revoked_issuer_keys", []):
+            if (entry.get("issuer_id") == assertion_issuer_id
+                    and entry.get("key_id") == assertion_key_id):
+                msg = f"FAIL: issuer key revoked (issuer_id={assertion_issuer_id} key_id={assertion_key_id})"
+                print(msg)
+                record("revocation_check", False, msg)
+                report["revocation_check"] = {
+                    "performed": True,
+                    "revocation_list": str(revocation_list_path),
+                    "status": "fail",
+                    "reason": "issuer_key_revoked",
+                }
+                _write_report(args.report, report)
+                return 1
+
+        # Check revoked bundles
+        for entry in rev_list.get("revoked_bundles", []):
+            if entry.get("bundle_manifest_sha256") == actual_sha:
+                msg = f"FAIL: bundle revoked (bundle_manifest_sha256={actual_sha})"
+                print(msg)
+                record("revocation_check", False, msg)
+                report["revocation_check"] = {
+                    "performed": True,
+                    "revocation_list": str(revocation_list_path),
+                    "status": "fail",
+                    "reason": "bundle_revoked",
+                }
+                _write_report(args.report, report)
+                return 1
+
+        record("revocation_check", True, "no revocation matches")
+        report["revocation_check"] = {
+            "performed": True,
+            "revocation_list": str(revocation_list_path),
+            "status": "pass",
+        }
+    else:
+        report["revocation_check"] = {"performed": False, "status": "not_performed"}
+
+    # --- 6. Signature check ---
     public_key_pem = matched_issuer.get("public_key_pem", "")
     if isinstance(public_key_pem, str):
         public_key_bytes = public_key_pem.encode("utf-8")
@@ -219,7 +294,7 @@ def main() -> int:
         return 1
     record("signature_check", True, "ed25519 signature valid")
 
-    # --- 6. Underlying bundle verification ---
+    # --- 7. Underlying bundle verification ---
     result = subprocess.run(
         [
             sys.executable,
