@@ -10,7 +10,7 @@ ProofRail defines that evidence layer.
 
 This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks.   Early Silver will demonstrate how a ProofRail Bronze evidence bundle manifest can be signed by a demo issuer and verified by a relying-party verifier using a local trust policy, while preserving the underlying Bronze evidence-integrity checks.
 
-ProofRail will follow this path from basic Iron capability to early Silver:
+Current proof chain:
 
 Iron-plus → Composed Bronze → Bronze v0.1.2 checksums → Bronze v0.1.3 bundle manifest → Minimal Silver signed assertion
 
