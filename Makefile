@@ -49,3 +49,16 @@ verify-silver-revocation-demo-001:
 .PHONY: verify-silver-report-demo-001
 verify-silver-report-demo-001:
 	bash tests/test_silver_verification_report_v0_1_0.sh
+
+.PHONY: export-independent-silver-package-demo-002
+export-independent-silver-package-demo-002:
+	python3 tools/silver/export_independent_verification_package_v0_1_0.py --bronze-root demos/composed-bronze-demo-001 --silver-root demos/silver-demo-001 --output demos/silver-demo-002-independent-verifier/runtime/package --force
+
+.PHONY: verify-independent-silver-demo-002
+verify-independent-silver-demo-002:
+	bash tests/test_independent_silver_verifier_v0_1_0.sh
+
+.PHONY: verify-silver-all
+verify-silver-all:
+	$(MAKE) verify-silver-demo-001
+	$(MAKE) verify-independent-silver-demo-002

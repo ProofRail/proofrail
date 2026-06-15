@@ -158,6 +158,34 @@ python3 tools/silver/validate_silver_verification_report_v0_1_0.py <report.json>
 
 Exit codes: 0 (valid), 1 (invalid), 2 (usage error).
 
+## Independent Verification Package Export
+
+Exports a portable verification package from Demo 001 artifacts for use with the independent verifier.
+
+```bash
+python3 tools/silver/export_independent_verification_package_v0_1_0.py \
+  --bronze-root demos/composed-bronze-demo-001 \
+  --silver-root demos/silver-demo-001 \
+  --output demos/silver-demo-002-independent-verifier/runtime/package \
+  --force
+```
+
+The export tool:
+
+1. Validates that all required Bronze and Silver artifacts exist.
+2. Creates a `source-repo-subset/` layout inside the output directory that preserves the repository directory structure, so the bundle manifest's relative paths resolve correctly and the Ed25519 signature remains valid over the original raw bytes.
+3. Copies Bronze demo content (claims, evidence, docs, bundle manifest), Silver runtime artifacts (assertion, trust policy, revocation list), schemas, and reference tools.
+4. Generates a `package-manifest.yaml` describing the package contents and paths.
+5. Excludes private keys, public keys, verification reports, Python caches, and other non-essential files.
+
+The `--force` flag overwrites an existing output directory.
+
+Exit codes: 0 (success), 1 (output exists without `--force`), 2 (usage error or missing source artifacts).
+
+### Independent Verifier Demo
+
+The independent verifier (`demos/silver-demo-002-independent-verifier/verifier/independent_verify.py`) operates on the exported package and performs all seven Silver checks without importing or invoking any tools from the main ProofRail source tree. See `demos/silver-demo-002-independent-verifier/README.md` for details.
+
 ## Security Notes
 
 - This is a demo signing system. Do not use generated keys for production.

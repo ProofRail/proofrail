@@ -11,3 +11,6 @@ __pycache__/
 
 # Silver demo runtime artifacts (keys, signed assertions, reports)
 demos/silver-demo-001/runtime/
+
+# Independent verifier demo runtime artifacts
+demos/silver-demo-002-independent-verifier/runtime/

@@ -28,6 +28,7 @@ bash tests/test_bronze_evidence_bundle_v0_1_3.sh
 bash tests/test_silver_signed_bundle_assertion_v0_1_0.sh
 bash tests/test_silver_revocation_list_v0_1_0.sh
 bash tests/test_silver_verification_report_v0_1_0.sh
+bash tests/test_independent_silver_verifier_v0_1_0.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -63,6 +64,11 @@ make silver-demo-001
 make verify-silver-demo-001
 make verify-silver-revocation-demo-001
 make verify-silver-report-demo-001
+
+# Export and verify independent Silver verification package (Demo 002)
+make export-independent-silver-package-demo-002
+make verify-independent-silver-demo-002
+make verify-silver-all
 
 # Silver tools standalone
 python3 tools/silver/generate_demo_issuer_v0_1_0.py <silver-demo-root> --force
@@ -103,6 +109,11 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 - `verify_signed_bundle_assertion_v0_1_0.py` — Signed assertion verifier (trust policy + signature + expiry + optional revocation check + underlying bundle); emits schema-backed Silver Verification Report v0.1.0 when `--report` is supplied
 - `generate_demo_revocation_list_v0_1_0.py` — Demo local revocation list generator (revoke by assertion ID, issuer key, or bundle hash)
 - `validate_silver_verification_report_v0_1_0.py` — Silver verification report structural validator
+- `export_independent_verification_package_v0_1_0.py` — Portable independent verification package exporter (creates source-repo-subset layout preserving Ed25519 signature)
+
+### Independent Silver Verifier Demo: `demos/silver-demo-002-independent-verifier/`
+
+Demonstrates relying-party separation: a standalone verifier operates on a portable verification package exported from Demo 001, without importing or invoking the main ProofRail Silver verifier or Bronze bundle verifier. The independent verifier implements all seven Silver checks inline and emits a Silver Verification Report v0.1.0-compatible JSON report. Existing Bronze and Silver Demo 001 verification semantics remain unchanged.
 
 ### Demo Stack: `demos/composed-bronze-demo-001/`
 
