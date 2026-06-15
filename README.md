@@ -1,8 +1,8 @@
 ProofRail™
 
-Status: early public documentation repository. Specifications, profiles, sanitized attestations, and examples will be published here. Raw deployment evidence and security-sensitive operational details remain private.
+Status: early public documentation repository and capability demonstrations. Specifications, profiles, sanitized attestations, and examples will be published here. Raw deployment evidence and security-sensitive operational details remain private.
 
-ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control.
+ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control.  The current release is [v0.1.5](https://github.com/ProofRail/proofrail/releases/tag/v0.1.5).  
 
 As AI agents gain access to tools, APIs, workflows, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
@@ -14,11 +14,12 @@ Current proof chain:
 
 Iron-plus → Composed Bronze → Bronze v0.1.2 checksums → Bronze v0.1.3 bundle manifest → Minimal Silver signed assertion
 
-Specific milestones on the path to Silver are:
+Specific milestones on the path to full Silver are:
 
 1. **Bronze v0.1.2** — generate a structured Bronze claim with evidence checksums.
 2. **Bronze v0.1.3** — generate an unsigned evidence bundle manifest that checksums the whole portable package, including the claim file.
-3. **Silver Signed Bundle Assertion v0.1.0** — sign the Bronze v0.1.3 bundle manifest and verify it against a local trust policy.
+3. **Silver Signed Bundle Assertion v0.1.0 (Minimal Silver v0.1.4)** — sign the Bronze v0.1.3 bundle manifest and verify it against a local trust policy.
+4. **Minimal Silver v0.1.5** - local revocation of otherwise-valid assertions
 
 ProofRail is not intended to replace enterprise gateways or security platforms. Its purpose is to define the control claims and evidence structure needed to trust deployments of agentic AI controls across heterogeneous enterprise stacks.
 
@@ -31,7 +32,7 @@ normalized audit evidence;
 performance evidence;
 Bronze claim schemas and conformance profiles;
 composed Bronze stacks using existing gateway and observability components
-Minimal Silver signed relying-party verification
+Minimal Silver signed relying-party verification and local revocation
 
 Raw deployment evidence, credentials, private topology, and security-sensitive operational details are not published here. Public materials are limited to specifications, profiles, sanitized attestations, examples, and implementation guidance.
 
