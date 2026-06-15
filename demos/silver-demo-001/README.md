@@ -10,6 +10,7 @@ This is the first Silver step in the ProofRail governance progression:
 2. **Bronze v0.1.3** — Unsigned bundle manifest checksumming the entire portable package (claim, evidence, schemas, tooling).
 3. **Silver v0.1.0** — Signed assertion over the bundle manifest, verifiable against a local trust policy.
 4. **Silver Revocation v0.1.0** — Local relying-party revocation list allowing trust withdrawal for specific assertions, issuer keys, or bundles.
+5. **Silver Verification Report v0.1.0** — Structured, schema-backed verification report recording the verifier's decision, checks, and metadata.
 
 ## How to Run
 
@@ -22,6 +23,9 @@ make verify-silver-demo-001
 
 # Run only the revocation regression test
 make verify-silver-revocation-demo-001
+
+# Run only the verification report regression test
+make verify-silver-report-demo-001
 ```
 
 ## What Happens
@@ -36,6 +40,7 @@ The `silver-demo-001` target runs the following steps:
 6. Generates an empty revocation list for the verifier.
 7. Signs the v0.1.3 bundle manifest with the demo issuer's private key.
 8. Verifies the signed Silver assertion against the trust policy and revocation list, including signature verification, expiry check, revocation check, and underlying bundle integrity.
+9. Validates the verification report against the Silver Verification Report v0.1.0 schema.
 
 ## Generated Runtime Files
 
@@ -47,7 +52,7 @@ runtime/issuer-a/public-key.pem           # Demo Ed25519 public key
 runtime/verifier-b/trust-policy.yaml      # Local trust policy for verifier
 runtime/verifier-b/revocation-list.yaml   # Local revocation list for verifier
 runtime/silver-signed-bundle-assertion-v0.1.0.yaml   # Signed assertion
-runtime/verification-report.json          # Verification report
+runtime/verification-report.json          # Verification report (Silver Verification Report v0.1.0)
 ```
 
 ## Why Private Keys Are Runtime-Only
@@ -63,12 +68,15 @@ This is a demo signing system. Real deployments would use proper key management 
 - The verifier checks issuer trust, key identity, signature validity, assertion expiry, manifest checksum, and underlying bundle integrity.
 - Tampering with the manifest, evidence files, trust policy, or assertion expiry is detected.
 - A relying-party verifier can reject an otherwise valid assertion via a local revocation list (revoking by assertion ID, issuer key, or bundle hash).
+- Verification results are emitted as a structured, schema-backed Silver Verification Report v0.1.0.
 
 ## What This Demo Does Not Prove
 
 - Production-grade PKI or key management.
 - Third-party certification or regulatory approval.
 - Production PKI revocation, public certificate revocation, OCSP, or transparency-log-backed revocation. (v0.1.5 demonstrates local demo revocation only.)
+- Signed verification reports. The report is unsigned in v0.1.0.
+- Gold certification. The verification report is a Silver artifact, not a Gold certification decision.
 - Full Silver governance (federation, transparency logs).
 - Production deployment conformance.
 - That the evidence files are truthful or the deployment is correctly configured.

@@ -5,6 +5,8 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 ## Current supported schemas
 
 - Silver Signed Bundle Assertion v0.1.0
+- Silver Revocation List v0.1.0
+- Silver Verification Report v0.1.0
 
 ## Demo Issuer Generator
 
@@ -107,6 +109,54 @@ When a revocation list is supplied, the verifier rejects the assertion if:
 - The bundle manifest hash is listed in `revoked_bundles` → `FAIL: bundle revoked`
 
 When no `--revocation-list` is supplied, existing behavior is unchanged.
+
+## Verification Report
+
+When the verifier is invoked with `--report`, it writes a structured Silver Verification Report v0.1.0 JSON file. The report conforms to `schemas/silver-verification-report-v0.1.0.md` and includes:
+
+- Report metadata (`report_version`, `report_type`, `report_id`, `generated_at`, `generated_by`)
+- Verifier identity
+- Structured inputs (assertion path, trust policy, revocation list, roots)
+- Assertion, issuer, and subject metadata
+- Decision block with `status` (`pass` or `fail`) and a stable snake_case `reason` code
+- Seven check blocks: `trust_check`, `algorithm_check`, `validity_check`, `bundle_manifest_checksum_check`, `revocation_check`, `signature_check`, `underlying_bundle_check`
+- Limitations list
+
+Every report — pass or fail — includes all seven check blocks. Checks not reached due to an earlier failure have `status: "not_performed"`.
+
+The report is written on both pass and fail when `--report` is supplied.
+
+The report is a verifier-generated evidence artifact. It is not signed in v0.1.0 and is not a Gold certification decision.
+
+### Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `all_checks_passed` | All checks passed (decision status `pass`) |
+| `issuer_not_trusted` | Issuer ID not in trust policy |
+| `key_id_not_trusted` | Issuer found but key_id not matched |
+| `unsupported_algorithm` | Algorithm is not ed25519 |
+| `invalid_validity_timestamps` | Cannot parse timestamps |
+| `assertion_not_yet_valid` | Current time before issued_at |
+| `assertion_expired` | Current time after expires_at |
+| `bundle_manifest_not_found` | Bundle manifest file missing |
+| `bundle_manifest_checksum_mismatch` | SHA-256 mismatch |
+| `assertion_revoked` | Assertion ID on revocation list |
+| `issuer_key_revoked` | Issuer key on revocation list |
+| `bundle_revoked` | Bundle hash on revocation list |
+| `signature_verification_failed` | Ed25519 signature invalid |
+| `underlying_bundle_verification_failed` | Bundle integrity check failed |
+| `invalid_report_input` | Input files malformed |
+
+## Verification Report Validator
+
+Validates the structure of a Silver Verification Report v0.1.0. Does not rerun cryptographic verification.
+
+```bash
+python3 tools/silver/validate_silver_verification_report_v0_1_0.py <report.json>
+```
+
+Exit codes: 0 (valid), 1 (invalid), 2 (usage error).
 
 ## Security Notes
 

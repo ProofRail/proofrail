@@ -27,6 +27,7 @@ bash tests/test_bronze_claim_v0_1_2.sh
 bash tests/test_bronze_evidence_bundle_v0_1_3.sh
 bash tests/test_silver_signed_bundle_assertion_v0_1_0.sh
 bash tests/test_silver_revocation_list_v0_1_0.sh
+bash tests/test_silver_verification_report_v0_1_0.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -61,11 +62,13 @@ python3 tools/claims/verify_evidence_bundle_manifest_v0_1_3.py <manifest.yaml> <
 make silver-demo-001
 make verify-silver-demo-001
 make verify-silver-revocation-demo-001
+make verify-silver-report-demo-001
 
 # Silver tools standalone
 python3 tools/silver/generate_demo_issuer_v0_1_0.py <silver-demo-root> --force
 python3 tools/silver/sign_bundle_manifest_v0_1_0.py <silver-demo-root> --private-key <key.pem> --output <assertion.yaml>
-python3 tools/silver/verify_signed_bundle_assertion_v0_1_0.py <assertion.yaml> <trust-policy.yaml> --silver-root <silver-root> --bronze-package-root <bronze-root> [--revocation-list <revocation-list.yaml>]
+python3 tools/silver/verify_signed_bundle_assertion_v0_1_0.py <assertion.yaml> <trust-policy.yaml> --silver-root <silver-root> --bronze-package-root <bronze-root> [--revocation-list <revocation-list.yaml>] [--report <report.json>]
+python3 tools/silver/validate_silver_verification_report_v0_1_0.py <report.json>
 python3 tools/silver/generate_demo_revocation_list_v0_1_0.py <silver-demo-root> [--revoke-assertion <id>] [--revoke-issuer-key <issuer_id:key_id>] [--revoke-bundle-sha256 <hash>]
 ```
 
@@ -97,8 +100,9 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 
 - `generate_demo_issuer_v0_1_0.py` — Demo Ed25519 issuer keypair and trust policy generator
 - `sign_bundle_manifest_v0_1_0.py` — Bundle manifest signer (produces Silver Signed Bundle Assertion YAML)
-- `verify_signed_bundle_assertion_v0_1_0.py` — Signed assertion verifier (trust policy + signature + expiry + optional revocation check + underlying bundle)
+- `verify_signed_bundle_assertion_v0_1_0.py` — Signed assertion verifier (trust policy + signature + expiry + optional revocation check + underlying bundle); emits schema-backed Silver Verification Report v0.1.0 when `--report` is supplied
 - `generate_demo_revocation_list_v0_1_0.py` — Demo local revocation list generator (revoke by assertion ID, issuer key, or bundle hash)
+- `validate_silver_verification_report_v0_1_0.py` — Silver verification report structural validator
 
 ### Demo Stack: `demos/composed-bronze-demo-001/`
 
