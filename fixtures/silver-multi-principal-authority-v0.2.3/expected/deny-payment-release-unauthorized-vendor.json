@@ -1,0 +1,6 @@
+{
+  "request_id": "REQ-003-deny-payment-release-unauthorized-vendor",
+  "expected_decision_status": "deny",
+  "expected_decision_reason": "authority_subject_mismatch",
+  "description": "vendororg.agent claims buyer-payment-release-direct which is granted to buyerorg.agent"
+}

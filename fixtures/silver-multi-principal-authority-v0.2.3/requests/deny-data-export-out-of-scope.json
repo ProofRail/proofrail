@@ -1,0 +1,17 @@
+{
+  "request_type": "proofrail.silver.protected_action_request",
+  "request_version": "v0.1.0",
+  "request_id": "REQ-005-deny-data-export-out-of-scope",
+  "requesting_principal_id": "verifier.auditor",
+  "action_id": "data.export",
+  "parameters": {
+    "dataset_id": "customer-raw"
+  },
+  "claimed_authority": {
+    "grant_id": "buyer-export-readonly-delegated"
+  },
+  "context": {
+    "source": "fixture",
+    "instruction_id": "fixture-instruction-005"
+  }
+}

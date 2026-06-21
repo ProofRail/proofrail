@@ -237,3 +237,31 @@ Bronze claim
   → Silver profile conformance report
   → verifier output attestation
 ```
+
+## v0.2.3 Update: Multi-Principal Authority Fixtures
+
+Silver v0.2.3 adds deterministic multi-principal authority evaluation fixtures.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Multi-Principal Authority Fixture | v0.1.0 | Deterministic scoped authority evaluation | `schemas/silver-multi-principal-authority-fixture-v0.1.0.md` |
+| Silver | Protected Action Request | v0.1.0 | Structured authority evaluation request | `schemas/silver-protected-action-request-v0.1.0.md` |
+| Silver | Protected Action Decision Report | v0.1.0 | Authority evaluation decision artifact | `schemas/silver-protected-action-decision-report-v0.1.0.md` |
+
+The authority evaluation extends the evidence chain with scoped, delegation-aware, revocation-aware authority decisions:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+  → multi-principal authority decision reports
+```
+
+The authority evaluator never executes a protected action. Every decision report includes `execution.performed == false` as structural proof.

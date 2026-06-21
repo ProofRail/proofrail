@@ -1,0 +1,7 @@
+{
+  "request_id": "REQ-002-allow-vendor-approval-direct",
+  "expected_decision_status": "allow",
+  "expected_decision_reason": "authority_requirements_satisfied",
+  "expected_decision_time": "2026-06-21T10:00:00Z",
+  "description": "Direct grant: buyerorg.agent has vendor.approve authority before revocation time (12:00)"
+}

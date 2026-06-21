@@ -1,0 +1,18 @@
+{
+  "request_type": "proofrail.silver.protected_action_request",
+  "request_version": "v0.1.0",
+  "request_id": "REQ-006-deny-deploy-change-out-of-scope",
+  "requesting_principal_id": "vendororg.agent",
+  "action_id": "deploy.change",
+  "parameters": {
+    "environment": "production",
+    "change_type": "config-update"
+  },
+  "claimed_authority": {
+    "grant_id": "vendor-deploy-staging-direct"
+  },
+  "context": {
+    "source": "fixture",
+    "instruction_id": "fixture-instruction-006"
+  }
+}

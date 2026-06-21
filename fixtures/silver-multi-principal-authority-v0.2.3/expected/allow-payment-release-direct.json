@@ -1,0 +1,6 @@
+{
+  "request_id": "REQ-001-allow-payment-release-direct",
+  "expected_decision_status": "allow",
+  "expected_decision_reason": "authority_requirements_satisfied",
+  "description": "Direct grant: buyerorg.agent has payment.release authority with valid constraints"
+}

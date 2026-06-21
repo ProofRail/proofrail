@@ -1,0 +1,143 @@
+fixture_type: proofrail.silver.multi_principal_authority_fixture
+fixture_version: v0.1.0
+fixture_id: proofrail-silver-authority-fixture-v0.2.3-canonical
+description: >-
+  Canonical multi-principal authority fixture for ProofRail Silver v0.2.3.
+  Demonstrates scoped authority grants, delegation, constraints, and revocation
+  across two organizations and an auditor.
+
+principals:
+  - principal_id: buyerorg.admin
+    principal_type: admin
+    organization: BuyerOrg
+    display_name: BuyerOrg Admin
+    roles:
+      - buyer_admin
+  - principal_id: buyerorg.agent
+    principal_type: agent
+    organization: BuyerOrg
+    display_name: BuyerOrg Agent
+    roles:
+      - buyer_operator
+  - principal_id: vendororg.admin
+    principal_type: admin
+    organization: VendorOrg
+    display_name: VendorOrg Admin
+    roles:
+      - vendor_admin
+  - principal_id: vendororg.agent
+    principal_type: agent
+    organization: VendorOrg
+    display_name: VendorOrg Agent
+    roles:
+      - vendor_operator
+  - principal_id: verifier.auditor
+    principal_type: verifier
+    organization: AuditorOrg
+    display_name: Verifier / Auditor
+    roles:
+      - verifier
+
+protected_actions:
+  - action_id: payment.release
+    required_scope: payment.release
+    actuator_type: simulated
+  - action_id: vendor.approve
+    required_scope: vendor.approve
+    actuator_type: simulated
+  - action_id: data.export
+    required_scope: data.export
+    actuator_type: simulated
+  - action_id: deploy.change
+    required_scope: deploy.change
+    actuator_type: simulated
+
+authority_grants:
+  - grant_id: buyer-payment-release-direct
+    grant_type: direct
+    issuer_principal_id: buyerorg.admin
+    subject_principal_id: buyerorg.agent
+    scopes:
+      - payment.release
+    constraints:
+      max_amount_usd: 5000
+      allowed_vendor_ids:
+        - vendororg
+    delegation:
+      permitted: false
+    issued_at: "2026-06-21T00:00:00Z"
+    expires_at: "2027-06-21T00:00:00Z"
+
+  - grant_id: buyer-vendor-approval-direct
+    grant_type: direct
+    issuer_principal_id: buyerorg.admin
+    subject_principal_id: buyerorg.agent
+    scopes:
+      - vendor.approve
+    constraints:
+      allowed_vendor_ids:
+        - vendororg
+    delegation:
+      permitted: false
+    issued_at: "2026-06-21T00:00:00Z"
+    expires_at: "2027-06-21T00:00:00Z"
+
+  - grant_id: buyer-data-export-direct
+    grant_type: direct
+    issuer_principal_id: buyerorg.admin
+    subject_principal_id: buyerorg.agent
+    scopes:
+      - data.export
+    constraints:
+      allowed_dataset_ids:
+        - audit-summary
+        - transaction-log
+    delegation:
+      permitted: true
+    issued_at: "2026-06-21T00:00:00Z"
+    expires_at: "2027-06-21T00:00:00Z"
+
+  - grant_id: buyer-export-readonly-delegated
+    grant_type: delegated
+    parent_grant_id: buyer-data-export-direct
+    issuer_principal_id: buyerorg.agent
+    subject_principal_id: verifier.auditor
+    scopes:
+      - data.export
+    constraints:
+      allowed_dataset_ids:
+        - audit-summary
+    delegation:
+      permitted: false
+    issued_at: "2026-06-21T00:00:00Z"
+    expires_at: "2027-06-21T00:00:00Z"
+
+  - grant_id: vendor-deploy-staging-direct
+    grant_type: direct
+    issuer_principal_id: vendororg.admin
+    subject_principal_id: vendororg.agent
+    scopes:
+      - deploy.change
+    constraints:
+      allowed_environments:
+        - staging
+      allowed_change_types:
+        - config-update
+    delegation:
+      permitted: false
+    issued_at: "2026-06-21T00:00:00Z"
+    expires_at: "2027-06-21T00:00:00Z"
+
+revocations:
+  - revocation_id: revoke-vendor-approval-001
+    target_type: authority_grant
+    target_id: buyer-vendor-approval-direct
+    revoked_at: "2026-06-21T12:00:00Z"
+    reason: vendor_approval_authority_revoked
+
+limitations:
+  - Local deterministic authority fixture only.
+  - No live actuators invoked.
+  - Not a production authorization system.
+  - Not prompt-injection detection.
+  - Not Gold certification.

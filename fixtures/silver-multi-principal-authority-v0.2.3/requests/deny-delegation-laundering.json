@@ -1,0 +1,17 @@
+{
+  "request_type": "proofrail.silver.protected_action_request",
+  "request_version": "v0.1.0",
+  "request_id": "REQ-004-deny-delegation-laundering",
+  "requesting_principal_id": "vendororg.agent",
+  "action_id": "data.export",
+  "parameters": {
+    "dataset_id": "audit-summary"
+  },
+  "claimed_authority": {
+    "grant_id": "buyer-export-readonly-delegated"
+  },
+  "context": {
+    "source": "fixture",
+    "instruction_id": "fixture-instruction-004"
+  }
+}

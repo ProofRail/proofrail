@@ -10,6 +10,9 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Relying-Party Profile v0.2.0
 - Silver Relying-Party Profile v0.2.1
 - Silver Verifier Output Attestation v0.1.0
+- Silver Multi-Principal Authority Fixture v0.1.0
+- Silver Protected Action Request v0.1.0
+- Silver Protected Action Decision Report v0.1.0
 
 ## Demo Issuer Generator
 
@@ -397,6 +400,96 @@ The verifier checks:
 | `limitations_missing` | Limitations empty or absent |
 
 Exit codes: 0 (pass), 1 (fail), 2 (usage error).
+
+## Multi-Principal Authority Fixture Validator
+
+Validates the structural integrity of a Silver Multi-Principal Authority Fixture v0.1.0.
+
+```bash
+python3 tools/silver/validate_multi_principal_authority_fixture_v0_1_0.py \
+  --fixture fixtures/silver-multi-principal-authority-v0.2.3/authority-fixture.yaml
+```
+
+The validator checks:
+
+1. Required top-level fields and type/version.
+2. Canonical principals present (`buyerorg.agent`, `vendororg.agent`, `verifier.auditor`).
+3. Canonical protected actions present (`payment.release`, `vendor.approve`, `data.export`, `deploy.change`).
+4. Grant ID uniqueness.
+5. Principal references resolve.
+6. Scope references resolve to known protected actions.
+7. Delegated grant parent exists.
+8. Parent grant permits delegation.
+9. Delegated scopes are subset of parent.
+10. Delegated constraints do not weaken parent (numeric <=, lists subset).
+11. Revocation targets reference existing grants.
+12. Limitations present and non-empty.
+
+### Fixture Validation Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_fixture_structure` | Missing required top-level fields or wrong type/version |
+| `missing_canonical_principal` | Required canonical principal absent |
+| `missing_protected_action` | Required canonical action absent |
+| `duplicate_grant_id` | Non-unique grant ID |
+| `unknown_principal_reference` | Grant references non-existent principal |
+| `unknown_scope_reference` | Grant scope not in protected_actions |
+| `unknown_parent_grant` | Delegated grant parent doesn't exist |
+| `delegation_not_permitted` | Parent grant has delegation.permitted == false |
+| `delegation_scope_expanded` | Delegated scopes not subset of parent |
+| `delegation_constraints_weakened` | Delegated constraint exceeds parent |
+| `unknown_revocation_target` | Revocation references non-existent grant |
+| `limitations_missing` | Limitations empty or absent |
+
+Exit codes: 0 (valid), 1 (invalid), 2 (usage/input error).
+
+## Authority Evaluator
+
+Evaluates a protected action request against a multi-principal authority fixture, producing a decision report.
+
+```bash
+python3 tools/silver/evaluate_multi_principal_authority_v0_1_0.py \
+  --fixture fixtures/silver-multi-principal-authority-v0.2.3/authority-fixture.yaml \
+  --request fixtures/silver-multi-principal-authority-v0.2.3/requests/allow-payment-release-direct.json \
+  --decision-time 2026-06-21T10:00:00Z \
+  --output /tmp/decision-report.json
+```
+
+The evaluator performs 10 ordered checks (short-circuit on first deny):
+
+1. **request_structure** — Valid request format.
+2. **principal_known** — Principal exists in fixture.
+3. **action_known** — Action exists in fixture.
+4. **grant_exists** — Claimed grant exists.
+5. **grant_subject_match** — Grant subject == requesting principal.
+6. **delegation_chain_valid** — Chain from grant to root is valid.
+7. **grant_not_revoked** — No applicable revocation at decision time.
+8. **grant_not_expired** — All grants in chain within validity period.
+9. **scope_authorized** — Action scope in grant scopes.
+10. **constraints_satisfied** — Request parameters satisfy all constraints.
+
+### Authority Deny Reason Codes
+
+| Reason | Description |
+|---|---|
+| `authority_requirements_satisfied` | All checks passed (allow) |
+| `invalid_request_structure` | Request type/version/fields malformed |
+| `unknown_principal` | Principal not in fixture |
+| `unknown_protected_action` | Action not in fixture |
+| `unknown_authority_grant` | Grant ID not in fixture |
+| `authority_subject_mismatch` | Grant subject != requesting principal |
+| `delegation_chain_invalid` | Delegation chain broken or cyclic |
+| `delegation_not_permitted` | Parent grant disallows delegation |
+| `authority_revoked` | Grant or chain member revoked at decision time |
+| `authority_expired` | Grant or chain member expired at decision time |
+| `scope_not_authorized` | Action scope not in grant scopes |
+| `constraint_not_satisfied` | Request parameter violates constraint |
+| `constraint_value_missing` | Required request parameter absent |
+
+Every decision report includes `"execution": { "performed": false, "reason": "decision_report_only" }` confirming no protected action was executed.
+
+Exit codes: 0 (decision report produced — both allow and deny), 1 (evaluation failure), 2 (usage/input error).
 
 ## Security Notes
 

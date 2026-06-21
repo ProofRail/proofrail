@@ -1,0 +1,6 @@
+{
+  "request_id": "REQ-005-deny-data-export-out-of-scope",
+  "expected_decision_status": "deny",
+  "expected_decision_reason": "constraint_not_satisfied",
+  "description": "verifier.auditor requests dataset_id=customer-raw but grant only allows [audit-summary]"
+}

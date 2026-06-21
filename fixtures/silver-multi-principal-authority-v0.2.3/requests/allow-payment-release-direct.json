@@ -1,0 +1,18 @@
+{
+  "request_type": "proofrail.silver.protected_action_request",
+  "request_version": "v0.1.0",
+  "request_id": "REQ-001-allow-payment-release-direct",
+  "requesting_principal_id": "buyerorg.agent",
+  "action_id": "payment.release",
+  "parameters": {
+    "amount_usd": 1250,
+    "vendor_id": "vendororg"
+  },
+  "claimed_authority": {
+    "grant_id": "buyer-payment-release-direct"
+  },
+  "context": {
+    "source": "fixture",
+    "instruction_id": "fixture-instruction-001"
+  }
+}

@@ -33,6 +33,7 @@ bash tests/test_silver_profile_v0_2_0.sh
 bash tests/test_silver_profile_v0_2_1.sh
 bash tests/test_silver_profile_examples_v0_2_1.sh
 bash tests/test_silver_verifier_output_attestation_v0_1_0.sh
+bash tests/test_silver_multi_principal_authority_v0_2_3.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -90,6 +91,15 @@ make sign-silver-verifier-attestation-demo-001
 make verify-silver-verifier-attestation-demo-001
 make verify-silver-attestation-v0-2-2
 
+# Silver v0.2.3 multi-principal authority fixtures
+make validate-silver-authority-fixtures-v0-2-3
+make verify-silver-authority-v0-2-3
+bash tests/test_silver_multi_principal_authority_v0_2_3.sh
+
+# Silver authority tools standalone
+python3 tools/silver/validate_multi_principal_authority_fixture_v0_1_0.py --fixture <fixture.yaml>
+python3 tools/silver/evaluate_multi_principal_authority_v0_1_0.py --fixture <fixture.yaml> --request <request.json> --decision-time <ISO-8601> --output <report.json>
+
 # Silver tools standalone
 python3 tools/silver/generate_demo_issuer_v0_1_0.py <silver-demo-root> --force
 python3 tools/silver/sign_bundle_manifest_v0_1_0.py <silver-demo-root> --private-key <key.pem> --output <assertion.yaml>
@@ -142,6 +152,8 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 - `generate_demo_verifier_attestor_v0_1_0.py` — Demo Ed25519 attestor keypair and attestation trust policy generator (separate from issuer keys)
 - `sign_verifier_output_attestation_v0_1_0.py` — Verifier output attestation signer (binds verifier identity to verification report + conformance report); rejects `..` in subject paths
 - `verify_verifier_output_attestation_v0_1_0.py` — Verifier output attestation verifier (trust policy + binding + signature + subject hashes + metadata cross-checks); rejects `..` in subject paths
+- `validate_multi_principal_authority_fixture_v0_1_0.py` — Multi-principal authority fixture structural validator (principals, grants, delegation rules, constraints, revocations)
+- `evaluate_multi_principal_authority_v0_1_0.py` — Protected action authority evaluator (10-check short-circuit evaluation producing decision reports; never executes actions)
 
 ### Independent Silver Verifier Demo: `demos/silver-demo-002-independent-verifier/`
 

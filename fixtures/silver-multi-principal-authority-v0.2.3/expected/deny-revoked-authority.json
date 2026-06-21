@@ -1,0 +1,7 @@
+{
+  "request_id": "REQ-007-deny-revoked-authority",
+  "expected_decision_status": "deny",
+  "expected_decision_reason": "authority_revoked",
+  "expected_decision_time": "2026-06-21T14:00:00Z",
+  "description": "buyerorg.agent claims buyer-vendor-approval-direct which was revoked at 12:00, evaluated at 14:00"
+}

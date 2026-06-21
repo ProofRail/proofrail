@@ -1,0 +1,6 @@
+{
+  "request_id": "REQ-004-deny-delegation-laundering",
+  "expected_decision_status": "deny",
+  "expected_decision_reason": "authority_subject_mismatch",
+  "description": "vendororg.agent claims buyer-export-readonly-delegated which is granted to verifier.auditor"
+}

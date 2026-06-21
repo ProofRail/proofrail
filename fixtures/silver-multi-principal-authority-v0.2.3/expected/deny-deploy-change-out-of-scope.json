@@ -1,0 +1,6 @@
+{
+  "request_id": "REQ-006-deny-deploy-change-out-of-scope",
+  "expected_decision_status": "deny",
+  "expected_decision_reason": "constraint_not_satisfied",
+  "description": "vendororg.agent requests environment=production but grant only allows [staging]"
+}

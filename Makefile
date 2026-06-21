@@ -116,6 +116,15 @@ verify-silver-verifier-attestation-demo-001:
 verify-silver-attestation-v0-2-2:
 	bash tests/test_silver_verifier_output_attestation_v0_1_0.sh
 
+.PHONY: validate-silver-authority-fixtures-v0-2-3
+validate-silver-authority-fixtures-v0-2-3:
+	python3 tools/silver/validate_multi_principal_authority_fixture_v0_1_0.py \
+	  --fixture fixtures/silver-multi-principal-authority-v0.2.3/authority-fixture.yaml
+
+.PHONY: verify-silver-authority-v0-2-3
+verify-silver-authority-v0-2-3:
+	bash tests/test_silver_multi_principal_authority_v0_2_3.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -124,3 +133,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-profile-v0-2-1
 	$(MAKE) verify-silver-profile-examples-v0-2-1
 	$(MAKE) verify-silver-attestation-v0-2-2
+	$(MAKE) verify-silver-authority-v0-2-3

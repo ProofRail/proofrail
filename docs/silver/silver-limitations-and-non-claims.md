@@ -223,6 +223,30 @@ Verifier output attestation is **not**:
 
 The attestor key is separate from the issuer key. Both use Ed25519 in demo mode but serve different roles. Subject paths containing `..` components are rejected by both the signer and verifier.
 
+## v0.2.3 Multi-Principal Authority Fixtures
+
+Silver v0.2.3 adds deterministic multi-principal authority fixtures. The authority evaluator processes structured requests against scoped, delegation-aware, revocation-aware authority grants and emits decision reports.
+
+Multi-principal authority fixtures are:
+
+- **scoped authority evaluation**: principals hold authority only for declared scopes with declared constraints;
+- **delegation-aware**: authority can be narrowly delegated; weakening is rejected;
+- **revocation-aware**: authority can be withdrawn at a specific point in time;
+- **deterministic**: evaluation is local, against a fixture, with an explicit decision time.
+
+Multi-principal authority fixtures are **not**:
+
+- a live multi-agent runtime;
+- prompt-injection detection;
+- model behavior evaluation;
+- production authorization infrastructure;
+- Gold certification;
+- a replacement for OAuth, RBAC, or enterprise IAM.
+
+Every decision report includes `execution.performed == false`, providing structural proof that no actuator was invoked.
+
+Silver v0.2.3 makes multi-principal authority executable as deterministic local fixtures. It does not make agents trustworthy or certify a deployment.
+
 ---
 
 ## Summary
