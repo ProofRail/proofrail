@@ -58,7 +58,16 @@ export-independent-silver-package-demo-002:
 verify-independent-silver-demo-002:
 	bash tests/test_independent_silver_verifier_v0_1_0.sh
 
+.PHONY: validate-silver-profile-demo-001
+validate-silver-profile-demo-001:
+	python3 tools/silver/validate_silver_profile_v0_2_0.py --profile-mode silver.base --verification-report demos/silver-demo-001/runtime/verification-report.json --output demos/silver-demo-001/runtime/silver-profile-conformance-report-v0.2.0.json
+
+.PHONY: validate-silver-profile-demo-002
+validate-silver-profile-demo-002:
+	bash tests/test_silver_profile_v0_2_0.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
 	$(MAKE) verify-independent-silver-demo-002
+	$(MAKE) validate-silver-profile-demo-002

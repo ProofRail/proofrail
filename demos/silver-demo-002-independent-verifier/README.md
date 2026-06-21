@@ -78,6 +78,23 @@ demos/silver-demo-002-independent-verifier/
 - A relying-party verifier can reject an assertion via a local revocation list.
 - The independent verifier emits a schema-backed Silver Verification Report v0.1.0.
 
+## Silver Profile Conformance
+
+Demo 002 can be validated against the Silver Relying-Party Profile v0.2.0 in `silver.independent` mode:
+
+```bash
+# Run the full profile regression test (includes silver.independent validation)
+make validate-silver-profile-demo-002
+```
+
+The `silver.independent` profile includes all `silver.base` requirements plus:
+
+- A package manifest must be supplied and structurally valid.
+- The report's verifier identity must be `proofrail-demo-independent-verifier`.
+- Revocation must be performed and must pass (no warning path).
+
+The profile validator checks the package manifest structure and report verifier identity. Actual out-of-tree execution is demonstrated by the regression test, not asserted by the validator.
+
 ## What This Demo Does Not Prove
 
 - Production-grade PKI or key management.

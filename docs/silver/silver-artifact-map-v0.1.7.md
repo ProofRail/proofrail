@@ -165,8 +165,32 @@ It does not mean:
 
 ---
 
-## Link to v0.2.0
+## v0.2.0 Update: Silver Relying-Party Profile
 
-Silver v0.2.0 should formalize the relying-party verification profile.
+Silver v0.2.0 adds the Silver Relying-Party Profile — the formal acceptance criteria for a Silver evidence package.
 
-The artifact map above provides the input vocabulary for that profile.
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Relying-Party Profile | v0.2.0 | Formal acceptance criteria for Silver evidence packages | `profiles/silver/SILVER_PROFILE_v0.2.0.md` |
+| Silver | Profile Conformance Report | v0.2.0 | Structured conformance decision artifact | `schemas/silver-profile-conformance-report-v0.2.0.md` |
+
+The profile defines two modes:
+
+- `silver.base` — Validates a Silver verification report from any conformant verifier. Revocation not performed produces a conditional pass with warning.
+- `silver.independent` — Validates a Silver verification report from an independent verifier, requiring a valid package manifest and mandatory revocation.
+
+The profile validator (`tools/silver/validate_silver_profile_v0_2_0.py`) consumes a Silver Verification Report v0.1.0 and optionally a package manifest, producing a profile conformance report.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+```

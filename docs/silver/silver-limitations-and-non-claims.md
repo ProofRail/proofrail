@@ -173,21 +173,25 @@ This proves production conformance.
 
 ---
 
-## What v0.2.0 Should Clarify
+## v0.2.0 Silver Relying-Party Profile
 
-Silver v0.2.0 should formalize:
+Silver v0.2.0 formalizes the relying-party verification profile. The profile defines:
 
 - what inputs a relying-party verifier must receive;
 - what checks it must perform;
 - what failure modes must be recognized;
 - what report must be produced;
-- what revocation means;
-- what independence means;
+- what revocation means (mode-dependent);
+- what independence means (structural checks, not execution assertion);
 - what limitations must accompany any Silver acceptance.
 
-The v0.2.0 profile should preserve this distinction:
+The profile preserves this distinction:
 
 > Silver is verifiable reliance on an evidence package, not certification of a live system.
+
+Silver profile conformance is local demo conformance. It does not constitute Gold certification, third-party certification, regulatory approval, production PKI, production deployment assurance, or audit opinion.
+
+See `profiles/silver/SILVER_PROFILE_v0.2.0.md` for the full profile specification.
 
 ---
 

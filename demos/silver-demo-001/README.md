@@ -70,6 +70,22 @@ This is a demo signing system. Real deployments would use proper key management 
 - A relying-party verifier can reject an otherwise valid assertion via a local revocation list (revoking by assertion ID, issuer key, or bundle hash).
 - Verification results are emitted as a structured, schema-backed Silver Verification Report v0.1.0.
 
+## Silver Profile Conformance
+
+Demo 001 can be validated against the Silver Relying-Party Profile v0.2.0 in `silver.base` mode:
+
+```bash
+# Validate silver.base profile conformance
+make validate-silver-profile-demo-001
+
+# Run the full profile regression test (both modes, negative tests)
+make validate-silver-profile-demo-002
+```
+
+The `silver.base` profile validates that the verification report is structurally valid, the decision passed, all required checks passed, and limitations are present. When revocation was performed and passed, the profile produces a clean pass. When revocation was not performed, the profile still passes but with reason `profile_requirements_satisfied_with_revocation_warning`.
+
+The conformance report is written to `runtime/silver-profile-conformance-report-v0.2.0.json`.
+
 ## What This Demo Does Not Prove
 
 - Production-grade PKI or key management.

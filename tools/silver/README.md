@@ -7,6 +7,7 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Signed Bundle Assertion v0.1.0
 - Silver Revocation List v0.1.0
 - Silver Verification Report v0.1.0
+- Silver Relying-Party Profile v0.2.0
 
 ## Demo Issuer Generator
 
@@ -185,6 +186,59 @@ Exit codes: 0 (success), 1 (output exists without `--force`), 2 (usage error or 
 ### Independent Verifier Demo
 
 The independent verifier (`demos/silver-demo-002-independent-verifier/verifier/independent_verify.py`) operates on the exported package and performs all seven Silver checks without importing or invoking any tools from the main ProofRail source tree. See `demos/silver-demo-002-independent-verifier/README.md` for details.
+
+## Silver Profile Conformance Validator
+
+Validates whether a Silver verification result satisfies the Silver Relying-Party Profile v0.2.0 requirements.
+
+Two profile modes are supported:
+
+- `silver.base` — Validates a verification report from any conformant Silver verifier.
+- `silver.independent` — Validates a verification report from an independent verifier, additionally requiring a valid package manifest.
+
+```bash
+# silver.base — requires only a verification report
+python3 tools/silver/validate_silver_profile_v0_2_0.py \
+  --profile-mode silver.base \
+  --verification-report demos/silver-demo-001/runtime/verification-report.json \
+  --output demos/silver-demo-001/runtime/silver-profile-conformance-report-v0.2.0.json
+
+# silver.independent — requires verification report + package manifest
+python3 tools/silver/validate_silver_profile_v0_2_0.py \
+  --profile-mode silver.independent \
+  --verification-report <independent-report.json> \
+  --package-manifest <package-manifest.yaml> \
+  --output <conformance-report.json>
+```
+
+The validator performs six conformance checks:
+
+1. **verification_report_valid** — Report passes structural validation (Silver Verification Report v0.1.0).
+2. **decision_passed** — Report decision is `pass` with reason `all_checks_passed`.
+3. **required_checks_passed** — All six core verification checks passed (trust, algorithm, validity, bundle manifest checksum, signature, underlying bundle).
+4. **revocation_requirement** — Revocation check meets mode-dependent requirements:
+   - `silver.base`: Revocation not performed → pass with warning and distinct reason code `profile_requirements_satisfied_with_revocation_warning`. Revocation performed and passed → clean pass. Revocation performed and failed → fail.
+   - `silver.independent`: Revocation must be performed and must pass.
+5. **independent_package_manifest_valid** — Package manifest is structurally valid with correct type and verifier metadata (`silver.independent` only; `not_applicable` for `silver.base`).
+6. **limitations_present** — Report includes a non-empty limitations list.
+
+The validator emits a profile conformance report conforming to `schemas/silver-profile-conformance-report-v0.2.0.md`.
+
+### Profile Failure Reason Codes
+
+| Reason | Status | Description |
+|---|---|---|
+| `profile_requirements_satisfied` | pass | All requirements met (clean pass) |
+| `profile_requirements_satisfied_with_revocation_warning` | pass | All requirements met but revocation not performed (silver.base only) |
+| `verification_report_invalid` | fail | Report failed structural validation |
+| `verification_report_failed` | fail | Report decision is not pass/all_checks_passed |
+| `required_check_failed` | fail | One or more required verification checks did not pass |
+| `revocation_not_performed` | fail | Revocation check required but not performed (silver.independent) |
+| `package_manifest_missing` | fail | Package manifest required but not supplied or not found |
+| `independence_requirement_failed` | fail | Package manifest or verifier identity check failed |
+| `limitations_missing` | fail | Report limitations list is missing or empty |
+
+Exit codes: 0 (pass), 1 (fail), 2 (usage error).
 
 ## Security Notes
 
