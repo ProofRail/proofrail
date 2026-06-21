@@ -4,11 +4,11 @@ Status: public documentation repository and capability demonstrations. Specifica
 
 ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current release is [v0.2.1](https://github.com/ProofRail/proofrail/releases/tag/v0.2.1).
 
-As AI agents gain access to tools, APIs, workflows, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
+As AI agents gain access to tools, APIs, workflows, other AI agents, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
 ProofRail defines that evidence layer.
 
-This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.0 formalizes the local relying-party profile for accepting a Silver evidence package.
+This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.1 hardened processing of and provided additional clarity around handoffs for the local relying-party profile created in v0.2.0 which is used for accepting a Silver evidence package. 
 
 ## Current Proof Chain
 
@@ -40,7 +40,7 @@ Silver Demo 002
 Silver Relying-Party Profile v0.2.0
   → relying-party acceptance profile with base and independent modes
 
-Silver Profile Conformance Report v0.2.0
+Silver Profile Conformance Report v0.2.1
   → structured conformance decision artifact
 ```
 
