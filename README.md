@@ -2,7 +2,7 @@
 
 Status: public documentation repository and capability demonstrations. Specifications, profiles, sanitized attestations, and examples are published here. Raw deployment evidence and security-sensitive operational details remain private.
 
-ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current release is [v0.2.2](https://github.com/ProofRail/proofrail/releases/tag/v0.2.2).
+ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is The current release is [v0.2.0](https://github.com/ProofRail/proofrail/releases/tag/v0.2.0). The main branch includes post-v0.2.0 Silver verifier output attestation work toward v0.2.3. 
 
 As AI agents gain access to tools, APIs, workflows, other AI agents, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
@@ -14,7 +14,7 @@ This project began with Iron-plus, a live reference profile for MCP actuation co
 
 Iron-plus → Composed Bronze → Bronze v0.1.2 checksums → Bronze v0.1.3 bundle manifest → Minimal Silver signed assertion → local revocation → structured verifier report → verification outside the repo source tree → Silver relying-party profile → profile conformance report → verifier output attestation
 
-ProofRail v0.2.0 defines and validates a local Silver relying-party profile for accepting a signed, revocable, reportable evidence package, with a stronger independent verification mode.
+ProofRail v0.2.0 defines and validates a local Silver relying-party profile for accepting a signed, revocable, reportable evidence package, with a stronger independent verification mode.  v0.2.2 provides verifier output attestation as attribution and tamper evidence for verifier outputs. It is not certification, regulator approval, production PKI, or Gold governed acceptance.
 
 The detailed proof chain is:
 
@@ -122,7 +122,7 @@ Revocation semantics are mode-dependent:
 - `silver.base` and `silver.independent` require revocation checking.
 - `silver.base.demo` may pass without revocation checking with an explicit warning reason: `profile_requirements_satisfied_with_revocation_warning`.
 
-v0.2.0 made revocation absence visible. v0.2.1 makes revocation expected for ordinary Silver reliance.
+v0.2.0 made revocation absence visible. v0.2.1 makes revocation expected for ordinary Silver reliance. v0.2.2 provides attestable verifier outputs without making certification claims.
 
 The independent mode preserves the key Silver idea: a relying party can verify a prepared evidence package outside the environment that produced it.
 
