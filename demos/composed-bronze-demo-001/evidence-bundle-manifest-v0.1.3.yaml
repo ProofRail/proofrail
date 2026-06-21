@@ -5,13 +5,13 @@ bundle_label: ProofRail Composed Bronze Demo 001b Evidence Bundle
 profile: bronze
 environment: test
 subject_claim: claims/bronze-claim-demo-001.yaml
-generated_at: '2026-06-14T14:13:22Z'
+generated_at: '2026-06-21T18:00:08Z'
 generated_by: tools/claims/generate_evidence_bundle_manifest_v0_1_3.py
 files:
 - path: claims/bronze-claim-demo-001.yaml
   role: claim
   required: true
-  sha256: sha256:d2a993dadb75d933e62a0c4379f28e29237e1fff63643026f351f18cbbe52c92
+  sha256: sha256:c4f10bdbd519298d06b663e0202d6df237ae12a2c716879f0a81a760cccc05d6
   size_bytes: 4055
 - path: evidence/protected_actuator_set.json
   role: protected_actuator_set_manifest

@@ -1,6 +1,6 @@
 spec_version: v0.1.2
 claim_type: proofrail.bronze.composed
-claim_id: proofrail-demo-001b-20260614T112552Z
+claim_id: proofrail-demo-001b-20260621T180008Z
 claim_label: ProofRail Composed Bronze Demo 001b — agentgateway MCP substrate — test
   env
 profile: bronze
@@ -79,7 +79,7 @@ evidence_checksums:
 validation:
   type: self-attested-demo
   validator: ProofRail Bronze claim validator v0.1.2 structural check
-  generated_at: '2026-06-14T11:25:52Z'
+  generated_at: '2026-06-21T18:00:08Z'
   missing_evidence_files: []
 limitations:
 - Demo 001b is a local Docker Compose test environment, not a production conformance

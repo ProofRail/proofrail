@@ -194,3 +194,21 @@ Bronze claim
   → independent verifier
   → Silver profile conformance report
 ```
+
+## v0.2.1 Update: Tightened Silver Profile
+
+Silver v0.2.1 adds a third profile mode and tightens revocation requirements.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Relying-Party Profile | v0.2.1 | Tightened acceptance criteria (revocation required for silver.base) | `profiles/silver/SILVER_PROFILE_v0.2.1.md` |
+| Silver | Profile Conformance Report | v0.2.1 | Structured conformance decision artifact (three modes) | `schemas/silver-profile-conformance-report-v0.2.1.md` |
+| Silver | Independent Verification Package Format | v0.2.1 | Package handoff format specification | `docs/silver/independent-verification-package-format-v0.2.1.md` |
+
+The profile defines three modes:
+
+- `silver.base` — Revocation required. No warning path.
+- `silver.base.demo` — Preserves v0.2.0 `silver.base` semantics (revocation warning path).
+- `silver.independent` — Unchanged from v0.2.0.
+
+The v0.2.1 package exporter adds `package_format_version`, `profile_compatibility`, `inputs`, and `path_map` to the manifest. The independent verifier requires no changes.

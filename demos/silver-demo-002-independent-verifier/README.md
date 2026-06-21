@@ -95,6 +95,17 @@ The `silver.independent` profile includes all `silver.base` requirements plus:
 
 The profile validator checks the package manifest structure and report verifier identity. Actual out-of-tree execution is demonstrated by the regression test, not asserted by the validator.
 
+### Silver Profile v0.2.1 and Package Format
+
+Silver Profile v0.2.1 and the v0.2.1 package exporter add enhanced manifest metadata (`package_format_version`, `profile_compatibility`, `inputs`, `path_map`). The independent verifier requires no changes — it reads only `paths`, `package_type`, and `verifier.*`.
+
+```bash
+# Run the full v0.2.1 profile regression test (includes independent package export)
+make verify-silver-profile-v0-2-1
+```
+
+See `docs/silver/independent-verification-package-format-v0.2.1.md` for the package format specification.
+
 ## What This Demo Does Not Prove
 
 - Production-grade PKI or key management.

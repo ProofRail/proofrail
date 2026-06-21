@@ -1,0 +1,33 @@
+{
+  "conformance_report_version": "v0.2.1",
+  "conformance_report_type": "proofrail.silver.profile_conformance_report",
+  "generated_at": "2026-06-21T12:00:00+00:00",
+  "generated_by": "tools/silver/validate_silver_profile_v0_2_1.py",
+  "profile": {
+    "profile_id": "proofrail.silver.profile",
+    "profile_version": "v0.2.1",
+    "profile_mode": "silver.base"
+  },
+  "input": {
+    "verification_report": "demos/silver-demo-001/runtime/verification-report.json",
+    "package_manifest": null
+  },
+  "decision": {
+    "status": "pass",
+    "reason": "profile_requirements_satisfied"
+  },
+  "checks": {
+    "verification_report_valid": { "status": "pass" },
+    "decision_passed": { "status": "pass" },
+    "required_checks_passed": { "status": "pass" },
+    "revocation_requirement": { "status": "pass" },
+    "independent_package_manifest_valid": { "status": "not_applicable" },
+    "limitations_present": { "status": "pass" }
+  },
+  "warnings": [],
+  "limitations": [
+    "Silver profile conformance is local demo conformance.",
+    "Not Gold certification.",
+    "Not production certification."
+  ]
+}

@@ -8,6 +8,7 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Revocation List v0.1.0
 - Silver Verification Report v0.1.0
 - Silver Relying-Party Profile v0.2.0
+- Silver Relying-Party Profile v0.2.1
 
 ## Demo Issuer Generator
 
@@ -239,6 +240,59 @@ The validator emits a profile conformance report conforming to `schemas/silver-p
 | `limitations_missing` | fail | Report limitations list is missing or empty |
 
 Exit codes: 0 (pass), 1 (fail), 2 (usage error).
+
+## Silver Profile Conformance Validator v0.2.1
+
+Validates whether a Silver verification result satisfies the Silver Relying-Party Profile v0.2.1 requirements.
+
+Three profile modes are supported:
+
+- `silver.base` — Validates a verification report from any conformant Silver verifier. Revocation must be performed and must pass.
+- `silver.base.demo` — Preserves v0.2.0 `silver.base` semantics. Revocation not performed produces a conditional pass with warning.
+- `silver.independent` — Validates a verification report from an independent verifier, additionally requiring a valid package manifest.
+
+```bash
+# silver.base — requires revocation
+python3 tools/silver/validate_silver_profile_v0_2_1.py \
+  --profile-mode silver.base \
+  --verification-report demos/silver-demo-001/runtime/verification-report.json \
+  --output demos/silver-demo-001/runtime/silver-profile-conformance-report-v0.2.1.json
+
+# silver.base.demo — preserves v0.2.0 warning path
+python3 tools/silver/validate_silver_profile_v0_2_1.py \
+  --profile-mode silver.base.demo \
+  --verification-report demos/silver-demo-001/runtime/verification-report.json \
+  --output <conformance-report.json>
+
+# silver.independent — requires verification report + package manifest
+python3 tools/silver/validate_silver_profile_v0_2_1.py \
+  --profile-mode silver.independent \
+  --verification-report <independent-report.json> \
+  --package-manifest <package-manifest.yaml> \
+  --output <conformance-report.json>
+```
+
+The validator emits a profile conformance report conforming to `schemas/silver-profile-conformance-report-v0.2.1.md`.
+
+Exit codes: 0 (pass), 1 (fail), 2 (usage error).
+
+## Independent Verification Package Export v0.2.1
+
+Exports a portable verification package with enhanced manifest metadata.
+
+```bash
+python3 tools/silver/export_independent_verification_package_v0_2_1.py \
+  --bronze-root demos/composed-bronze-demo-001 \
+  --silver-root demos/silver-demo-001 \
+  --output demos/silver-demo-002-independent-verifier/runtime/package \
+  --force
+```
+
+The v0.2.1 exporter adds `package_format_version`, `profile_compatibility`, `inputs`, and `path_map` fields to the package manifest. All existing fields are preserved. The independent verifier requires no changes.
+
+See `docs/silver/independent-verification-package-format-v0.2.1.md` for the package format specification.
+
+Exit codes: 0 (success), 1 (output exists without `--force`), 2 (usage error or missing source artifacts).
 
 ## Security Notes
 

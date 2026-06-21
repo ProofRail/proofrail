@@ -30,6 +30,8 @@ bash tests/test_silver_revocation_list_v0_1_0.sh
 bash tests/test_silver_verification_report_v0_1_0.sh
 bash tests/test_independent_silver_verifier_v0_1_0.sh
 bash tests/test_silver_profile_v0_2_0.sh
+bash tests/test_silver_profile_v0_2_1.sh
+bash tests/test_silver_profile_examples_v0_2_1.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -75,6 +77,12 @@ make verify-silver-all
 make validate-silver-profile-demo-001
 make validate-silver-profile-demo-002
 
+# Silver v0.2.1 profile conformance
+make validate-silver-profile-v0-2-1-demo-001
+make validate-silver-profile-v0-2-1-demo-002
+make verify-silver-profile-v0-2-1
+make verify-silver-profile-examples-v0-2-1
+
 # Silver tools standalone
 python3 tools/silver/generate_demo_issuer_v0_1_0.py <silver-demo-root> --force
 python3 tools/silver/sign_bundle_manifest_v0_1_0.py <silver-demo-root> --private-key <key.pem> --output <assertion.yaml>
@@ -82,6 +90,8 @@ python3 tools/silver/verify_signed_bundle_assertion_v0_1_0.py <assertion.yaml> <
 python3 tools/silver/validate_silver_verification_report_v0_1_0.py <report.json>
 python3 tools/silver/generate_demo_revocation_list_v0_1_0.py <silver-demo-root> [--revoke-assertion <id>] [--revoke-issuer-key <issuer_id:key_id>] [--revoke-bundle-sha256 <hash>]
 python3 tools/silver/validate_silver_profile_v0_2_0.py --profile-mode <mode> --verification-report <report.json> [--package-manifest <manifest.yaml>] [--output <conformance.json>]
+python3 tools/silver/validate_silver_profile_v0_2_1.py --profile-mode <mode> --verification-report <report.json> [--package-manifest <manifest.yaml>] [--output <conformance.json>]
+python3 tools/silver/export_independent_verification_package_v0_2_1.py --bronze-root <bronze-root> --silver-root <silver-root> --output <output-dir> --force
 ```
 
 ## Architecture
@@ -117,6 +127,8 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 - `validate_silver_verification_report_v0_1_0.py` — Silver verification report structural validator
 - `export_independent_verification_package_v0_1_0.py` — Portable independent verification package exporter (creates source-repo-subset layout preserving Ed25519 signature)
 - `validate_silver_profile_v0_2_0.py` — Silver Relying-Party Profile v0.2.0 conformance validator (two modes: `silver.base`, `silver.independent`); emits profile conformance report
+- `validate_silver_profile_v0_2_1.py` — Silver Relying-Party Profile v0.2.1 conformance validator (three modes: `silver.base`, `silver.base.demo`, `silver.independent`); tightened revocation for `silver.base`
+- `export_independent_verification_package_v0_2_1.py` — Portable independent verification package exporter with enhanced manifest (v0.2.1 format fields)
 
 ### Independent Silver Verifier Demo: `demos/silver-demo-002-independent-verifier/`
 

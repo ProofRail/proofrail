@@ -193,6 +193,16 @@ Silver profile conformance is local demo conformance. It does not constitute Gol
 
 See `profiles/silver/SILVER_PROFILE_v0.2.0.md` for the full profile specification.
 
+## v0.2.1 Silver Profile Tightening
+
+Silver v0.2.1 tightens revocation requirements for the `silver.base` mode. In v0.2.0, `silver.base` allowed revocation absence with a warning path. In v0.2.1, `silver.base` requires revocation — if revocation is not performed, the profile fails.
+
+The v0.2.0 warning path is preserved in a new `silver.base.demo` mode for demo and development workflows.
+
+This change reflects the principle that ordinary Silver reliance should include revocation checking. The demo mode exists to support development workflows where revocation infrastructure may not be configured.
+
+See `profiles/silver/SILVER_PROFILE_v0.2.1.md` for the full v0.2.1 profile specification.
+
 ---
 
 ## Summary

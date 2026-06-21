@@ -86,6 +86,18 @@ The `silver.base` profile validates that the verification report is structurally
 
 The conformance report is written to `runtime/silver-profile-conformance-report-v0.2.0.json`.
 
+### Silver Profile v0.2.1
+
+Silver Profile v0.2.1 tightens `silver.base` to require revocation. The v0.2.0 warning path is preserved in a new `silver.base.demo` mode.
+
+```bash
+# Validate silver.base v0.2.1 profile conformance (requires revocation)
+make validate-silver-profile-v0-2-1-demo-001
+
+# Run the full v0.2.1 profile regression test
+make verify-silver-profile-v0-2-1
+```
+
 ## What This Demo Does Not Prove
 
 - Production-grade PKI or key management.
