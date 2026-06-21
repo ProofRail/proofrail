@@ -84,6 +84,38 @@ verify-silver-profile-v0-2-1:
 verify-silver-profile-examples-v0-2-1:
 	bash tests/test_silver_profile_examples_v0_2_1.sh
 
+.PHONY: generate-silver-verifier-attestor-demo-001
+generate-silver-verifier-attestor-demo-001:
+	python3 tools/silver/generate_demo_verifier_attestor_v0_1_0.py \
+	  --output-root demos/silver-demo-001/runtime/verifier-b \
+	  --attestor-id proofrail-demo-verifier-b \
+	  --key-id proofrail-demo-verifier-b-ed25519-attestation-001 \
+	  --force
+
+.PHONY: sign-silver-verifier-attestation-demo-001
+sign-silver-verifier-attestation-demo-001:
+	python3 tools/silver/validate_silver_profile_v0_2_1.py --profile-mode silver.base \
+	  --verification-report demos/silver-demo-001/runtime/verification-report.json \
+	  --output demos/silver-demo-001/runtime/silver-profile-conformance-report-v0.2.1.json
+	python3 tools/silver/sign_verifier_output_attestation_v0_1_0.py \
+	  --verification-report demos/silver-demo-001/runtime/verification-report.json \
+	  --conformance-report demos/silver-demo-001/runtime/silver-profile-conformance-report-v0.2.1.json \
+	  --private-key demos/silver-demo-001/runtime/verifier-b/attestor-private-key.pem \
+	  --attestor-id proofrail-demo-verifier-b \
+	  --attestor-version v0.2.2-demo \
+	  --key-id proofrail-demo-verifier-b-ed25519-attestation-001 \
+	  --output demos/silver-demo-001/runtime/silver-verifier-output-attestation-v0.1.0.json
+
+.PHONY: verify-silver-verifier-attestation-demo-001
+verify-silver-verifier-attestation-demo-001:
+	python3 tools/silver/verify_verifier_output_attestation_v0_1_0.py \
+	  --attestation demos/silver-demo-001/runtime/silver-verifier-output-attestation-v0.1.0.json \
+	  --trust-policy demos/silver-demo-001/runtime/verifier-b/attestation-trust-policy.yaml
+
+.PHONY: verify-silver-attestation-v0-2-2
+verify-silver-attestation-v0-2-2:
+	bash tests/test_silver_verifier_output_attestation_v0_1_0.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -91,3 +123,4 @@ verify-silver-all:
 	$(MAKE) validate-silver-profile-demo-002
 	$(MAKE) verify-silver-profile-v0-2-1
 	$(MAKE) verify-silver-profile-examples-v0-2-1
+	$(MAKE) verify-silver-attestation-v0-2-2

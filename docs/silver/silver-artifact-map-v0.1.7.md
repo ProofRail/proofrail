@@ -212,3 +212,28 @@ The profile defines three modes:
 - `silver.independent` — Unchanged from v0.2.0.
 
 The v0.2.1 package exporter adds `package_format_version`, `profile_compatibility`, `inputs`, and `path_map` to the manifest. The independent verifier requires no changes.
+
+## v0.2.2 Update: Verifier Output Attestation
+
+Silver v0.2.2 adds detached, signed attestations over verifier outputs.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Verifier Output Attestation | v0.1.0 | Detached, signed verifier output attribution | `schemas/silver-verifier-output-attestation-v0.1.0.md` |
+
+The attestation binds a verifier's identity to its verification report and profile conformance report. For `silver.independent` mode, it also covers the package manifest.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+```

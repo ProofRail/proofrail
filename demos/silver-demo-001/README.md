@@ -98,6 +98,24 @@ make validate-silver-profile-v0-2-1-demo-001
 make verify-silver-profile-v0-2-1
 ```
 
+### Silver v0.2.2 Verifier Output Attestation
+
+Silver v0.2.2 adds detached, signed attestations over verifier outputs. The attestation binds the verifier's identity to its verification report and conformance report.
+
+```bash
+# Generate attestor keypair for verifier-b
+make generate-silver-verifier-attestor-demo-001
+
+# Sign verifier output attestation (also generates conformance report)
+make sign-silver-verifier-attestation-demo-001
+
+# Verify the attestation
+make verify-silver-verifier-attestation-demo-001
+
+# Run the full v0.2.2 regression test
+make verify-silver-attestation-v0-2-2
+```
+
 ## What This Demo Does Not Prove
 
 - Production-grade PKI or key management.

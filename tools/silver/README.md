@@ -9,6 +9,7 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Verification Report v0.1.0
 - Silver Relying-Party Profile v0.2.0
 - Silver Relying-Party Profile v0.2.1
+- Silver Verifier Output Attestation v0.1.0
 
 ## Demo Issuer Generator
 
@@ -293,6 +294,109 @@ The v0.2.1 exporter adds `package_format_version`, `profile_compatibility`, `inp
 See `docs/silver/independent-verification-package-format-v0.2.1.md` for the package format specification.
 
 Exit codes: 0 (success), 1 (output exists without `--force`), 2 (usage error or missing source artifacts).
+
+## Demo Verifier Attestor Key Generator
+
+Generates a demo Ed25519 attestor keypair and an attestation trust policy for verifier output attestations. The attestor key is separate from the issuer key used for Silver Signed Bundle Assertions.
+
+```bash
+python3 tools/silver/generate_demo_verifier_attestor_v0_1_0.py \
+  --output-root demos/silver-demo-001/runtime/verifier-b \
+  --attestor-id proofrail-demo-verifier-b \
+  --key-id proofrail-demo-verifier-b-ed25519-attestation-001 \
+  --force
+```
+
+Generated files (runtime-only, not committed):
+
+```
+<output-root>/attestor-private-key.pem
+<output-root>/attestor-public-key.pem
+<output-root>/attestation-trust-policy.yaml
+```
+
+The same tool generates attestor keys for any verifier identity (e.g., `proofrail-demo-verifier-b` or `proofrail-demo-independent-verifier`).
+
+The `--force` flag overwrites existing keys. Private keys are set to `0600` permissions.
+
+Exit codes: 0 (success), 1 (output exists without `--force`), 2 (usage error).
+
+## Verifier Output Attestation Signer
+
+Signs a detached verifier output attestation binding a verifier's identity to its verification report and profile conformance report.
+
+```bash
+python3 tools/silver/sign_verifier_output_attestation_v0_1_0.py \
+  --verification-report demos/silver-demo-001/runtime/verification-report.json \
+  --conformance-report demos/silver-demo-001/runtime/silver-profile-conformance-report-v0.2.1.json \
+  --private-key demos/silver-demo-001/runtime/verifier-b/attestor-private-key.pem \
+  --attestor-id proofrail-demo-verifier-b \
+  --attestor-version v0.2.2-demo \
+  --key-id proofrail-demo-verifier-b-ed25519-attestation-001 \
+  --output demos/silver-demo-001/runtime/silver-verifier-output-attestation-v0.1.0.json
+```
+
+For `silver.independent` mode, add `--package-manifest <path>`.
+
+The signer:
+
+1. Validates verification report version and type.
+2. Validates conformance report version, type, and profile mode.
+3. Confirms `--attestor-id` matches `verifier_id` in the verification report.
+4. Rejects subject paths containing `..` components.
+5. Computes SHA-256 of each subject file.
+6. Copies `profile` and `decision` from the conformance report.
+7. Signs the canonical JSON of the `signed_payload` with Ed25519.
+8. Writes attestation JSON with binding constraint: `signature.key_id == signed_payload.attestor.key_id`.
+
+The signer does not require `decision.status == "pass"` — it attests both pass and fail reports.
+
+Exit codes: 0 (success), 1 (signing/validation failure), 2 (usage/input error).
+
+## Verifier Output Attestation Verifier
+
+Verifies a Silver Verifier Output Attestation against an attestation trust policy.
+
+```bash
+python3 tools/silver/verify_verifier_output_attestation_v0_1_0.py \
+  --attestation demos/silver-demo-001/runtime/silver-verifier-output-attestation-v0.1.0.json \
+  --trust-policy demos/silver-demo-001/runtime/verifier-b/attestation-trust-policy.yaml
+```
+
+The verifier checks:
+
+1. Attestation structure and version.
+2. Binding: `signature.key_id == signed_payload.attestor.key_id` and `signature.algorithm == signed_payload.attestor.signature_algorithm`.
+3. Attestor trust via attestation trust policy (type `proofrail.silver.verifier_attestation_trust_policy`).
+4. Algorithm is Ed25519.
+5. Public key loaded from `public_key_path` (relative to trust policy file).
+6. Ed25519 signature over canonical JSON of `signed_payload`.
+7. Subject paths do not contain `..` components.
+8. SHA-256 of all subject files matches attested hashes.
+9. Verification report metadata (verifier identity, report version/type).
+10. Conformance report metadata (profile, decision, version/type).
+11. If `silver.independent`: package manifest file integrity and metadata.
+12. Limitations present and non-empty.
+
+### Attestation Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_attestation_structure` | Top-level structure invalid or binding mismatch |
+| `invalid_trust_policy` | Trust policy type/version invalid |
+| `attestor_not_trusted` | Attestor ID not in trust policy |
+| `key_id_not_trusted` | Key ID not found for attestor |
+| `unsupported_algorithm` | Algorithm is not ed25519 |
+| `signature_verification_failed` | Ed25519 signature invalid |
+| `subject_hash_mismatch` | File hash differs from attested hash |
+| `subject_file_missing` | Attested file not found |
+| `subject_path_traversal` | Subject path contains `..` component |
+| `package_manifest_mismatch` | Package manifest metadata mismatch |
+| `attestor_verifier_identity_mismatch` | attestor_id != verifier_id |
+| `attested_metadata_mismatch` | Signed metadata differs from file content |
+| `limitations_missing` | Limitations empty or absent |
+
+Exit codes: 0 (pass), 1 (fail), 2 (usage error).
 
 ## Security Notes
 

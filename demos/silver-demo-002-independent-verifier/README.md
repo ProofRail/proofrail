@@ -106,6 +106,10 @@ make verify-silver-profile-v0-2-1
 
 See `docs/silver/independent-verification-package-format-v0.2.1.md` for the package format specification.
 
+### Silver v0.2.2 Verifier Output Attestation
+
+The independent verifier can now produce an attested output using its own attestor key. When signing the attestation for the independent verifier, use `--package-manifest` and `--attestor-id proofrail-demo-independent-verifier`. The regression test (`make verify-silver-attestation-v0-2-2`) covers this path.
+
 ## What This Demo Does Not Prove
 
 - Production-grade PKI or key management.

@@ -2,17 +2,17 @@
 
 Status: public documentation repository and capability demonstrations. Specifications, profiles, sanitized attestations, and examples are published here. Raw deployment evidence and security-sensitive operational details remain private.
 
-ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current release is [v0.2.1](https://github.com/ProofRail/proofrail/releases/tag/v0.2.1).
+ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current release is [v0.2.2](https://github.com/ProofRail/proofrail/releases/tag/v0.2.2).
 
 As AI agents gain access to tools, APIs, workflows, other AI agents, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
 ProofRail defines that evidence layer.
 
-This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.1 hardened processing of and provided additional clarity around handoffs for the local relying-party profile created in v0.2.0 which is used for accepting a Silver evidence package. 
+This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.2 adds detached verifier output attestations, making Silver verification outputs attributable and tamper-evident while preserving the boundary between Silver evidence-package reliance and Gold governed acceptance.
 
 ## Current Proof Chain
 
-Iron-plus → Composed Bronze → Bronze v0.1.2 checksums → Bronze v0.1.3 bundle manifest → Minimal Silver signed assertion → local revocation → structured verifier report → verification outside the repo source tree → Silver relying-party profile → profile conformance report
+Iron-plus → Composed Bronze → Bronze v0.1.2 checksums → Bronze v0.1.3 bundle manifest → Minimal Silver signed assertion → local revocation → structured verifier report → verification outside the repo source tree → Silver relying-party profile → profile conformance report → verifier output attestation
 
 ProofRail v0.2.0 defines and validates a local Silver relying-party profile for accepting a signed, revocable, reportable evidence package, with a stronger independent verification mode.
 
@@ -42,6 +42,9 @@ Silver Relying-Party Profile v0.2.0
 
 Silver Profile Conformance Report v0.2.1
   → structured conformance decision artifact
+
+Silver Verifier Output Attestation v0.1.0
+  → detached, signed verifier output attribution
 ```
 
 In practical terms, the repository now demonstrates:
@@ -53,7 +56,8 @@ In practical terms, the repository now demonstrates:
 5. local relying-party revocation for otherwise valid signed assertions;
 6. a structured Silver verification report;
 7. independent local verification from an exported verification package;
-8. profile-level Silver relying-party conformance validation.
+8. profile-level Silver relying-party conformance validation;
+9. detached, signed verifier output attestations.
 
 The primary release verification path is:
 
@@ -99,6 +103,7 @@ This is still a demo-grade framework. It does not claim production certification
 | Silver | Independent Verifier Demo | v0.1.0 | Portable relying-party verification demo |
 | Silver | Relying-Party Profile | v0.2.1 | Formal acceptance criteria for Silver evidence packages |
 | Silver | Profile Conformance Report | v0.2.1 | Structured profile conformance decision artifact |
+| Silver | Verifier Output Attestation | v0.1.0 | Detached, signed verifier output attribution |
 
 Artifact schema versions and repository release versions intentionally differ. Repository releases advance when a new profile, demo, evidence chain, or conformance behavior becomes available; individual schemas advance only when that artifact changes.
 
@@ -123,9 +128,9 @@ The independent mode preserves the key Silver idea: a relying party can verify a
 
 ---
 
-## What ProofRail v0.2.1 Shows
+## What ProofRail v0.2.2 Shows
 
-ProofRail v0.2.1 shows that a protected actuator-control evidence package can be:
+ProofRail v0.2.2 shows that a protected actuator-control evidence package can be:
 
 ```text
 generated
@@ -136,13 +141,14 @@ generated
   → reported
   → independently re-verified
   → profile-validated for relying-party acceptance (with mandatory revocation)
+  → verifier output attested (tamper-evident, attributable)
 ```
 
 The main transition is:
 
 ```text
-Silver v0.2.1:
-  tightened relying-party verification profile (revocation required for silver.base)
+Silver v0.2.2:
+  detached verifier output attestations (attribution + tamper evidence)
 
 Next:
   stronger relying-party operating profile
@@ -157,7 +163,7 @@ Silver remains the evidence-package reliance layer. Gold begins only when the wo
 
 ## What ProofRail Does Not Claim
 
-ProofRail v0.2.1 does not claim:
+ProofRail v0.2.2 does not claim:
 
 - Gold certification;
 - third-party certification;

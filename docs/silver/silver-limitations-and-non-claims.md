@@ -203,6 +203,26 @@ This change reflects the principle that ordinary Silver reliance should include 
 
 See `profiles/silver/SILVER_PROFILE_v0.2.1.md` for the full v0.2.1 profile specification.
 
+## v0.2.2 Verifier Output Attestation
+
+Silver v0.2.2 adds detached, signed attestations over verifier outputs. This makes Silver verification outputs attributable and tamper-evident.
+
+Verifier output attestation is:
+
+- **attribution**: it records which verifier produced which outputs;
+- **tamper evidence**: it detects modification of verification reports and conformance reports.
+
+Verifier output attestation is **not**:
+
+- certification of the underlying evidence or deployment;
+- Gold certification;
+- regulator approval;
+- production PKI;
+- production deployment assurance;
+- third-party audit.
+
+The attestor key is separate from the issuer key. Both use Ed25519 in demo mode but serve different roles. Subject paths containing `..` components are rejected by both the signer and verifier.
+
 ---
 
 ## Summary

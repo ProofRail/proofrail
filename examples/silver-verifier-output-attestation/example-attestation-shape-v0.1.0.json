@@ -1,0 +1,53 @@
+{
+  "attestation_version": "v0.1.0",
+  "attestation_type": "proofrail.silver.verifier_output_attestation",
+  "signed_payload": {
+    "attestation_id": "proofrail-demo-verifier-b-attestation-aabbccddeeff-silver-base",
+    "generated_at": "2026-06-21T12:00:00+00:00",
+    "generated_by": "tools/silver/sign_verifier_output_attestation_v0_1_0.py",
+    "attestor": {
+      "attestor_id": "proofrail-demo-verifier-b",
+      "attestor_role": "silver_verifier",
+      "attestor_version": "v0.2.2-demo",
+      "key_id": "proofrail-demo-verifier-b-ed25519-attestation-001",
+      "signature_algorithm": "ed25519"
+    },
+    "profile": {
+      "profile_id": "proofrail.silver.profile",
+      "profile_version": "v0.2.1",
+      "profile_mode": "silver.base"
+    },
+    "decision": {
+      "status": "pass",
+      "reason": "profile_requirements_satisfied"
+    },
+    "subjects": {
+      "verification_report": {
+        "path": "verification-report.json",
+        "sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "report_version": "v0.1.0",
+        "report_type": "proofrail.silver.verification_report"
+      },
+      "profile_conformance_report": {
+        "path": "silver-base-conformance.json",
+        "sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "conformance_report_version": "v0.2.1",
+        "conformance_report_type": "proofrail.silver.profile_conformance_report"
+      },
+      "package_manifest": null
+    },
+    "limitations": [
+      "Verifier output attestation is not certification.",
+      "Not Gold certification.",
+      "Not production PKI.",
+      "Not regulator approval.",
+      "Not production deployment assurance."
+    ]
+  },
+  "signature": {
+    "algorithm": "ed25519",
+    "key_id": "proofrail-demo-verifier-b-ed25519-attestation-001",
+    "signature_encoding": "base64",
+    "signature": "PLACEHOLDER_BASE64_SIGNATURE_NOT_VERIFIABLE"
+  }
+}
