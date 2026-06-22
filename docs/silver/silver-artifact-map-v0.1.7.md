@@ -434,3 +434,41 @@ Bronze claim
   → composed gateway evidence report + composed gateway evidence manifest
   → relying-party acceptance policy + acceptance record + acceptance package manifest
 ```
+
+## v0.2.9 Update: Revocation/Challenge Drill
+
+Silver v0.2.9 layers a deterministic, hash-anchored local revocation/challenge drill on top of a v0.2.8 relying-party acceptance package. The drill records post-acceptance review signals (challenges and revocation signals), classifies them against the acceptance record's policy-derived challenge window, and produces a single `recommended_local_posture` from a closed set. It does not adjudicate challenges, revoke acceptance, or execute Gold governance.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Relying-Party Review Event | v0.1.0 | JSONL event-line schema for post-acceptance review signals | `schemas/silver-relying-party-review-event-v0.1.0.md` |
+| Silver | Revocation/Challenge Drill Report | v0.1.0 | Local report binding nested acceptance and classifying review events | `schemas/silver-revocation-challenge-drill-report-v0.1.0.md` |
+| Silver | Revocation/Challenge Drill Manifest | v0.1.0 | Three-subject SHA-256 hash anchor binding nested acceptance manifest, review events, and drill report | `schemas/silver-revocation-challenge-drill-manifest-v0.1.0.md` |
+| Doc | Silver Revocation/Challenge Drill | v0.2.9 | Release narrative document | `docs/silver/silver-revocation-challenge-drill-v0.2.9.md` |
+
+The runner (`tools/silver/run_revocation_challenge_drill_v0_1_0.py`) subprocess-invokes the unchanged v0.2.8 acceptance validator on the input package and refuses with `FAIL: acceptance_package_validation_failed: <detail>` (exit 1) when validation fails, or with `FAIL: review_fixture_insufficient: <detail>` (exit 1) when the fixture has zero within-window challenges or zero revocation signals. Output is staged in a sibling directory and atomically moved into place — a refused run leaves no partial drill package on disk. The full v0.2.8 package subdirectory is byte-copied under `acceptance-package/`; no v0.2.7 evidence package contents are duplicated.
+
+The verifier (`tools/silver/verify_revocation_challenge_drill_v0_1_0.py`) delegates nested acceptance-package validation to the unchanged v0.2.8 validator (failures surface as `nested_acceptance_package_invalid`; v0.2.8's `external_evidence_verification_failed` is preserved as a distinct v0.2.9 reason when `--evidence-package-root` is supplied). It runs hash-first, re-derives the drill report's classification, findings, and triggers independently, and resolves 22 stable failure reasons. The runner-only codes `acceptance_package_validation_failed` and `review_fixture_insufficient` are never emitted by the verifier.
+
+A revocation/challenge drill report is not a Gold certificate, regulator approval, third-party audit, legal revocation, dispute resolution, or acceptance governance workflow. v0.2.9 records review triggers. It does not decide their merits.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+  → multi-principal authority decision reports
+  → multi-agent harness transcript + run report + evidence manifest
+  → multi-agent trust-boundary demo package manifest + demo summary
+  → composed gateway evidence report + composed gateway evidence manifest
+  → relying-party acceptance policy + acceptance record + acceptance package manifest
+  → relying-party review events + revocation/challenge drill report + drill manifest
+```

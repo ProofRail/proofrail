@@ -831,6 +831,82 @@ JSON parse errors are caught and surfaced as the appropriate stable reason — n
 
 Exit codes: 0 (valid), 1 (validation failure), 2 (usage/input error).
 
+## Revocation/Challenge Drill Runner (v0.2.9)
+
+Stages a deterministic revocation/challenge drill over an existing v0.2.8 relying-party acceptance package. Pure-stdlib. Atomic staging-then-replace; a refused run leaves no partial drill package on disk.
+
+```bash
+python3 tools/silver/run_revocation_challenge_drill_v0_1_0.py \
+  --acceptance-manifest /tmp/proofrail-silver-relying-party-acceptance-v0.2.8/acceptance-package-manifest.json \
+  --review-events fixtures/silver-revocation-challenge-drill-v0.2.9/review-events.jsonl \
+  --generated-at 2026-06-27T00:00:00Z \
+  --output-dir /tmp/proofrail-silver-revocation-challenge-drill-v0.2.9 \
+  --force \
+  [--evidence-package-root /tmp/proofrail-silver-composed-gateway-demo-v0.2.7] \
+  [--self-validate]
+```
+
+The runner:
+
+1. Subprocess-invokes the unchanged v0.2.8 acceptance validator on `--acceptance-manifest` and **refuses** with `FAIL: acceptance_package_validation_failed: <detail>` and exit code 1 if validation fails.
+2. Byte-copies the full v0.2.8 acceptance package subdirectory into `acceptance-package/` (never mutates the source package).
+3. Parses the JSONL review-events fixture line-by-line and **refuses** with `FAIL: review_fixture_insufficient: <detail>` and exit code 1 if the fixture contains zero within-window challenges or zero revocation signals.
+4. Derives findings, review triggers, and a single `recommended_local_posture` from the closed set:
+   - `acceptance_stands_for_demo_scope`
+   - `acceptance_requires_review_before_reuse`
+   - `acceptance_not_reusable_without_governed_review`
+5. Emits `review-events.jsonl`, `revocation-challenge-drill-report.json`, and `revocation-challenge-drill-manifest.json` with three subjects in fixed order (roles `nested_acceptance_package_manifest`, `review_events`, `revocation_challenge_drill_report`).
+6. Optionally subprocess-invokes the v0.2.9 verifier when `--self-validate` is supplied.
+
+`acceptance_package_validation_failed` and `review_fixture_insufficient` are **runner-only** codes and are never emitted by the verifier.
+
+Exit codes: 0 (success), 1 (drill refused / self-validate failed), 2 (usage/input error).
+
+## Revocation/Challenge Drill Verifier (v0.2.9)
+
+Validates a v0.2.9 revocation/challenge drill package. Pure-stdlib. Hash-first ordering. Optional `--evidence-package-root` re-invokes the v0.2.7 verifier against the original composed gateway evidence package.
+
+```bash
+python3 tools/silver/verify_revocation_challenge_drill_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-revocation-challenge-drill-v0.2.9/revocation-challenge-drill-manifest.json \
+  [--evidence-package-root /tmp/proofrail-silver-composed-gateway-demo-v0.2.7]
+```
+
+The verifier delegates nested acceptance-package validation to the unchanged v0.2.8 validator and re-derives the drill report's classification, findings, and triggers independently from the review events.
+
+### Drill Verifier Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_drill_package_manifest` | Manifest shape, type, version, hash algorithm, or subject count/order/roles invalid |
+| `drill_subject_file_missing` | A manifest subject file is missing |
+| `drill_subject_path_traversal` | A subject path contains `..` or is absolute |
+| `drill_subject_hash_mismatch` | Recomputed SHA-256 differs from recorded hash |
+| `nested_acceptance_package_invalid` | Subprocess invocation of the v0.2.8 validator on the nested acceptance package fails |
+| `invalid_review_events` | Review-events JSONL malformed, missing required fields, wrong document type/version, or has an out-of-set event type |
+| `invalid_drill_report` | Drill report JSON malformed or fails shape checks (e.g., wrong `document_type`, missing required fields, invalid posture set members) |
+| `acceptance_record_binding_mismatch` | Drill report's `base_acceptance.*` block disagrees with the nested v0.2.8 record, policy, or recomputed package manifest sha256 |
+| `review_events_hash_mismatch` | Recomputed SHA-256 of `review-events.jsonl` disagrees with `drill_report.review_events.events_sha256` |
+| `review_event_target_mismatch` | Non-revocation review event references an acceptance record / purpose other than the bound one |
+| `review_event_sequence_invalid` | Review events are not monotonic in `event_time` |
+| `challenge_window_missing` | Drill report omits the policy-derived challenge window when at least one `challenge.received` event is present |
+| `challenge_within_window_missing` | At least one `challenge.received` event exists in the window but no `challenge_within_window` finding/trigger is recorded |
+| `challenge_window_classification_mismatch` | A `challenge_within_window` finding/trigger references an event that is outside the policy challenge window, or vice-versa |
+| `revocation_signal_missing` | Zero `revocation.signal_received` events in the fixture |
+| `revocation_signal_target_mismatch` | A `revocation.signal_received` event references an acceptance record / purpose other than the bound one |
+| `required_finding_missing` | A required finding type derived from the events is missing from the report |
+| `required_review_trigger_missing` | A required review trigger type derived from the events is missing from the report |
+| `recommended_posture_invalid` | `recommended_local_posture` is not in the closed set |
+| `scope_limitations_missing` | `drill_report.scope_limitations` is empty |
+| `drill_non_claims_missing` | `drill_report.non_claims` is empty |
+| `external_evidence_verification_failed` | `--evidence-package-root` re-invocation of the v0.2.7 verifier fails on the original composed gateway evidence package |
+
+The runner-only codes `acceptance_package_validation_failed` and `review_fixture_insufficient` are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
 ## Security Notes
 
 - This is a demo signing system. Do not use generated keys for production.

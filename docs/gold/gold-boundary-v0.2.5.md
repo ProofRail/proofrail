@@ -143,3 +143,30 @@ A relying-party acceptance record is not a Gold certificate, regulator approval,
 v0.2.8 records acceptance context. It does not execute acceptance governance.
 
 v0.2.8 names a relying-party decision. It does not cross the Gold boundary.
+
+---
+
+## 10. Note on v0.2.9 Revocation/Challenge Drill
+
+Silver v0.2.9 layers a deterministic, hash-anchored local revocation/challenge drill on top of a v0.2.8 relying-party acceptance package. The drill consumes a static JSONL fixture of post-acceptance review signals, classifies them against the acceptance record's policy-derived challenge window, derives required findings and review triggers, and selects a single `recommended_local_posture` from a closed set.
+
+The v0.2.9 drill is **still Silver, not Gold**:
+
+- It records that local post-acceptance review signals were detected, classified, and bound to a specific v0.2.8 acceptance package. It does not adjudicate them.
+- It does not invoke any external revocation authority, dispute-resolution body, regulator, auditor, registry, or sign-off process. The drill does not query live revocation services, real challenge systems, real gateways, real SIEM, real GRC, or any external service.
+- It does not coordinate, chain, federate, or arbitrate decisions across parties. The drill is a single-relying-party, local-evidence artifact.
+- It is not signed. v0.2.9 ships local hash anchors only.
+- It never mutates the underlying v0.2.7 composed gateway evidence package or the v0.2.8 acceptance record. The full v0.2.8 package subdirectory is byte-copied into the drill package; the runner refuses to emit output when the v0.2.8 validator fails.
+- The `recommended_local_posture` is exactly one of `acceptance_stands_for_demo_scope`, `acceptance_requires_review_before_reuse`, `acceptance_not_reusable_without_governed_review`. It is a recorded local recommendation, not a governed acceptance change.
+
+Gold-level adjudication of challenges and revocations (as inventoried in §5 above) still requires the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity, retention, change-control, revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.2.9 does not add any of those.
+
+The release sentence holds:
+
+> v0.2.9 drills post-acceptance review signals over a Silver relying-party acceptance record. It does not adjudicate challenges, revoke acceptance, certify evidence, or execute Gold governance.
+
+A revocation/challenge drill report is not a Gold certificate, regulator approval, third-party audit, legal revocation, dispute resolution, or acceptance governance workflow.
+
+v0.2.9 records review triggers. It does not decide their merits.
+
+v0.2.9 names a post-acceptance review drill. It does not cross the Gold boundary.

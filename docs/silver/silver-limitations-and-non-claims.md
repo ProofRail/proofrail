@@ -391,6 +391,33 @@ A relying-party acceptance record is not a Gold certificate, regulator approval,
 
 ---
 
+## v0.2.9 Revocation/Challenge Drill
+
+Silver v0.2.9 layers a deterministic, hash-anchored local revocation/challenge drill on top of a v0.2.8 relying-party acceptance package. The drill consumes a static JSONL fixture of post-acceptance review signals (challenges, revocation signals, and acceptance revalidations), classifies them against the acceptance record's policy-derived challenge window, derives required findings and review triggers, and selects a single `recommended_local_posture` from a closed set.
+
+The v0.2.9 drill is:
+
+- **A post-acceptance review evidence artifact**: the drill records that review signals were detected, classified, and bound to a specific v0.2.8 acceptance package; it does not adjudicate them.
+- **Hash-anchored**: a three-subject package manifest binds the byte-copied v0.2.8 acceptance-package manifest, the review-events JSONL, and the drill report under SHA-256, with subject paths refused if they contain `..` or are absolute.
+- **Delegating, never re-implementing**: the runner subprocess-invokes the unchanged v0.2.8 acceptance validator; the verifier delegates nested acceptance-package validation to the same unchanged v0.2.8 validator. v0.2.8 failures surface as `nested_acceptance_package_invalid`; the v0.2.8 code `external_evidence_verification_failed` is preserved as a distinct v0.2.9 reason when `--evidence-package-root` is supplied.
+- **Refusal-by-design**: the runner refuses with `FAIL: acceptance_package_validation_failed: <detail>` (exit 1) when the input v0.2.8 package fails validation, and with `FAIL: review_fixture_insufficient: <detail>` (exit 1) when the fixture has zero within-window challenges or zero revocation signals. A refused run leaves no partial drill package on disk. Both refusal codes are runner-only and are never emitted by the verifier.
+- **Re-derivation-based**: the verifier re-derives the drill report's classification, findings, and triggers independently from the review events, including the within-window challenge classification (`challenge_window_classification_mismatch` fires before `challenge_within_window_missing`).
+- **Closed-set posture**: `recommended_local_posture` is exactly one of `acceptance_stands_for_demo_scope`, `acceptance_requires_review_before_reuse`, `acceptance_not_reusable_without_governed_review`.
+
+The v0.2.9 drill is **not**:
+
+- A Gold certificate, regulator approval, third-party audit, legal revocation, dispute resolution, or acceptance governance workflow. The drill records review triggers; it does not decide their merits.
+- A live revocation, challenge, or governance integration. The drill does not query live revocation services, real challenge systems, real gateways, real SIEM, real GRC, or any external service.
+- A change to the v0.2.7 composed gateway evidence package or the v0.2.8 acceptance record. The drill never mutates a v0.2.8 acceptance package; the full v0.2.8 package subdirectory is byte-copied into the drill package.
+- A signed Silver artifact. v0.2.9 ships local hash anchors only.
+- A change to Bronze, Silver Signed Bundle Assertion, Revocation List, Verification Report, Profile, Verifier Output Attestation, Multi-principal Authority, Multi-agent Harness, Multi-agent Trust-boundary Demo, Evidence Source Adapter, Composed Gateway Evidence, or Relying-Party Acceptance Record semantics.
+
+The key claim:
+
+> v0.2.9 drills post-acceptance review signals over a Silver relying-party acceptance record. It does not adjudicate challenges, revoke acceptance, certify evidence, or execute Gold governance.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.
