@@ -418,6 +418,36 @@ The key claim:
 
 ---
 
+## v0.3.0 Silver Acceptance Handoff
+
+Silver v0.3.0 is a composition release. It packages the completed v0.2.7 composed gateway evidence, v0.2.8 relying-party acceptance, and v0.2.9 revocation/challenge drill into a single portable, hash-anchored Silver acceptance handoff artifact. v0.3.0 introduces no new evidence content.
+
+The v0.3.0 handoff is:
+
+- **A composition artifact**: the runner subprocess-invokes the unchanged v0.2.7 verifier, v0.2.8 validator, and v0.2.9 verifier — each **without** `--evidence-package-root` — so v0.3.0 alone owns the cross-package binding. The four nested packages remain unchanged on disk.
+- **Hash-anchored**: a four-subject package manifest binds the v0.2.7 composed gateway evidence manifest, the v0.2.8 acceptance package manifest, the v0.2.9 drill manifest, and the v0.3.0 handoff summary under SHA-256 in fixed order with fixed roles. Subject paths are refused if they contain `..` or are absolute.
+- **Chain-bound by v0.3.0**: four v0.3.0-owned cross-checks bind the top-level manifest subjects to the recorded sha256 fields inside the nested packages. Any mismatch fires the specific v0.3.0 reason `handoff_chain_binding_mismatch` (verifier) or `handoff_chain_binding_failed` (runner).
+- **Posture-rank-bounded**: the runner maps the nested v0.2.9 `recommended_local_posture` onto a minimum handoff posture rank (`acceptance_stands_for_demo_scope` → 0, `acceptance_requires_review_before_reuse` → 1, `acceptance_not_reusable_without_governed_review` → 2). The selected `recommended_handoff_posture` must be no weaker than the rank required by the drill posture; an unknown posture fires `handoff_posture_invalid` and a weaker handoff posture fires `handoff_posture_downgrade`.
+- **Overclaim-guarded**: the verifier scans every string value in the handoff summary (recursively) **outside** the `scope_limitations` and `non_claims` arrays for a closed set of forbidden positive tokens (`certified`, `approved`, `audited`, `legally accepted`, `legally revoked`, `challenge resolved`, `gold accepted`, `gold certified`, `compliant`, `production-approved`, `production-ready`, `regulator-ready`, `regulator approval`, `trust transferred`, `trust transfer`). Any positive occurrence fires `handoff_overclaim`.
+- **Self-validated before atomic move**: with `--self-validate`, the runner invokes the v0.3.0 verifier against the staging directory **before** `os.replace()`. On failure it removes staging, leaves the destination untouched, and exits 1 with `FAIL: self_validation_failed: <detail>`.
+- **Stable-failure-reasoned**: 17 stable verifier failure reasons and 5 deliberately distinct runner-only refusal codes (`composed_evidence_validation_failed`, `acceptance_package_validation_failed`, `drill_package_validation_failed`, `handoff_chain_binding_failed`, `self_validation_failed`). The verifier never emits the runner-only codes.
+
+The v0.3.0 handoff is **not**:
+
+- A Gold certificate, Gold conformance, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, adjudicated challenge, legally revoked acceptance, or production authorization.
+- A change to the v0.2.7 composed gateway evidence package, the v0.2.8 relying-party acceptance package, or the v0.2.9 revocation/challenge drill package. The full nested package roots are byte-copied; their semantics are unchanged.
+- A signed Silver artifact. v0.3.0 ships local hash anchors only.
+- A live integration with any real gateway, SIEM, observability stack, policy engine, GRC platform, or governance authority.
+- A claim of new evidence content. The `recommended_handoff_posture` is descriptive. It is not an approval, not a decision, and not a governance act.
+- A transfer of reliance from one relying party to another. v0.2.8 already recorded one relying party's local decision; v0.3.0 binds that decision into a portable package without extending what it asserts.
+- A change to Bronze, Silver Signed Bundle Assertion, Revocation List, Verification Report, Profile, Verifier Output Attestation, Multi-principal Authority, Multi-agent Harness, Multi-agent Trust-boundary Demo, Evidence Source Adapter, Composed Gateway Evidence, Relying-Party Acceptance Record, or Revocation/Challenge Drill semantics.
+
+The key claim:
+
+> v0.3.0 packages already-verified Silver evidence into a portable, hash-anchored handoff artifact whose chain binding the v0.3.0 verifier owns and re-derives end to end. It does not extend the substance of what that evidence asserts and it does not cross the Gold boundary.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

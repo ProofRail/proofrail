@@ -2,7 +2,7 @@
 
 Status: public documentation repository and capability demonstrations. Specifications, profiles, sanitized attestations, and examples are published here. Raw deployment evidence and security-sensitive operational details remain private.
 
-ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence, Silver v0.2.5 multi-agent trust-boundary demo packaging plus the first Gold boundary documentation, Silver v0.2.6 evidence source adapter descriptors, Silver v0.2.7 composed gateway evidence demo, Silver v0.2.8 relying-party acceptance record, and Silver v0.2.9 revocation/challenge drill.
+ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence, Silver v0.2.5 multi-agent trust-boundary demo packaging plus the first Gold boundary documentation, Silver v0.2.6 evidence source adapter descriptors, Silver v0.2.7 composed gateway evidence demo, Silver v0.2.8 relying-party acceptance record, Silver v0.2.9 revocation/challenge drill, and Silver v0.3.0 acceptance handoff.
 
 As AI agents gain access to tools, APIs, workflows, other AI agents, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
@@ -301,9 +301,34 @@ make verify-silver-revocation-challenge-drill-v0-2-9
 
 ---
 
+## What ProofRail v0.3.0 Adds
+
+ProofRail v0.3.0 introduces the **Silver Acceptance Handoff**: a deterministic, local composition release that packages the completed v0.2.7 / v0.2.8 / v0.2.9 Silver acceptance chain into a single portable, hash-anchored handoff artifact. It adds:
+
+- a handoff summary schema (`schemas/silver-acceptance-handoff-summary-v0.1.0.md`) recording the included v0.2.7 / v0.2.8 / v0.2.9 manifest hashes, the v0.2.8 acceptance record id, decision status, and purpose, the v0.2.9 recommended local posture, the derived v0.3.0 handoff posture, scope limitations, non-claims, and a non-empty `reuse_warning`;
+- a four-subject handoff manifest schema (`schemas/silver-acceptance-handoff-manifest-v0.1.0.md`) binding the composed-gateway-evidence manifest, the acceptance-package manifest, the revocation/challenge drill manifest, and the handoff summary in a fixed deterministic order;
+- a runner (`tools/silver/build_silver_acceptance_handoff_v0_1_0.py`) that subprocess-invokes the unchanged v0.2.7 verifier, v0.2.8 acceptance validator, and v0.2.9 drill verifier (the latter two without `--evidence-package-root` so v0.3.0 owns the four cross-copy chain-binding checks), refuses on nested-validator failure or chain-binding mismatch with stable refusal codes, byte-copies the three nested package roots under fixed top-level directories, and with `--self-validate` verifies the staging directory before the atomic move;
+- a verifier (`tools/silver/verify_silver_acceptance_handoff_v0_1_0.py`) running 17 stable failure reasons including `handoff_chain_binding_mismatch`, `handoff_posture_downgrade`, and `handoff_overclaim`, re-running all three nested validators, re-deriving the four v0.3.0-owned chain-binding cross-checks, enforcing a closed-set posture rank ordering, and running a recursive overclaim guard against 15 forbidden positive tokens;
+- a 31-case regression test (`tests/test_silver_acceptance_handoff_v0_3_0.sh`) covering every stable verifier failure reason plus the five runner-only refusal codes.
+
+The handoff package is unsigned; v0.3.0 ships local hash anchors only.
+
+> v0.3.0 packages already-verified Silver evidence. It does not extend the substance of what that evidence asserts.
+
+A Silver acceptance handoff package is not a Gold certificate, regulator approval, auditor approval, legal acceptance, transferred reliance, adjudicated challenge resolution, legally revoked acceptance, production authorization, or a governance act. The `recommended_handoff_posture` is descriptive, not approval.
+
+Run and verify the v0.3.0 acceptance handoff locally:
+
+```bash
+make run-silver-acceptance-handoff-v0-3-0
+make verify-silver-acceptance-handoff-v0-3-0
+```
+
+---
+
 ## What ProofRail Does Not Claim
 
-ProofRail v0.2.9 does not claim:
+ProofRail v0.3.0 does not claim:
 
 - Gold certification;
 - third-party certification;
@@ -314,7 +339,7 @@ ProofRail v0.2.9 does not claim:
 - public accreditation;
 - that any real gateway, observability stack, SIEM, policy engine, or GRC platform is conformant with ProofRail.
 
-Silver profile conformance is local relying-party verification, not certification of a live system. The v0.2.5 multi-agent trust-boundary demo is a local, deterministic re-packaging of v0.2.4 harness evidence; it does not execute live agents, does not invoke live actuators, does not parse natural-language prompts, does not detect prompt injection, and does not cross the Gold boundary. The v0.2.6 evidence source adapter descriptors are static declarations only; they do not integrate with any real product, do not certify their declared sources, and do not assert that a declared source actually behaves as described. The v0.2.7 composed gateway evidence demo is a substrate-neutral local composition over a static JSONL fixture; it does not integrate with any real MCP gateway, SIEM, observability stack, policy engine, or GRC platform, does not execute any protected action, does not establish the gateway as a trust authority, does not sign the composed report, and does not constitute a relying-party acceptance record. The v0.2.8 relying-party acceptance record is a local hash-anchored artifact recording a fictional demo relying party's decision over verified v0.2.7 evidence; it does not certify the evidence, does not certify any system, does not sign the record, does not coordinate multiple relying parties, does not establish a new trust authority, and is not a Gold certificate, regulator approval, third-party audit, or legal acceptance instrument. The v0.2.9 revocation/challenge drill is a local hash-anchored review record over a v0.2.8 acceptance package; it does not query live revocation services, does not interact with any real challenge or dispute process, does not revoke acceptance, does not adjudicate challenges on the merits, does not alter the v0.2.7 evidence package or the v0.2.8 acceptance record, and is not a Gold certificate, regulator approval, third-party audit, or legal revocation instrument.
+Silver profile conformance is local relying-party verification, not certification of a live system. The v0.2.5 multi-agent trust-boundary demo is a local, deterministic re-packaging of v0.2.4 harness evidence; it does not execute live agents, does not invoke live actuators, does not parse natural-language prompts, does not detect prompt injection, and does not cross the Gold boundary. The v0.2.6 evidence source adapter descriptors are static declarations only; they do not integrate with any real product, do not certify their declared sources, and do not assert that a declared source actually behaves as described. The v0.2.7 composed gateway evidence demo is a substrate-neutral local composition over a static JSONL fixture; it does not integrate with any real MCP gateway, SIEM, observability stack, policy engine, or GRC platform, does not execute any protected action, does not establish the gateway as a trust authority, does not sign the composed report, and does not constitute a relying-party acceptance record. The v0.2.8 relying-party acceptance record is a local hash-anchored artifact recording a fictional demo relying party's decision over verified v0.2.7 evidence; it does not certify the evidence, does not certify any system, does not sign the record, does not coordinate multiple relying parties, does not establish a new trust authority, and is not a Gold certificate, regulator approval, third-party audit, or legal acceptance instrument. The v0.2.9 revocation/challenge drill is a local hash-anchored review record over a v0.2.8 acceptance package; it does not query live revocation services, does not interact with any real challenge or dispute process, does not revoke acceptance, does not adjudicate challenges on the merits, does not alter the v0.2.7 evidence package or the v0.2.8 acceptance record, and is not a Gold certificate, regulator approval, third-party audit, or legal revocation instrument. The v0.3.0 acceptance handoff package is a local, deterministic, hash-anchored composition over the already-verified v0.2.7 / v0.2.8 / v0.2.9 chain; it does not extend the substance of what the nested evidence asserts, does not sign the handoff, does not transfer reliance from the original v0.2.8 relying party to any downstream party, does not adjudicate any challenge or revocation signal, does not constitute Gold conformance or regulator/auditor approval, and the `recommended_handoff_posture` is descriptive only — it is not an approval, decision, or governance act.
 
 ---
 

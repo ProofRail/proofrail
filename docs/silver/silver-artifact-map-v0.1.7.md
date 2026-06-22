@@ -472,3 +472,41 @@ Bronze claim
   → relying-party acceptance policy + acceptance record + acceptance package manifest
   → relying-party review events + revocation/challenge drill report + drill manifest
 ```
+
+## v0.3.0 Update: Silver Acceptance Handoff
+
+ProofRail v0.3.0 is a composition release. It packages the completed v0.2.7 composed gateway evidence, v0.2.8 relying-party acceptance, and v0.2.9 revocation/challenge drill into a single portable, hash-anchored Silver acceptance handoff artifact. v0.3.0 introduces no new evidence content. It binds three already-verified Silver pipelines and lets the v0.3.0 verifier own and re-derive the cross-package binding end to end.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Acceptance Handoff Summary | v0.1.0 | Per-package summary recording included manifest hashes, record id, decision status, purpose, drill posture, derived handoff posture, and reuse warning | `schemas/silver-acceptance-handoff-summary-v0.1.0.md` |
+| Silver | Acceptance Handoff Manifest | v0.1.0 | Four-subject SHA-256 hash anchor with fixed top-level layout and chain-binding cross-references | `schemas/silver-acceptance-handoff-manifest-v0.1.0.md` |
+| Doc | Silver Acceptance Handoff | v0.3.0 | Release narrative document | `docs/silver/silver-acceptance-handoff-v0.3.0.md` |
+
+The runner (`tools/silver/build_silver_acceptance_handoff_v0_1_0.py`) subprocess-invokes the unchanged v0.2.7, v0.2.8, and v0.2.9 validators **without** `--evidence-package-root`, so v0.3.0 alone owns the four chain-binding cross-checks. It byte-copies the three nested package roots into fixed top-level directories (`composed-gateway-evidence/`, `acceptance-package/`, `revocation-challenge-drill/`), maps the nested v0.2.9 `recommended_local_posture` onto a minimum handoff posture rank, runs self-validation against the staging directory **before** the atomic move, and refuses with one of five runner-only codes (`composed_evidence_validation_failed`, `acceptance_package_validation_failed`, `drill_package_validation_failed`, `handoff_chain_binding_failed`, `self_validation_failed`) on any failure.
+
+The verifier (`tools/silver/verify_silver_acceptance_handoff_v0_1_0.py`) is hash-first, re-runs the unchanged nested validators as subprocesses, performs the same four v0.3.0-owned chain bindings, runs the record/purpose cross-checks, validates the closed-set posture rank, and runs a recursive overclaim guard over every summary string outside `scope_limitations` and `non_claims`. It resolves 17 stable failure reasons including `handoff_chain_binding_mismatch`, `handoff_posture_invalid`, `handoff_posture_downgrade`, and `handoff_overclaim`. The five runner-only refusal codes are deliberately distinct and never emitted by the verifier.
+
+A Silver acceptance handoff package is not a certificate, Gold conformance, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, adjudicated challenge, legally revoked acceptance, or production authorization. The `recommended_handoff_posture` is descriptive, not a governance act. v0.3.0 packages already-verified Silver evidence. It does not extend the substance of what that evidence asserts.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+  → multi-principal authority decision reports
+  → multi-agent harness transcript + run report + evidence manifest
+  → multi-agent trust-boundary demo package manifest + demo summary
+  → composed gateway evidence report + composed gateway evidence manifest
+  → relying-party acceptance policy + acceptance record + acceptance package manifest
+  → relying-party review events + revocation/challenge drill report + drill manifest
+  → Silver acceptance handoff summary + handoff manifest
+```
