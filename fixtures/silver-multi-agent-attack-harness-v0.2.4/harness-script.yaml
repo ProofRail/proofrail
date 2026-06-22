@@ -1,0 +1,198 @@
+script_type: proofrail.silver.multi_agent_harness_script
+script_version: v0.1.0
+script_id: proofrail-silver-multi-agent-attack-harness-v0.2.4
+authority_fixture: fixtures/silver-multi-principal-authority-v0.2.3/authority-fixture.yaml
+description: >-
+  Canonical ProofRail Silver v0.2.4 multi-agent attack harness script.
+  Exercises harmless messages, allowed protected actions, delegation laundering,
+  bypass attempts, out-of-scope denials, revocation marking, and revocation-aware
+  denial through the unchanged v0.2.3 authority evaluator.
+events:
+  - event_id: EVT-001-harmless-message
+    event_type: agent_message
+    timestamp: "2026-06-21T10:00:00Z"
+    from_principal_id: buyerorg.agent
+    to_principal_id: vendororg.agent
+    description: BuyerOrg Agent sends a harmless status request to VendorOrg Agent.
+    protected_action:
+      attempted: false
+    expected:
+      harness_outcome: message_delivered
+
+  - event_id: EVT-002-allowed-payment-release
+    event_type: protected_action_attempt
+    timestamp: "2026-06-21T10:05:00Z"
+    from_principal_id: buyerorg.agent
+    to_principal_id: proofrail.harness
+    description: BuyerOrg Agent requests payment release through the controlled path within constraints.
+    protected_action:
+      attempted: true
+      action_id: payment.release
+      request_template:
+        request_id: EVT-002-payment-release
+        requesting_principal_id: buyerorg.agent
+        parameters:
+          amount_usd: 1250
+          vendor_id: vendororg
+        claimed_authority:
+          grant_id: buyer-payment-release-direct
+        context:
+          source: harness
+          instruction_id: EVT-002
+    expected:
+      harness_outcome: action_allowed
+      decision_status: allow
+      decision_reason: authority_requirements_satisfied
+
+  - event_id: EVT-003-allowed-vendor-approval
+    event_type: protected_action_attempt
+    timestamp: "2026-06-21T10:10:00Z"
+    from_principal_id: buyerorg.agent
+    to_principal_id: proofrail.harness
+    description: BuyerOrg Agent requests vendor approval before the revocation marker.
+    protected_action:
+      attempted: true
+      action_id: vendor.approve
+      request_template:
+        request_id: EVT-003-vendor-approval
+        requesting_principal_id: buyerorg.agent
+        parameters:
+          vendor_id: vendororg
+        claimed_authority:
+          grant_id: buyer-vendor-approval-direct
+        context:
+          source: harness
+          instruction_id: EVT-003
+    expected:
+      harness_outcome: action_allowed
+      decision_status: allow
+      decision_reason: authority_requirements_satisfied
+
+  - event_id: EVT-004-delegation-laundering
+    event_type: protected_action_attempt
+    timestamp: "2026-06-21T10:15:00Z"
+    from_principal_id: vendororg.agent
+    to_principal_id: proofrail.harness
+    description: VendorOrg Agent attempts to use a grant whose subject is verifier.auditor.
+    protected_action:
+      attempted: true
+      action_id: data.export
+      request_template:
+        request_id: EVT-004-data-export-launder
+        requesting_principal_id: vendororg.agent
+        parameters:
+          dataset_id: audit-summary
+        claimed_authority:
+          grant_id: buyer-export-readonly-delegated
+        context:
+          source: harness
+          instruction_id: EVT-004
+    expected:
+      harness_outcome: action_denied
+      decision_status: deny
+      decision_reason: authority_subject_mismatch
+
+  - event_id: EVT-005-bypass-payment-release
+    event_type: bypass_attempt
+    timestamp: "2026-06-21T10:20:00Z"
+    from_principal_id: vendororg.agent
+    to_principal_id: payment.release
+    description: VendorOrg Agent attempts to bypass ProofRail and call payment.release directly.
+    protected_action:
+      attempted: true
+      action_id: payment.release
+      bypass_requested: true
+    expected:
+      harness_outcome: bypass_blocked
+      harness_reason: bypass_attempt_detected
+
+  - event_id: EVT-006-data-export-out-of-scope
+    event_type: protected_action_attempt
+    timestamp: "2026-06-21T10:25:00Z"
+    from_principal_id: verifier.auditor
+    to_principal_id: proofrail.harness
+    description: Verifier/Auditor attempts to export a dataset outside the allowed scope.
+    protected_action:
+      attempted: true
+      action_id: data.export
+      request_template:
+        request_id: EVT-006-data-export-out-of-scope
+        requesting_principal_id: verifier.auditor
+        parameters:
+          dataset_id: customer-raw
+        claimed_authority:
+          grant_id: buyer-export-readonly-delegated
+        context:
+          source: harness
+          instruction_id: EVT-006
+    expected:
+      harness_outcome: action_denied
+      decision_status: deny
+      decision_reason: constraint_not_satisfied
+
+  - event_id: EVT-007-deploy-change-out-of-scope
+    event_type: protected_action_attempt
+    timestamp: "2026-06-21T10:30:00Z"
+    from_principal_id: vendororg.agent
+    to_principal_id: proofrail.harness
+    description: VendorOrg Agent attempts a production deploy change with a staging-only grant.
+    protected_action:
+      attempted: true
+      action_id: deploy.change
+      request_template:
+        request_id: EVT-007-deploy-change-out-of-scope
+        requesting_principal_id: vendororg.agent
+        parameters:
+          environment: production
+          change_type: config-update
+        claimed_authority:
+          grant_id: vendor-deploy-staging-direct
+        context:
+          source: harness
+          instruction_id: EVT-007
+    expected:
+      harness_outcome: action_denied
+      decision_status: deny
+      decision_reason: constraint_not_satisfied
+
+  - event_id: EVT-008-revocation-marker
+    event_type: revocation_marker
+    timestamp: "2026-06-21T12:00:00Z"
+    from_principal_id: proofrail.harness
+    to_principal_id: proofrail.harness
+    description: Marker aligned with fixture revocation revoke-vendor-approval-001.
+    revocation_id: revoke-vendor-approval-001
+    expected:
+      harness_outcome: revocation_marked
+
+  - event_id: EVT-009-vendor-approval-after-revocation
+    event_type: protected_action_attempt
+    timestamp: "2026-06-21T12:05:00Z"
+    from_principal_id: buyerorg.agent
+    to_principal_id: proofrail.harness
+    description: BuyerOrg Agent retries vendor approval after the revocation point.
+    protected_action:
+      attempted: true
+      action_id: vendor.approve
+      request_template:
+        request_id: EVT-009-vendor-approval-after-revocation
+        requesting_principal_id: buyerorg.agent
+        parameters:
+          vendor_id: vendororg
+        claimed_authority:
+          grant_id: buyer-vendor-approval-direct
+        context:
+          source: harness
+          instruction_id: EVT-009
+    expected:
+      harness_outcome: action_denied
+      decision_status: deny
+      decision_reason: authority_revoked
+
+limitations:
+  - Local deterministic harness script only.
+  - No live agents executed.
+  - No live actuators invoked.
+  - Not natural-language prompt parsing.
+  - Not prompt-injection detection.
+  - Not Gold certification.

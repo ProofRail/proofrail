@@ -2,13 +2,13 @@
 
 Status: public documentation repository and capability demonstrations. Specifications, profiles, sanitized attestations, and examples are published here. Raw deployment evidence and security-sensitive operational details remain private.
 
-ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.3 multi-principal authority fixtures.
+ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence.
 
 As AI agents gain access to tools, APIs, workflows, other AI agents, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
 ProofRail defines that evidence layer.
 
-This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.2 adds detached verifier output attestations, making Silver verification outputs attributable and tamper-evident while preserving the boundary between Silver evidence-package reliance and Gold governed acceptance. v0.2.3 adds deterministic multi-principal authority fixtures, showing that protected actions can be evaluated against scoped, revocation-aware authority before any simulated actuator path is allowed.
+This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.2 adds detached verifier output attestations, making Silver verification outputs attributable and tamper-evident while preserving the boundary between Silver evidence-package reliance and Gold governed acceptance. v0.2.3 adds deterministic multi-principal authority fixtures, showing that protected actions can be evaluated against scoped, revocation-aware authority before any simulated actuator path is allowed. v0.2.4 adds a deterministic, scripted multi-principal agent attack harness that drives the unchanged v0.2.3 evaluator across a canonical attack scenario and produces hash-anchored local harness evidence.
 
 ## Current Proof Chain
 
@@ -45,6 +45,12 @@ Silver Profile Conformance Report v0.2.1
 
 Silver Verifier Output Attestation v0.1.0
   → detached, signed verifier output attribution
+
+Silver Multi-Principal Authority Fixture v0.1.0
+  → deterministic scoped, delegated, revocation-aware authority evaluation
+
+Silver Multi-Agent Harness Evidence Manifest v0.1.0
+  → SHA-256 manifest over a deterministic multi-principal agent attack harness run
 ```
 
 In practical terms, the repository now demonstrates:
@@ -107,6 +113,9 @@ This is still a demo-grade framework. It does not claim production certification
 | Silver | Multi-Principal Authority Fixture | v0.1.0 | Deterministic scoped authority evaluation |
 | Silver | Protected Action Request | v0.1.0 | Structured authority evaluation request |
 | Silver | Protected Action Decision Report | v0.1.0 | Authority evaluation decision artifact |
+| Silver | Multi-Agent Harness Script | v0.1.0 | Deterministic scripted multi-principal attack scenario |
+| Silver | Multi-Agent Harness Run Report | v0.1.0 | Structured harness run summary with per-event match results |
+| Silver | Multi-Agent Harness Evidence Manifest | v0.1.0 | SHA-256 manifest over harness output artifacts |
 
 Artifact schema versions and repository release versions intentionally differ. Repository releases advance when a new profile, demo, evidence chain, or conformance behavior becomes available; individual schemas advance only when that artifact changes.
 
@@ -131,9 +140,9 @@ The independent mode preserves the key Silver idea: a relying party can verify a
 
 ---
 
-## What ProofRail v0.2.3 Shows
+## What ProofRail v0.2.4 Shows
 
-ProofRail v0.2.3 shows that a protected actuator-control evidence package can be:
+ProofRail v0.2.4 shows that a protected actuator-control evidence package can be:
 
 ```text
 generated
@@ -146,13 +155,14 @@ generated
   → profile-validated for relying-party acceptance (with mandatory revocation)
   → verifier output attested (tamper-evident, attributable)
   → multi-principal authority evaluated (scoped, delegated, revocation-aware)
+  → exercised by a deterministic multi-principal agent attack harness that produces hash-anchored, non-executing harness evidence
 ```
 
 The main transition is:
 
 ```text
-Silver v0.2.3:
-  deterministic multi-principal authority fixtures (scoped, delegated, revocable)
+Silver v0.2.4:
+  deterministic multi-principal agent attack harness with hash-anchored evidence
 
 Next:
   stronger relying-party operating profile
@@ -167,7 +177,7 @@ Silver remains the evidence-package reliance layer. Gold begins only when the wo
 
 ## What ProofRail Does Not Claim
 
-ProofRail v0.2.3 does not claim:
+ProofRail v0.2.4 does not claim:
 
 - Gold certification;
 - third-party certification;

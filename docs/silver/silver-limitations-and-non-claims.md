@@ -247,6 +247,32 @@ Every decision report includes `execution.performed == false`, providing structu
 
 Silver v0.2.3 makes multi-principal authority executable as deterministic local fixtures. It does not make agents trustworthy or certify a deployment.
 
+## v0.2.4 Multi-Agent Attack Harness Evidence
+
+Silver v0.2.4 adds a deterministic, scripted multi-principal agent attack harness that consumes the v0.2.3 fixture and the unchanged authority evaluator and produces local harness evidence: a transcript, per-event protected action requests and decision reports, a structured run report, and a SHA-256 evidence manifest.
+
+The harness is:
+
+- **deterministic**: scripted events, ordered execution, fixed inputs;
+- **multi-principal**: events drive multiple principals (buyer agent, vendor agent, verifier auditor);
+- **non-executing**: protected actions are never performed; the run report and every decision report carry structural execution proof;
+- **evidence-only**: outputs are local, hash-anchored, and verifiable by an independent verifier tool.
+
+The harness is **not**:
+
+- a live multi-agent runtime;
+- a prompt-injection detector;
+- a model behavior evaluation;
+- a network-driven actuator harness;
+- a Gold conformance claim;
+- a signed evidence artifact (the manifest is unsigned local integrity evidence).
+
+Bypass events are harness-level only: they record `bypass_blocked` with reason `bypass_attempt_detected`, without invoking the authority evaluator and without producing a request or decision report. Revocation marker events do not mutate the fixture; subsequent events' decision times drive revocation semantics through the unchanged evaluator.
+
+The evidence verifier rejects subject paths containing `..`, recomputes SHA-256 of every subject, and confirms the run report and every decision report carry `execution.protected_actions_performed == false` / `execution.performed == false`.
+
+Silver v0.2.4 makes a multi-principal attack scenario reproducible as local evidence. It does not constitute red-teaming, attestation of safety, or certification of any deployment.
+
 ---
 
 ## Summary

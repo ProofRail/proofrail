@@ -125,6 +125,20 @@ validate-silver-authority-fixtures-v0-2-3:
 verify-silver-authority-v0-2-3:
 	bash tests/test_silver_multi_principal_authority_v0_2_3.sh
 
+.PHONY: run-silver-multi-agent-harness-v0-2-4
+run-silver-multi-agent-harness-v0-2-4:
+	python3 tools/silver/run_multi_agent_attack_harness_v0_1_0.py \
+	  --script fixtures/silver-multi-agent-attack-harness-v0.2.4/harness-script.yaml \
+	  --authority-fixture fixtures/silver-multi-principal-authority-v0.2.3/authority-fixture.yaml \
+	  --output-dir /tmp/proofrail-silver-multi-agent-harness-v0.2.4 \
+	  --force
+	python3 tools/silver/verify_multi_agent_harness_evidence_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-multi-agent-harness-v0.2.4/harness-evidence-manifest.json
+
+.PHONY: verify-silver-multi-agent-harness-v0-2-4
+verify-silver-multi-agent-harness-v0-2-4:
+	bash tests/test_silver_multi_agent_attack_harness_v0_2_4.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -134,3 +148,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-profile-examples-v0-2-1
 	$(MAKE) verify-silver-attestation-v0-2-2
 	$(MAKE) verify-silver-authority-v0-2-3
+	$(MAKE) verify-silver-multi-agent-harness-v0-2-4

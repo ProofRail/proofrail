@@ -34,6 +34,7 @@ bash tests/test_silver_profile_v0_2_1.sh
 bash tests/test_silver_profile_examples_v0_2_1.sh
 bash tests/test_silver_verifier_output_attestation_v0_1_0.sh
 bash tests/test_silver_multi_principal_authority_v0_2_3.sh
+bash tests/test_silver_multi_agent_attack_harness_v0_2_4.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -96,6 +97,15 @@ make validate-silver-authority-fixtures-v0-2-3
 make verify-silver-authority-v0-2-3
 bash tests/test_silver_multi_principal_authority_v0_2_3.sh
 
+# Silver v0.2.4 multi-agent attack harness
+make run-silver-multi-agent-harness-v0-2-4
+make verify-silver-multi-agent-harness-v0-2-4
+bash tests/test_silver_multi_agent_attack_harness_v0_2_4.sh
+
+# Silver multi-agent harness tools standalone
+python3 tools/silver/run_multi_agent_attack_harness_v0_1_0.py --script <harness-script.yaml> --authority-fixture <authority-fixture.yaml> --output-dir <output-dir> [--force]
+python3 tools/silver/verify_multi_agent_harness_evidence_v0_1_0.py --manifest <harness-evidence-manifest.json>
+
 # Silver authority tools standalone
 python3 tools/silver/validate_multi_principal_authority_fixture_v0_1_0.py --fixture <fixture.yaml>
 python3 tools/silver/evaluate_multi_principal_authority_v0_1_0.py --fixture <fixture.yaml> --request <request.json> --decision-time <ISO-8601> --output <report.json>
@@ -154,6 +164,8 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 - `verify_verifier_output_attestation_v0_1_0.py` — Verifier output attestation verifier (trust policy + binding + signature + subject hashes + metadata cross-checks); rejects `..` in subject paths
 - `validate_multi_principal_authority_fixture_v0_1_0.py` — Multi-principal authority fixture structural validator (principals, grants, delegation rules, constraints, revocations)
 - `evaluate_multi_principal_authority_v0_1_0.py` — Protected action authority evaluator (10-check short-circuit evaluation producing decision reports; never executes actions)
+- `run_multi_agent_attack_harness_v0_1_0.py` — Deterministic multi-principal agent attack harness runner (consumes harness script + v0.2.3 fixture; routes protected-action attempts through the existing `evaluate_request` callable; handles bypass and revocation events at harness level; emits transcript, requests, decision reports, run report, evidence manifest)
+- `verify_multi_agent_harness_evidence_v0_1_0.py` — Harness evidence manifest verifier (manifest type/version, path traversal rejection, SHA-256 recomputation, run report and decision report semantic checks)
 
 ### Independent Silver Verifier Demo: `demos/silver-demo-002-independent-verifier/`
 

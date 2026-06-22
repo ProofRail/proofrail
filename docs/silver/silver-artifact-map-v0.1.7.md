@@ -265,3 +265,40 @@ Bronze claim
 ```
 
 The authority evaluator never executes a protected action. Every decision report includes `execution.performed == false` as structural proof.
+
+## v0.2.4 Update: Multi-Agent Attack Harness Evidence
+
+Silver v0.2.4 adds a deterministic, scripted multi-principal agent attack harness that drives the unchanged v0.2.3 authority evaluator across a canonical attack scenario and produces local evidence.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Multi-Agent Harness Script | v0.1.0 | Scripted multi-principal attack scenario (events, expected outcomes) | `schemas/silver-multi-agent-harness-script-v0.1.0.md` |
+| Silver | Multi-Agent Harness Run Report | v0.1.0 | Structured run summary with per-event match results | `schemas/silver-multi-agent-harness-run-report-v0.1.0.md` |
+| Silver | Multi-Agent Harness Evidence Manifest | v0.1.0 | SHA-256 manifest over the harness output artifacts | `schemas/silver-multi-agent-harness-evidence-manifest-v0.1.0.md` |
+
+The harness runner:
+
+- Consumes the v0.2.3 fixture and the unchanged authority evaluator (`evaluate_request` callable; no v0.2.3 refactor).
+- Routes `protected_action_attempt` events through the evaluator, writing requests and decision reports.
+- Records `bypass_attempt` events at harness level only — no evaluator call, no request file, no decision report.
+- Records `revocation_marker` events without mutating the fixture; the decision time on subsequent events drives revocation semantics.
+- Emits a transcript, derived `expected-outcomes.json`, a run report with `execution.protected_actions_performed == false`, and an evidence manifest with deterministic subject ordering.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+  → multi-principal authority decision reports
+  → multi-agent harness transcript + run report + evidence manifest
+```
+
+The harness never executes a protected action. Both the run report and every decision report carry structural execution proof (`execution.protected_actions_performed == false` and `execution.performed == false` respectively).
