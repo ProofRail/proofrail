@@ -13,6 +13,9 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Multi-Principal Authority Fixture v0.1.0
 - Silver Protected Action Request v0.1.0
 - Silver Protected Action Decision Report v0.1.0
+- Silver Multi-Agent Harness Script v0.1.0
+- Silver Multi-Agent Harness Run Report v0.1.0
+- Silver Multi-Agent Harness Evidence Manifest v0.1.0
 
 ## Demo Issuer Generator
 
@@ -490,6 +493,66 @@ The evaluator performs 10 ordered checks (short-circuit on first deny):
 Every decision report includes `"execution": { "performed": false, "reason": "decision_report_only" }` confirming no protected action was executed.
 
 Exit codes: 0 (decision report produced — both allow and deny), 1 (evaluation failure), 2 (usage/input error).
+
+## Multi-Agent Attack Harness Runner
+
+Runs a deterministic, scripted multi-principal agent attack harness against the v0.2.3 authority fixture. Produces a transcript, per-event protected action requests and decision reports, a structured run report, and a SHA-256 evidence manifest. No protected actions are executed.
+
+```bash
+python3 tools/silver/run_multi_agent_attack_harness_v0_1_0.py \
+  --script fixtures/silver-multi-agent-attack-harness-v0.2.4/harness-script.yaml \
+  --authority-fixture fixtures/silver-multi-principal-authority-v0.2.3/authority-fixture.yaml \
+  --output-dir /tmp/proofrail-silver-multi-agent-harness-v0.2.4 \
+  --force
+```
+
+The runner:
+
+1. Validates harness script structure (type, version, non-empty unique events).
+2. Copies the script and authority fixture into the output directory before hashing (no `..` in manifest paths).
+3. For each event:
+   - `agent_message` — recorded in transcript only (no evaluator call).
+   - `protected_action_attempt` — renders a Silver Protected Action Request v0.1.0, evaluates it against the v0.2.3 fixture via the existing `evaluate_request` callable, writes the request and decision report, records the outcome in the transcript.
+   - `bypass_attempt` — recorded in transcript as `bypass_blocked` with reason `bypass_attempt_detected`. No evaluator call, no request file, no decision report.
+   - `revocation_marker` — recorded in transcript as `revocation_marked`. The fixture file is not mutated; the decision time on the next event drives revocation semantics.
+4. Compares actual outcomes to expected outcomes from each event's `expected:` block.
+5. Emits `expected-outcomes.json` as a derived runtime artifact (the canonical oracle is the script's `expected:` blocks).
+6. Writes `harness-run-report.json` with `execution.protected_actions_performed: false`.
+7. Writes `harness-evidence-manifest.json` with deterministic subject ordering: script → fixture → expected outcomes → transcript → protected action requests (sorted) → decision reports (sorted) → run report.
+
+Exit codes: 0 (all events matched expected outcomes), 1 (one or more mismatches), 2 (usage/input error).
+
+## Multi-Agent Harness Evidence Verifier
+
+Verifies a multi-agent harness evidence manifest by parsing the manifest, rejecting subject paths containing `..`, recomputing SHA-256 of every subject, and validating the run report and each decision report.
+
+```bash
+python3 tools/silver/verify_multi_agent_harness_evidence_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-multi-agent-harness-v0.2.4/harness-evidence-manifest.json
+```
+
+The verifier checks:
+
+1. Manifest type, version, hash algorithm, non-empty subjects, non-empty limitations.
+2. No subject path contains `..` and no subject path is absolute.
+3. Every subject file exists.
+4. Recomputed SHA-256 matches the recorded hash for every subject.
+5. Run report subject: `report_type`, `report_version`, `summary.status == "pass"`, `execution.protected_actions_performed is false`.
+6. Each decision report subject: `report_type`, `execution.performed is false`.
+
+### Harness Evidence Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_evidence_manifest` | Missing required fields or wrong type/version |
+| `subject_path_traversal` | Subject path contains `..` or is absolute |
+| `subject_file_missing` | Subject file not found |
+| `subject_hash_mismatch` | Recomputed SHA-256 differs from recorded hash |
+| `harness_run_failed` | Run report version, type, or summary status invalid |
+| `execution_violation` | Run or decision report indicates a protected action was performed |
+| `decision_report_invalid` | Decision report version/type invalid or unparseable |
+
+Exit codes: 0 (evidence valid), 1 (evidence invalid), 2 (usage/input error).
 
 ## Security Notes
 
