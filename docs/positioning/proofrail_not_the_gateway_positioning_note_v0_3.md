@@ -1,6 +1,6 @@
 # ProofRail™ Is Not The Gateway
 
-Draft v0.2 - 2026-06-21
+v0.3 - 2026-06-21
 
 ## Short Thesis
 
