@@ -16,6 +16,8 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Multi-Agent Harness Script v0.1.0
 - Silver Multi-Agent Harness Run Report v0.1.0
 - Silver Multi-Agent Harness Evidence Manifest v0.1.0
+- Silver Multi-Agent Demo Package Manifest v0.1.0
+- Silver Multi-Agent Demo Summary v0.1.0
 
 ## Demo Issuer Generator
 
@@ -553,6 +555,77 @@ The verifier checks:
 | `decision_report_invalid` | Decision report version/type invalid or unparseable |
 
 Exit codes: 0 (evidence valid), 1 (evidence invalid), 2 (usage/input error).
+
+## Multi-Agent Trust-Boundary Demo Packager (v0.2.5)
+
+Packages the v0.2.4 multi-agent attack harness evidence into a local Silver multi-agent trust-boundary demo. The packager invokes the unchanged v0.2.4 harness runner and verifier as subprocesses, derives eight required claims from the nested run report and transcript, and emits a SHA-256 package manifest plus a demo summary.
+
+```bash
+python3 tools/silver/package_multi_agent_trust_boundary_demo_v0_1_0.py \
+  --demo-root demos/silver-demo-003-multi-agent-trust-boundary \
+  --harness-script fixtures/silver-multi-agent-attack-harness-v0.2.4/harness-script.yaml \
+  --authority-fixture fixtures/silver-multi-principal-authority-v0.2.3/authority-fixture.yaml \
+  --output-dir /tmp/proofrail-silver-multi-agent-demo-v0.2.5 \
+  --force
+```
+
+The packager:
+
+1. Invokes the v0.2.4 harness runner against the v0.2.4 harness script and v0.2.3 fixture.
+2. Invokes the v0.2.4 evidence verifier on the nested manifest.
+3. Copies the committed demo `README.md` and `demo-walkthrough.md` into the package root.
+4. Derives the eight required claims deterministically from the run report and transcript:
+   - `harmless_messages_proceed`
+   - `protected_actions_require_scoped_authority`
+   - `unauthorized_delegation_fails`
+   - `bypass_attempts_blocked`
+   - `revoked_authority_fails`
+   - `out_of_scope_actions_fail`
+   - `evidence_is_hash_verifiable`
+   - `no_protected_actions_executed`
+5. Writes `demo-summary.json` (Silver Multi-Agent Demo Summary v0.1.0).
+6. Writes `demo-package-manifest.json` (Silver Multi-Agent Demo Package Manifest v0.1.0) with four subjects in deterministic order: `demo_readme` → `demo_walkthrough` → `demo_summary` → `nested_harness_evidence_manifest`.
+
+The `--generated-at` flag (ISO-8601) makes the manifest deterministic across runs. The `--force` flag overwrites an existing output directory.
+
+Exit codes: 0 (package valid), 1 (packaging failure), 2 (usage/input error).
+
+## Multi-Agent Trust-Boundary Demo Verifier (v0.2.5)
+
+Verifies a Silver multi-agent trust-boundary demo package. The verifier parses the package manifest, recomputes SHA-256 for every package subject, validates the demo summary structure, cross-checks every claim against the nested run report and decision reports, and delegates nested evidence verification to the unchanged v0.2.4 verifier.
+
+```bash
+python3 tools/silver/verify_multi_agent_trust_boundary_demo_v0_1_0.py \
+  --package-manifest /tmp/proofrail-silver-multi-agent-demo-v0.2.5/demo-package-manifest.json
+```
+
+Verification ordering (hash-first, then parse, then semantic cross-check, then nested):
+
+1. Manifest structure (type, version, hash algorithm, subjects, limitations).
+2. Path safety (no `..`, no absolute paths).
+3. SHA-256 recomputation for every package subject.
+4. Demo summary structural validation against Silver Multi-Agent Demo Summary v0.1.0.
+5. Claim cross-checks against nested run report and decision reports.
+6. Nested v0.2.4 evidence verification via subprocess.
+
+### Demo Package Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_demo_package_manifest` | Missing required fields, wrong type/version, or malformed manifest JSON |
+| `demo_subject_path_traversal` | Subject path contains `..` or is absolute |
+| `demo_subject_file_missing` | Subject file not found |
+| `demo_subject_hash_mismatch` | Recomputed SHA-256 differs from recorded hash |
+| `invalid_demo_summary` | Demo summary structure invalid or malformed JSON |
+| `demo_execution_violation` | Demo summary indicates a protected action was performed |
+| `demo_claim_missing` | One or more of the eight required claim IDs absent |
+| `demo_claim_failed` | A required claim status is not `pass` |
+| `demo_evidence_ref_invalid` | A claim's evidence reference does not satisfy the claim's derivation rule against nested evidence, or contains `..`/absolute path |
+| `nested_harness_evidence_invalid` | Nested v0.2.4 verifier reported a failure (nested reason included as context, top-level reason stable) |
+
+JSON parse errors on `demo-summary.json` are caught and surfaced as `invalid_demo_summary` — no Python traceback leaks. Nested verifier failures are surfaced as the stable top-level reason `nested_harness_evidence_invalid` with the underlying nested context included as a detail string (e.g., `subject_hash_mismatch`).
+
+Exit codes: 0 (package valid), 1 (package invalid), 2 (usage/input error).
 
 ## Security Notes
 

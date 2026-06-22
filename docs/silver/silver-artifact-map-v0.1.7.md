@@ -302,3 +302,42 @@ Bronze claim
 ```
 
 The harness never executes a protected action. Both the run report and every decision report carry structural execution proof (`execution.protected_actions_performed == false` and `execution.performed == false` respectively).
+
+## v0.2.5 Update: Multi-Agent Trust-Boundary Demo + First Gold Boundary Doc
+
+Silver v0.2.5 packages the v0.2.4 harness evidence into a local multi-agent trust-boundary demo with deterministically derived claims and the first explicit Gold boundary documentation.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Multi-Agent Demo Package Manifest | v0.1.0 | SHA-256 manifest packaging v0.2.4 harness evidence into a local demo | `schemas/silver-multi-agent-demo-package-manifest-v0.1.0.md` |
+| Silver | Multi-Agent Demo Summary | v0.1.0 | Eight deterministically derived claims over the packaged harness evidence | `schemas/silver-multi-agent-demo-summary-v0.1.0.md` |
+| Doc | Silver Multi-Agent Trust-Boundary Demo | v0.2.5 | Demo narrative document | `docs/silver/silver-multi-agent-trust-boundary-demo-v0.2.5.md` |
+| Doc | Gold Boundary | v0.2.5 | First explicit Gold boundary documentation (text-only; no Gold schema/validator/certificate) | `docs/gold/gold-boundary-v0.2.5.md` |
+
+The packager:
+
+- Invokes the v0.2.4 harness runner and evidence verifier as subprocesses (no v0.2.4 refactor).
+- Derives eight required claims (`harmless_messages_proceed`, `protected_actions_require_scoped_authority`, `unauthorized_delegation_fails`, `bypass_attempts_blocked`, `revoked_authority_fails`, `out_of_scope_actions_fail`, `evidence_is_hash_verifiable`, `no_protected_actions_executed`) from the nested run report and transcript.
+- Writes `demo-summary.json` and `demo-package-manifest.json` with four subjects in deterministic order.
+
+The verifier recomputes SHA-256 for every package subject, validates the demo summary, cross-checks every claim against the nested run report and decision reports, and delegates nested evidence verification to the unchanged v0.2.4 verifier. Nested verifier failures are surfaced as the stable top-level reason `nested_harness_evidence_invalid`.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+  → multi-principal authority decision reports
+  → multi-agent harness transcript + run report + evidence manifest
+  → multi-agent trust-boundary demo package manifest + demo summary
+```
+
+v0.2.5 names the Gold boundary. It does not cross it. There is no Gold schema, validator, or certificate in this release. See `docs/gold/gold-boundary-v0.2.5.md`.

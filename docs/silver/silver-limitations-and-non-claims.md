@@ -273,6 +273,38 @@ The evidence verifier rejects subject paths containing `..`, recomputes SHA-256 
 
 Silver v0.2.4 makes a multi-principal attack scenario reproducible as local evidence. It does not constitute red-teaming, attestation of safety, or certification of any deployment.
 
+## v0.2.5 Multi-Agent Trust-Boundary Demo
+
+Silver v0.2.5 packages the v0.2.4 harness evidence into a local multi-agent trust-boundary demo with eight deterministically derived claims, a hash-anchored package manifest, and the first explicit Gold boundary documentation.
+
+The v0.2.5 demo is:
+
+- **a re-packaging of v0.2.4 evidence**: the packager invokes the unchanged v0.2.4 harness runner and verifier as subprocesses; no v0.2.3 or v0.2.4 semantics are mutated;
+- **deterministic**: claims are derived from the v0.2.4 run report and transcript by fixed rules; the package manifest hashes four subjects in fixed order;
+- **hash-anchored**: every package subject is SHA-256-checksummed, and the nested v0.2.4 manifest is re-verified by the unchanged v0.2.4 verifier;
+- **non-executing**: the eighth required claim `no_protected_actions_executed` is structurally anchored to `harness-run-report.json` with `execution.protected_actions_performed == false`;
+- **stable-failure-reasoned**: ten stable top-level failure reasons cover the verifier surface, including `nested_harness_evidence_invalid` for any nested v0.2.4 failure.
+
+The v0.2.5 demo is **not**:
+
+- a live multi-agent system;
+- a live actuator harness;
+- a natural-language prompt parser;
+- a prompt-injection detector;
+- a signed evidence artifact (the package manifest is unsigned local integrity evidence);
+- a Gold certification, accreditation, regulator approval, or third-party audit;
+- a re-implementation of v0.2.4 — it delegates to the unchanged v0.2.4 verifier.
+
+### First Explicit Gold Boundary
+
+v0.2.5 publishes the first explicit Gold boundary documentation: `docs/gold/gold-boundary-v0.2.5.md`.
+
+The key claim:
+
+> v0.2.5 names the Gold boundary. It does not cross it.
+
+There is no Gold schema, no Gold validator, no Gold certificate, no governing body, no certification process, and no governed-acceptance workflow in v0.2.5. The Gold boundary document exists so that later releases can address Gold explicitly rather than by implication.
+
 ---
 
 ## Summary

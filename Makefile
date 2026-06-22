@@ -139,6 +139,21 @@ run-silver-multi-agent-harness-v0-2-4:
 verify-silver-multi-agent-harness-v0-2-4:
 	bash tests/test_silver_multi_agent_attack_harness_v0_2_4.sh
 
+.PHONY: run-silver-multi-agent-demo-v0-2-5
+run-silver-multi-agent-demo-v0-2-5:
+	python3 tools/silver/package_multi_agent_trust_boundary_demo_v0_1_0.py \
+	  --demo-root demos/silver-demo-003-multi-agent-trust-boundary \
+	  --harness-script fixtures/silver-multi-agent-attack-harness-v0.2.4/harness-script.yaml \
+	  --authority-fixture fixtures/silver-multi-principal-authority-v0.2.3/authority-fixture.yaml \
+	  --output-dir /tmp/proofrail-silver-multi-agent-demo-v0.2.5 \
+	  --force
+	python3 tools/silver/verify_multi_agent_trust_boundary_demo_v0_1_0.py \
+	  --package-manifest /tmp/proofrail-silver-multi-agent-demo-v0.2.5/demo-package-manifest.json
+
+.PHONY: verify-silver-multi-agent-demo-v0-2-5
+verify-silver-multi-agent-demo-v0-2-5:
+	bash tests/test_silver_multi_agent_trust_boundary_demo_v0_2_5.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -149,3 +164,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-attestation-v0-2-2
 	$(MAKE) verify-silver-authority-v0-2-3
 	$(MAKE) verify-silver-multi-agent-harness-v0-2-4
+	$(MAKE) verify-silver-multi-agent-demo-v0-2-5

@@ -2,13 +2,13 @@
 
 Status: public documentation repository and capability demonstrations. Specifications, profiles, sanitized attestations, and examples are published here. Raw deployment evidence and security-sensitive operational details remain private.
 
-ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence.
+ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence and Silver v0.2.5 multi-agent trust-boundary demo packaging plus the first Gold boundary documentation.
 
 As AI agents gain access to tools, APIs, workflows, other AI agents, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
 ProofRail defines that evidence layer.
 
-This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.2 adds detached verifier output attestations, making Silver verification outputs attributable and tamper-evident while preserving the boundary between Silver evidence-package reliance and Gold governed acceptance. v0.2.3 adds deterministic multi-principal authority fixtures, showing that protected actions can be evaluated against scoped, revocation-aware authority before any simulated actuator path is allowed. v0.2.4 adds a deterministic, scripted multi-principal agent attack harness that drives the unchanged v0.2.3 evaluator across a canonical attack scenario and produces hash-anchored local harness evidence.
+This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.2 adds detached verifier output attestations, making Silver verification outputs attributable and tamper-evident while preserving the boundary between Silver evidence-package reliance and Gold governed acceptance. v0.2.3 adds deterministic multi-principal authority fixtures, showing that protected actions can be evaluated against scoped, revocation-aware authority before any simulated actuator path is allowed. v0.2.4 adds a deterministic, scripted multi-principal agent attack harness that drives the unchanged v0.2.3 evaluator across a canonical attack scenario and produces hash-anchored local harness evidence. v0.2.5 packages that harness evidence into a local multi-agent trust-boundary demo with eight deterministically derived claims, hash-anchored package manifest, and the first explicit Gold boundary documentation. v0.2.5 names the Gold boundary. It does not cross it.
 
 ## Current Proof Chain
 
@@ -51,6 +51,12 @@ Silver Multi-Principal Authority Fixture v0.1.0
 
 Silver Multi-Agent Harness Evidence Manifest v0.1.0
   → SHA-256 manifest over a deterministic multi-principal agent attack harness run
+
+Silver Multi-Agent Demo Package Manifest v0.1.0
+  → SHA-256 manifest packaging the v0.2.4 harness evidence into a local demo
+
+Silver Multi-Agent Demo Summary v0.1.0
+  → eight deterministically derived claims over the packaged harness evidence
 ```
 
 In practical terms, the repository now demonstrates:
@@ -116,6 +122,8 @@ This is still a demo-grade framework. It does not claim production certification
 | Silver | Multi-Agent Harness Script | v0.1.0 | Deterministic scripted multi-principal attack scenario |
 | Silver | Multi-Agent Harness Run Report | v0.1.0 | Structured harness run summary with per-event match results |
 | Silver | Multi-Agent Harness Evidence Manifest | v0.1.0 | SHA-256 manifest over harness output artifacts |
+| Silver | Multi-Agent Demo Package Manifest | v0.1.0 | SHA-256 manifest packaging the v0.2.4 harness evidence into a local demo |
+| Silver | Multi-Agent Demo Summary | v0.1.0 | Eight deterministically derived claims over the packaged harness evidence |
 
 Artifact schema versions and repository release versions intentionally differ. Repository releases advance when a new profile, demo, evidence chain, or conformance behavior becomes available; individual schemas advance only when that artifact changes.
 
@@ -140,9 +148,9 @@ The independent mode preserves the key Silver idea: a relying party can verify a
 
 ---
 
-## What ProofRail v0.2.4 Shows
+## What ProofRail v0.2.5 Shows
 
-ProofRail v0.2.4 shows that a protected actuator-control evidence package can be:
+ProofRail v0.2.5 shows that a protected actuator-control evidence package can be:
 
 ```text
 generated
@@ -156,13 +164,18 @@ generated
   → verifier output attested (tamper-evident, attributable)
   → multi-principal authority evaluated (scoped, delegated, revocation-aware)
   → exercised by a deterministic multi-principal agent attack harness that produces hash-anchored, non-executing harness evidence
+  → packaged as a local multi-agent trust-boundary demo whose claims are deterministically derived from the harness evidence and whose package manifest is hash-verifiable end to end
 ```
+
+v0.2.5 also publishes the first explicit Gold boundary doc ([`docs/gold/gold-boundary-v0.2.5.md`](docs/gold/gold-boundary-v0.2.5.md)). It names — but does not introduce — Gold. There is no Gold schema, validator, or certificate in this release.
 
 The main transition is:
 
 ```text
-Silver v0.2.4:
-  deterministic multi-principal agent attack harness with hash-anchored evidence
+Silver v0.2.5:
+  multi-agent trust-boundary demo packaged from v0.2.4 harness evidence,
+  with hash-verifiable package manifest, deterministically derived claims,
+  and the first explicit Gold boundary documentation
 
 Next:
   stronger relying-party operating profile
@@ -171,13 +184,20 @@ Later:
   Gold governed acceptance / certification layer
 ```
 
-Silver remains the evidence-package reliance layer. Gold begins only when the work shifts from verifier conformance to governed institutional acceptance, review, challenge, and certification workflows.
+Silver remains the evidence-package reliance layer. Gold begins only when the work shifts from verifier conformance to governed institutional acceptance, review, challenge, and certification workflows. v0.2.5 does not begin that work; it names the boundary so later releases can address it explicitly.
+
+Run and verify the v0.2.5 demo locally:
+
+```bash
+make run-silver-multi-agent-demo-v0-2-5
+make verify-silver-multi-agent-demo-v0-2-5
+```
 
 ---
 
 ## What ProofRail Does Not Claim
 
-ProofRail v0.2.4 does not claim:
+ProofRail v0.2.5 does not claim:
 
 - Gold certification;
 - third-party certification;
@@ -187,7 +207,7 @@ ProofRail v0.2.4 does not claim:
 - audit opinion;
 - public accreditation.
 
-Silver profile conformance is local relying-party verification, not certification of a live system.
+Silver profile conformance is local relying-party verification, not certification of a live system. The v0.2.5 multi-agent trust-boundary demo is a local, deterministic re-packaging of v0.2.4 harness evidence; it does not execute live agents, does not invoke live actuators, does not parse natural-language prompts, does not detect prompt injection, and does not cross the Gold boundary.
 
 ---
 
@@ -212,11 +232,13 @@ Raw deployment evidence, credentials, private topology, and security-sensitive o
 
 ## Start Here
 
-1. [Silver Relying-Party Profile v0.2.1](https://github.com/ProofRail/proofrail/blob/main/profiles/silver/SILVER_PROFILE_v0.2.1.md)
-2. [Silver profile conformance report schema v0.2.1](https://github.com/ProofRail/proofrail/blob/main/schemas/silver-profile-conformance-report-v0.2.1.md)
-3. [Silver verification tools README](https://github.com/ProofRail/proofrail/blob/main/tools/silver/README.md)
-4. [Independent Silver verifier demo](https://github.com/ProofRail/proofrail/tree/main/demos/silver-demo-002-independent-verifier)
-5. [Evidence walkthrough](https://github.com/ProofRail/proofrail/blob/main/docs/walkthroughs/composed-bronze-demo-001b-evidence-walkthrough.md)
-6. [Bronze demo folders](https://github.com/ProofRail/proofrail/tree/main/demos/composed-bronze-demo-001)
-7. [ProofRail Bronze claim schema v0.1.2](https://github.com/ProofRail/proofrail/blob/main/schemas/bronze-claim-schema-v0.1.2.md)
-8. [Bronze claim tools README](https://github.com/ProofRail/proofrail/blob/main/tools/claims/README.md)
+1. [Silver Multi-Agent Trust-Boundary Demo v0.2.5](docs/silver/silver-multi-agent-trust-boundary-demo-v0.2.5.md)
+2. [Gold Boundary v0.2.5](docs/gold/gold-boundary-v0.2.5.md)
+3. [Silver Relying-Party Profile v0.2.1](https://github.com/ProofRail/proofrail/blob/main/profiles/silver/SILVER_PROFILE_v0.2.1.md)
+4. [Silver profile conformance report schema v0.2.1](https://github.com/ProofRail/proofrail/blob/main/schemas/silver-profile-conformance-report-v0.2.1.md)
+5. [Silver verification tools README](https://github.com/ProofRail/proofrail/blob/main/tools/silver/README.md)
+6. [Independent Silver verifier demo](https://github.com/ProofRail/proofrail/tree/main/demos/silver-demo-002-independent-verifier)
+7. [Evidence walkthrough](https://github.com/ProofRail/proofrail/blob/main/docs/walkthroughs/composed-bronze-demo-001b-evidence-walkthrough.md)
+8. [Bronze demo folders](https://github.com/ProofRail/proofrail/tree/main/demos/composed-bronze-demo-001)
+9. [ProofRail Bronze claim schema v0.1.2](https://github.com/ProofRail/proofrail/blob/main/schemas/bronze-claim-schema-v0.1.2.md)
+10. [Bronze claim tools README](https://github.com/ProofRail/proofrail/blob/main/tools/claims/README.md)

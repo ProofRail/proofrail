@@ -35,6 +35,7 @@ bash tests/test_silver_profile_examples_v0_2_1.sh
 bash tests/test_silver_verifier_output_attestation_v0_1_0.sh
 bash tests/test_silver_multi_principal_authority_v0_2_3.sh
 bash tests/test_silver_multi_agent_attack_harness_v0_2_4.sh
+bash tests/test_silver_multi_agent_trust_boundary_demo_v0_2_5.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -102,9 +103,18 @@ make run-silver-multi-agent-harness-v0-2-4
 make verify-silver-multi-agent-harness-v0-2-4
 bash tests/test_silver_multi_agent_attack_harness_v0_2_4.sh
 
+# Silver v0.2.5 multi-agent trust-boundary demo package
+make run-silver-multi-agent-demo-v0-2-5
+make verify-silver-multi-agent-demo-v0-2-5
+bash tests/test_silver_multi_agent_trust_boundary_demo_v0_2_5.sh
+
 # Silver multi-agent harness tools standalone
 python3 tools/silver/run_multi_agent_attack_harness_v0_1_0.py --script <harness-script.yaml> --authority-fixture <authority-fixture.yaml> --output-dir <output-dir> [--force]
 python3 tools/silver/verify_multi_agent_harness_evidence_v0_1_0.py --manifest <harness-evidence-manifest.json>
+
+# Silver v0.2.5 multi-agent trust-boundary demo tools standalone
+python3 tools/silver/package_multi_agent_trust_boundary_demo_v0_1_0.py --demo-root <demo-dir> --harness-script <harness-script.yaml> --authority-fixture <authority-fixture.yaml> --output-dir <output-dir> [--generated-at <ISO-8601>] [--force]
+python3 tools/silver/verify_multi_agent_trust_boundary_demo_v0_1_0.py --package-manifest <demo-package-manifest.json>
 
 # Silver authority tools standalone
 python3 tools/silver/validate_multi_principal_authority_fixture_v0_1_0.py --fixture <fixture.yaml>
@@ -166,6 +176,12 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 - `evaluate_multi_principal_authority_v0_1_0.py` — Protected action authority evaluator (10-check short-circuit evaluation producing decision reports; never executes actions)
 - `run_multi_agent_attack_harness_v0_1_0.py` — Deterministic multi-principal agent attack harness runner (consumes harness script + v0.2.3 fixture; routes protected-action attempts through the existing `evaluate_request` callable; handles bypass and revocation events at harness level; emits transcript, requests, decision reports, run report, evidence manifest)
 - `verify_multi_agent_harness_evidence_v0_1_0.py` — Harness evidence manifest verifier (manifest type/version, path traversal rejection, SHA-256 recomputation, run report and decision report semantic checks)
+- `package_multi_agent_trust_boundary_demo_v0_1_0.py` — Silver v0.2.5 multi-agent trust-boundary demo packager (invokes v0.2.4 harness runner and verifier as subprocesses, derives the eight required claims from the nested run report and transcript, emits `demo-summary.json` and `demo-package-manifest.json`)
+- `verify_multi_agent_trust_boundary_demo_v0_1_0.py` — Silver v0.2.5 demo package verifier (parses the package manifest, recomputes SHA-256 for every package subject, validates `demo-summary.json` and cross-checks claim rules against nested run report / decision reports, then delegates nested verification to the unchanged v0.2.4 verifier; surfaces nested failures as the stable top-level reason `nested_harness_evidence_invalid`)
+
+### Silver Multi-Agent Trust-Boundary Demo: `demos/silver-demo-003-multi-agent-trust-boundary/`
+
+v0.2.5 packages the v0.2.4 multi-agent attack harness into a local demo. The committed demo directory holds only the README and walkthrough; the packager writes runtime output under `/tmp` (default `/tmp/proofrail-silver-multi-agent-demo-v0.2.5/`) and is never staged into the repository. Eight claims are derived deterministically from the v0.2.4 harness run report: `harmless_messages_proceed`, `protected_actions_require_scoped_authority`, `unauthorized_delegation_fails`, `bypass_attempts_blocked`, `revoked_authority_fails`, `out_of_scope_actions_fail`, `evidence_is_hash_verifiable`, and `no_protected_actions_executed`. The verifier re-invokes the unchanged v0.2.4 verifier on the nested manifest. See `docs/silver/silver-multi-agent-trust-boundary-demo-v0.2.5.md` and `docs/gold/gold-boundary-v0.2.5.md`.
 
 ### Independent Silver Verifier Demo: `demos/silver-demo-002-independent-verifier/`
 
