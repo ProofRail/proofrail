@@ -363,3 +363,39 @@ Canonical descriptors (`examples/silver-evidence-source-adapters/`) cover six cl
 The validator `tools/silver/validate_evidence_source_adapter_v0_1_0.py` is pure-stdlib and operates only on the parsed descriptor JSON. It rejects out-of-set source types, missing capabilities, missing `decision_event` mapping, empty/whitespace-only strings, sample-artifact-ref path traversal, and duplicate adapter IDs in directory mode.
 
 The evidence chain is unchanged. Adapter descriptors sit **next to** Bronze claims and Silver bundles as static declarations of source-evidence shape, not above or below them. v0.2.6 defines how evidence sources describe their outputs. It does not make those sources trustworthy.
+
+## v0.2.7 Update: Composed Silver Demo Over Simulated Gateway Evidence
+
+Silver v0.2.7 introduces a composed Silver demo built from a v0.2.6 simulated gateway adapter descriptor and a static JSONL gateway event fixture. The demo deterministically composes a ProofRail evidence package, computes hash anchors, derives ten claims, and is independently verified by a separate verifier.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Simulated Gateway Evidence Event | v0.1.0 | JSONL gateway event line schema for static fixtures | `schemas/silver-simulated-gateway-evidence-event-v0.1.0.md` |
+| Silver | Composed Gateway Evidence Report | v0.1.0 | Composed report with ten derived claims over a gateway source | `schemas/silver-composed-gateway-evidence-report-v0.1.0.md` |
+| Silver | Composed Gateway Evidence Manifest | v0.1.0 | SHA-256 manifest with deterministic subject order and `composition` block | `schemas/silver-composed-gateway-evidence-manifest-v0.1.0.md` |
+| Doc | Silver Composed Gateway Evidence Demo | v0.2.7 | Demo narrative document | `docs/silver/silver-composed-gateway-evidence-demo-v0.2.7.md` |
+
+The composer (`tools/silver/compose_gateway_evidence_demo_v0_1_0.py`) subprocess-invokes the unchanged v0.2.6 adapter validator, validates the JSONL fixture, derives the ten required claims, and emits both the composed report and a manifest with five subjects in deterministic order plus a `composition` block.
+
+The verifier (`tools/silver/verify_composed_gateway_evidence_demo_v0_1_0.py`) re-derives every claim independently from the copied adapter and JSONL, validates the manifest `composition` block, and rejects wrong-but-valid evidence refs.
+
+The simulated gateway is an evidence source, not a trust authority. v0.2.7 demonstrates substrate-neutral evidence composition. It does not integrate with a real gateway or certify gateway enforcement. The composed report is not signed; v0.2.7 ships local hash anchors only.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+  → multi-principal authority decision reports
+  → multi-agent harness transcript + run report + evidence manifest
+  → multi-agent trust-boundary demo package manifest + demo summary
+  → composed gateway evidence report + composed gateway evidence manifest
+```

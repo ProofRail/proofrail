@@ -335,6 +335,35 @@ ProofRail is not the gateway, not the SIEM, not the policy engine, and not the G
 
 ---
 
+## v0.2.7 Composed Silver Demo Over Simulated Gateway Evidence
+
+Silver v0.2.7 introduces a composed Silver demo built from a v0.2.6 simulated gateway adapter descriptor and a static JSONL fixture of nine gateway evidence events. The composer deterministically produces an evidence package; an independent verifier re-derives every claim from the copied adapter and JSONL.
+
+The v0.2.7 demo is:
+
+- **A composition demo**: a v0.2.6 adapter descriptor and a JSONL gateway event fixture become a hash-anchored ProofRail evidence package with a derived report and ten required claims.
+- **Substrate-neutral**: the composer and verifier do not depend on any real gateway, SIEM, observability stack, policy engine, or GRC platform.
+- **Hash-first verifiable**: the verifier rejects subject path traversal, missing subjects, hash mismatches, and a `composition` block that does not match the deterministic package layout before any semantic check.
+- **Re-derivation-based**: the verifier re-derives every required claim independently, including wrong-but-valid evidence reference rejection (for example, a bypass claim that points at the harmless message event).
+- **Non-executing**: every event has `execution.performed == false`; the report sets `execution.protected_actions_performed == false`; an `execution_violation` reason is reserved for any breach.
+
+The v0.2.7 demo is **not**:
+
+- An integration with any real MCP gateway, SIEM, observability stack, policy engine, or GRC platform.
+- A certification that any real product behaves like the simulated fixture.
+- A claim that the gateway is a trust authority. The adapter declares `source_is_trust_authority == false`; the manifest `composition` block restates this.
+- A signed Silver artifact. The composed report is not signed; v0.2.7 ships local hash anchors only.
+- A relying-party acceptance record (that is v0.2.8 work).
+- A change to Bronze, Silver Signed Bundle Assertion, Revocation List, Verification Report, Profile, Verifier Output Attestation, Multi-principal Authority, Multi-agent Harness, Multi-agent Trust-boundary Demo, or Evidence Source Adapter semantics.
+
+The key claim:
+
+> v0.2.7 demonstrates substrate-neutral evidence composition. It does not integrate with a real gateway or certify gateway enforcement.
+
+The simulated gateway is an evidence source, not a trust authority. Composed Silver evidence is not Gold acceptance, production assurance, compliance, or certification.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

@@ -19,6 +19,9 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Multi-Agent Demo Package Manifest v0.1.0
 - Silver Multi-Agent Demo Summary v0.1.0
 - Silver Evidence Source Adapter Descriptor v0.1.0
+- Silver Simulated Gateway Evidence Event v0.1.0
+- Silver Composed Gateway Evidence Report v0.1.0
+- Silver Composed Gateway Evidence Manifest v0.1.0
 
 ## Demo Issuer Generator
 
@@ -676,6 +679,81 @@ Validation rules:
 JSON parse errors are caught and surfaced as `invalid_adapter_descriptor` — no Python traceback leaks.
 
 Exit codes: 0 (valid), 1 (validation failure), 2 (usage / input-file error).
+
+## Composed Gateway Evidence Composer (v0.2.7)
+
+Composes a Silver evidence package from a v0.2.6 simulated gateway adapter descriptor and a static JSONL gateway event fixture. Pure-stdlib. Subprocess-invokes the unchanged v0.2.6 adapter validator. Does not integrate with any real gateway and does not execute any protected action.
+
+```bash
+python3 tools/silver/compose_gateway_evidence_demo_v0_1_0.py \
+  --demo-root demos/silver-demo-004-composed-gateway-evidence \
+  --adapter examples/silver-evidence-source-adapters/gateway-mcp-simulated-v0.2.6.json \
+  --gateway-events fixtures/silver-composed-gateway-evidence-v0.2.7/gateway-events.jsonl \
+  --output-dir /tmp/proofrail-silver-composed-gateway-demo-v0.2.7 \
+  --generated-at 2026-06-22T00:00:00Z \
+  --force
+```
+
+The composer:
+
+1. Refuses to overwrite a non-empty `--output-dir` unless `--force` is supplied.
+2. Re-validates the adapter descriptor via the unchanged v0.2.6 validator (subprocess).
+3. Confirms `source.source_type == "gateway"` and `trust_boundary.source_is_trust_authority == false`.
+4. Parses the JSONL events line-by-line, validates each line against the simulated gateway event schema (cross-field consistency for bypass and revocation events included), and confirms exactly one event per required `scenario_event_id`.
+5. Confirms every `protected_action_id` is within the adapter's `protected_action_mapping.protected_action_ids` (or `null` for `gateway.message_observed`).
+6. Confirms every event has `execution.performed == false`.
+7. Copies `README.md`, `demo-walkthrough.md`, the adapter descriptor (under `adapter/`), and the JSONL fixture (under `source/`) into the output directory.
+8. Derives the ten required claims, writes `composed-gateway-evidence-report.json`.
+9. Writes `composed-gateway-evidence-manifest.json` with five subjects in deterministic order and a `composition` block.
+
+Exit codes: 0 (success), 1 (composition failure), 2 (usage/input error).
+
+## Composed Gateway Evidence Verifier (v0.2.7)
+
+Verifies a composed gateway evidence package. Pure-stdlib. Re-derives every required claim independently from the copied adapter and JSONL events; does not trust the composed report alone.
+
+```bash
+python3 tools/silver/verify_composed_gateway_evidence_demo_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-composed-gateway-demo-v0.2.7/composed-gateway-evidence-manifest.json
+```
+
+Verification ordering (hash-first):
+
+1. Parse manifest: shape, document type, version, hash algorithm, subject count and order, `composition` block.
+2. Reject subject paths containing `..` or starting with `/`.
+3. Reject missing subjects.
+4. Recompute SHA-256 for every subject.
+5. Re-validate the copied adapter via the unchanged v0.2.6 validator (subprocess); confirm `source_type == "gateway"`.
+6. Re-parse the JSONL events: reject malformed lines, empty file, duplicates, out-of-scope `protected_action_id`, unknown decisions, inconsistent bypass/revocation events.
+7. Load the report: reject shape errors, missing required claim IDs, wrong evidence-ref paths, wrong-but-valid evidence refs, and any claim whose composer-reported status disagrees with the independently re-derived status.
+8. Reject any event with `execution.performed == true`, and any report with `execution.protected_actions_performed != false`.
+
+### Composed Gateway Verifier Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_composed_gateway_manifest` | Manifest shape, type, version, hash algorithm, subjects, or `composition` block invalid |
+| `composed_subject_file_missing` | A manifest subject file is missing |
+| `composed_subject_path_traversal` | A subject path contains `..` or is absolute |
+| `composed_subject_hash_mismatch` | Recomputed SHA-256 differs from recorded hash |
+| `adapter_invalid` | Copied adapter fails v0.2.6 validation |
+| `adapter_not_gateway_source` | Copied adapter `source_type` is not `gateway` |
+| `source_event_invalid` | A JSONL line is malformed or fails schema/cross-field checks (no Python traceback leaks) |
+| `source_event_missing` | A required `scenario_event_id` is missing or the JSONL file is empty |
+| `source_event_duplicate` | A `scenario_event_id` appears more than once |
+| `gateway_protected_action_mismatch` | A source event references an unsupported `protected_action_id` for the adapter |
+| `gateway_decision_mismatch` | A source event decision does not match its expected scenario decision |
+| `gateway_bypass_mismatch` | A bypass event has inconsistent fields (e.g., `bypass_detected == false`) |
+| `gateway_revocation_mismatch` | A revocation event has inconsistent fields (e.g., `revocation_checked == false`) |
+| `normalized_report_invalid` | Report shape, type, or version invalid |
+| `normalized_claim_missing` | A required claim ID is missing from the report |
+| `normalized_claim_failed` | A required claim's re-derived status is not `pass`, or composer status disagrees with re-derived status |
+| `normalized_evidence_ref_invalid` | A claim's evidence reference contains `..`, is absolute, or points at a wrong-but-valid event |
+| `execution_violation` | A source event has `execution.performed == true`, or the report has `execution.protected_actions_performed != false` |
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (validation failure), 2 (usage/input error).
 
 ## Security Notes
 

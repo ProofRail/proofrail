@@ -37,6 +37,7 @@ bash tests/test_silver_multi_principal_authority_v0_2_3.sh
 bash tests/test_silver_multi_agent_attack_harness_v0_2_4.sh
 bash tests/test_silver_multi_agent_trust_boundary_demo_v0_2_5.sh
 bash tests/test_silver_evidence_source_adapter_v0_2_6.sh
+bash tests/test_silver_composed_gateway_evidence_v0_2_7.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -118,6 +119,15 @@ bash tests/test_silver_evidence_source_adapter_v0_2_6.sh
 python3 tools/silver/validate_evidence_source_adapter_v0_1_0.py --adapter <adapter.json>
 python3 tools/silver/validate_evidence_source_adapter_v0_1_0.py --examples-dir <dir>
 
+# Silver v0.2.7 composed gateway evidence demo
+make run-silver-composed-gateway-demo-v0-2-7
+make verify-silver-composed-gateway-demo-v0-2-7
+bash tests/test_silver_composed_gateway_evidence_v0_2_7.sh
+
+# Silver v0.2.7 composed gateway evidence tools standalone
+python3 tools/silver/compose_gateway_evidence_demo_v0_1_0.py --demo-root <demo-dir> --adapter <adapter.json> --gateway-events <events.jsonl> --output-dir <output-dir> [--generated-at <ISO-8601>] [--force]
+python3 tools/silver/verify_composed_gateway_evidence_demo_v0_1_0.py --manifest <composed-gateway-evidence-manifest.json>
+
 # Silver multi-agent harness tools standalone
 python3 tools/silver/run_multi_agent_attack_harness_v0_1_0.py --script <harness-script.yaml> --authority-fixture <authority-fixture.yaml> --output-dir <output-dir> [--force]
 python3 tools/silver/verify_multi_agent_harness_evidence_v0_1_0.py --manifest <harness-evidence-manifest.json>
@@ -189,6 +199,8 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 - `package_multi_agent_trust_boundary_demo_v0_1_0.py` — Silver v0.2.5 multi-agent trust-boundary demo packager (invokes v0.2.4 harness runner and verifier as subprocesses, derives the eight required claims from the nested run report and transcript, emits `demo-summary.json` and `demo-package-manifest.json`)
 - `verify_multi_agent_trust_boundary_demo_v0_1_0.py` — Silver v0.2.5 demo package verifier (parses the package manifest, recomputes SHA-256 for every package subject, validates `demo-summary.json` and cross-checks claim rules against nested run report / decision reports, then delegates nested verification to the unchanged v0.2.4 verifier; surfaces nested failures as the stable top-level reason `nested_harness_evidence_invalid`)
 - `validate_evidence_source_adapter_v0_1_0.py` — Silver v0.2.6 evidence source adapter descriptor validator (pure-stdlib structural validator; closed set of six `source_type` values; six required evidence capabilities with `provided`/`not_provided`/`not_applicable` statuses; `decision_event` must be `provided` with full mapping fields; rejects empty/whitespace-only strings; supports `--adapter <file>` and `--examples-dir <dir>` modes with duplicate adapter_id detection)
+- `compose_gateway_evidence_demo_v0_1_0.py` — Silver v0.2.7 composed gateway evidence composer (pure-stdlib; subprocess-invokes the unchanged v0.2.6 adapter validator; parses the static JSONL gateway event fixture with cross-field consistency checks; derives ten required claims; emits `composed-gateway-evidence-report.json` and `composed-gateway-evidence-manifest.json` with five subjects in deterministic order and a `composition` block)
+- `verify_composed_gateway_evidence_demo_v0_1_0.py` — Silver v0.2.7 composed gateway evidence verifier (pure-stdlib; hash-first ordering; re-derives every required claim independently; validates the manifest `composition` block against the deterministic package layout; rejects wrong-but-valid evidence refs; 18 stable failure reasons including `composed_subject_hash_mismatch`, `adapter_invalid`, `source_event_invalid`, `gateway_protected_action_mismatch`, `gateway_decision_mismatch`, `gateway_bypass_mismatch`, `gateway_revocation_mismatch`, `normalized_evidence_ref_invalid`, `normalized_claim_failed`, and `execution_violation`)
 
 ### Silver Multi-Agent Trust-Boundary Demo: `demos/silver-demo-003-multi-agent-trust-boundary/`
 
@@ -197,6 +209,10 @@ v0.2.5 packages the v0.2.4 multi-agent attack harness into a local demo. The com
 ### Silver Evidence Source Adapter Profile: `examples/silver-evidence-source-adapters/`
 
 v0.2.6 adds a descriptor profile for evidence sources (gateway, observability trace, SIEM, policy engine, GRC platform, native ProofRail). Six canonical static JSON descriptors live in `examples/silver-evidence-source-adapters/`. A descriptor declares how a source's events map to ProofRail-relevant evidence fields and what the source does **not** assert. Descriptors are not evidence, not trust decisions, and not certifications. The GRC platform example is explicitly framed as workflow / risk / approval evidence only, with limitations stating workflow approval is not technical enforcement and not sufficient by itself for protected-action reliance. The local structural validator `tools/silver/validate_evidence_source_adapter_v0_1_0.py` rejects out-of-set source types, missing capabilities, missing `decision_event` mapping, empty/whitespace-only strings, sample-artifact-ref path traversal, and duplicate adapter IDs in directory mode. See `docs/silver/silver-evidence-source-adapter-profile-v0.2.6.md` and `schemas/silver-evidence-source-adapter-v0.1.0.md`.
+
+### Silver Composed Gateway Evidence Demo: `demos/silver-demo-004-composed-gateway-evidence/`
+
+v0.2.7 composes a Silver evidence package from the v0.2.6 simulated gateway adapter descriptor and a static JSONL fixture of nine gateway events (`fixtures/silver-composed-gateway-evidence-v0.2.7/gateway-events.jsonl`). The committed demo directory holds only the README and walkthrough; the composer writes runtime output to `/tmp/proofrail-silver-composed-gateway-demo-v0.2.7/` and is never staged into the repository. The composer subprocess-invokes the unchanged v0.2.6 adapter validator, derives ten claims (`gateway_source_described_by_adapter`, `gateway_source_not_trust_authority`, `gateway_events_normalized`, `protected_actions_require_scoped_authority`, `unauthorized_delegation_fails`, `bypass_attempts_observed_or_blocked`, `revoked_authority_fails`, `out_of_scope_actions_fail`, `source_evidence_hash_verifiable`, `no_protected_actions_executed`), and emits `composed-gateway-evidence-report.json` plus `composed-gateway-evidence-manifest.json` with five subjects in deterministic order and a `composition` block (`source_type: "gateway"`, `source_is_trust_authority: false`, three subject paths). The verifier re-derives every claim independently and rejects wrong-but-valid evidence refs. The simulated gateway is an evidence source, not a trust authority. The composed report is not signed; v0.2.7 ships local hash anchors only. See `docs/silver/silver-composed-gateway-evidence-demo-v0.2.7.md`.
 
 ### Independent Silver Verifier Demo: `demos/silver-demo-002-independent-verifier/`
 

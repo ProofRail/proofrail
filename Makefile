@@ -163,6 +163,22 @@ validate-silver-evidence-source-adapters-v0-2-6:
 verify-silver-evidence-source-adapter-v0-2-6:
 	bash tests/test_silver_evidence_source_adapter_v0_2_6.sh
 
+.PHONY: run-silver-composed-gateway-demo-v0-2-7
+run-silver-composed-gateway-demo-v0-2-7:
+	python3 tools/silver/compose_gateway_evidence_demo_v0_1_0.py \
+	  --demo-root demos/silver-demo-004-composed-gateway-evidence \
+	  --adapter examples/silver-evidence-source-adapters/gateway-mcp-simulated-v0.2.6.json \
+	  --gateway-events fixtures/silver-composed-gateway-evidence-v0.2.7/gateway-events.jsonl \
+	  --output-dir /tmp/proofrail-silver-composed-gateway-demo-v0.2.7 \
+	  --generated-at 2026-06-22T00:00:00Z \
+	  --force
+	python3 tools/silver/verify_composed_gateway_evidence_demo_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-composed-gateway-demo-v0.2.7/composed-gateway-evidence-manifest.json
+
+.PHONY: verify-silver-composed-gateway-demo-v0-2-7
+verify-silver-composed-gateway-demo-v0-2-7:
+	bash tests/test_silver_composed_gateway_evidence_v0_2_7.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -175,3 +191,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-multi-agent-harness-v0-2-4
 	$(MAKE) verify-silver-multi-agent-demo-v0-2-5
 	$(MAKE) verify-silver-evidence-source-adapter-v0-2-6
+	$(MAKE) verify-silver-composed-gateway-demo-v0-2-7
