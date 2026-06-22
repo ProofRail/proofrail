@@ -170,3 +170,31 @@ A revocation/challenge drill report is not a Gold certificate, regulator approva
 v0.2.9 records review triggers. It does not decide their merits.
 
 v0.2.9 names a post-acceptance review drill. It does not cross the Gold boundary.
+
+---
+
+## 11. Note on v0.3.0 Silver Acceptance Handoff
+
+ProofRail v0.3.0 is a composition release. It packages the completed v0.2.7 composed gateway evidence, v0.2.8 relying-party acceptance, and v0.2.9 revocation/challenge drill into a single portable, hash-anchored Silver acceptance handoff artifact. v0.3.0 introduces no new evidence content.
+
+The v0.3.0 handoff is **still Silver, not Gold**:
+
+- It is a composition. The runner subprocess-invokes the unchanged v0.2.7 verifier, v0.2.8 validator, and v0.2.9 verifier — each without `--evidence-package-root` — so v0.3.0 alone owns the cross-package chain binding. The nested packages remain unchanged on disk.
+- The four v0.3.0-owned chain-binding cross-checks (top-level subject sha256 against nested `evidence_package.manifest_sha256`, against nested `base_acceptance.acceptance_package_manifest_sha256`, and against the inner byte-copies inside the v0.2.8 and v0.2.9 roots) are integrity checks. They are not acceptance decisions.
+- The `recommended_handoff_posture` is a closed-set local recommendation (`silver_handoff_complete_for_demo_scope`, `silver_handoff_complete_review_required_before_reuse`, `silver_handoff_not_reusable_without_governed_review`) whose rank must be no weaker than the nested v0.2.9 drill posture. It is descriptive, not a governance act.
+- The verifier's overclaim guard explicitly rejects the positive tokens `certified`, `approved`, `audited`, `legally accepted`, `legally revoked`, `challenge resolved`, `gold accepted`, `gold certified`, `compliant`, `production-approved`, `production-ready`, `regulator-ready`, `regulator approval`, `trust transferred`, `trust transfer` anywhere outside `scope_limitations` and `non_claims`. The handoff is structurally prevented from claiming Gold conformance, regulator approval, audit, or trust transfer.
+- It is not signed. v0.3.0 ships local hash anchors only.
+- It does not invoke any external acceptance authority, governance workflow, regulator, auditor, registry, sign-off body, or trust-transfer mechanism.
+- It does not adjudicate, decide, federate, chain, arbitrate, or transfer reliance. The nested v0.2.8 record remains exactly one fictional demo relying party's local decision.
+
+Gold-level handoff (as inventoried in §5 above) still requires the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity, retention, change-control, revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.3.0 does not add any of those.
+
+The release sentence holds:
+
+> v0.3.0 packages already-verified Silver evidence into a portable, hash-anchored handoff artifact whose chain binding the v0.3.0 verifier owns and re-derives end to end. It does not extend the substance of what that evidence asserts.
+
+A Silver acceptance handoff package is not a Gold certificate, Gold conformance, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, adjudicated challenge, legally revoked acceptance, or production authorization.
+
+v0.3.0 packages acceptance evidence. It does not execute acceptance governance.
+
+v0.3.0 names a portable Silver handoff. It does not cross the Gold boundary.

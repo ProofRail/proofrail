@@ -238,6 +238,45 @@ run-silver-revocation-challenge-drill-v0-2-9:
 verify-silver-revocation-challenge-drill-v0-2-9:
 	bash tests/test_silver_revocation_challenge_drill_v0_2_9.sh
 
+.PHONY: run-silver-acceptance-handoff-v0-3-0
+run-silver-acceptance-handoff-v0-3-0:
+	python3 tools/silver/compose_gateway_evidence_demo_v0_1_0.py \
+	  --demo-root demos/silver-demo-004-composed-gateway-evidence \
+	  --adapter examples/silver-evidence-source-adapters/gateway-mcp-simulated-v0.2.6.json \
+	  --gateway-events fixtures/silver-composed-gateway-evidence-v0.2.7/gateway-events.jsonl \
+	  --output-dir /tmp/proofrail-silver-composed-gateway-demo-v0.2.7 \
+	  --generated-at 2026-06-22T00:00:00Z \
+	  --force
+	python3 tools/silver/generate_relying_party_acceptance_record_v0_1_0.py \
+	  --policy fixtures/silver-relying-party-acceptance-v0.2.8/acceptance-policy.json \
+	  --evidence-manifest /tmp/proofrail-silver-composed-gateway-demo-v0.2.7/composed-gateway-evidence-manifest.json \
+	  --decision accepted \
+	  --purpose demo_trust_boundary_review \
+	  --decision-maker demo.relying_party.local_reviewer \
+	  --generated-at 2026-06-22T00:00:00Z \
+	  --challenge-closes-at 2026-07-22T00:00:00Z \
+	  --output-dir /tmp/proofrail-silver-relying-party-acceptance-v0.2.8 \
+	  --force
+	python3 tools/silver/run_revocation_challenge_drill_v0_1_0.py \
+	  --acceptance-manifest /tmp/proofrail-silver-relying-party-acceptance-v0.2.8/acceptance-package-manifest.json \
+	  --review-events fixtures/silver-revocation-challenge-drill-v0.2.9/review-events.jsonl \
+	  --generated-at 2026-06-27T00:00:00Z \
+	  --output-dir /tmp/proofrail-silver-revocation-challenge-drill-v0.2.9 \
+	  --force
+	python3 tools/silver/build_silver_acceptance_handoff_v0_1_0.py \
+	  --composed-evidence-manifest /tmp/proofrail-silver-composed-gateway-demo-v0.2.7/composed-gateway-evidence-manifest.json \
+	  --acceptance-manifest /tmp/proofrail-silver-relying-party-acceptance-v0.2.8/acceptance-package-manifest.json \
+	  --drill-manifest /tmp/proofrail-silver-revocation-challenge-drill-v0.2.9/revocation-challenge-drill-manifest.json \
+	  --generated-at 2026-06-28T00:00:00Z \
+	  --output-dir /tmp/proofrail-silver-acceptance-handoff-v0.3.0 \
+	  --force
+	python3 tools/silver/verify_silver_acceptance_handoff_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-acceptance-handoff-v0.3.0/silver-acceptance-handoff-manifest.json
+
+.PHONY: verify-silver-acceptance-handoff-v0-3-0
+verify-silver-acceptance-handoff-v0-3-0:
+	bash tests/test_silver_acceptance_handoff_v0_3_0.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -253,3 +292,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-composed-gateway-demo-v0-2-7
 	$(MAKE) verify-silver-relying-party-acceptance-demo-v0-2-8
 	$(MAKE) verify-silver-revocation-challenge-drill-v0-2-9
+	$(MAKE) verify-silver-acceptance-handoff-v0-3-0

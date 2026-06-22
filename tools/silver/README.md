@@ -22,6 +22,14 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Simulated Gateway Evidence Event v0.1.0
 - Silver Composed Gateway Evidence Report v0.1.0
 - Silver Composed Gateway Evidence Manifest v0.1.0
+- Silver Relying-Party Acceptance Policy v0.1.0
+- Silver Relying-Party Acceptance Record v0.1.0
+- Silver Relying-Party Acceptance Package Manifest v0.1.0
+- Silver Relying-Party Review Event v0.1.0
+- Silver Revocation/Challenge Drill Report v0.1.0
+- Silver Revocation/Challenge Drill Manifest v0.1.0
+- Silver Acceptance Handoff Summary v0.1.0
+- Silver Acceptance Handoff Manifest v0.1.0
 
 ## Demo Issuer Generator
 
@@ -902,6 +910,86 @@ The verifier delegates nested acceptance-package validation to the unchanged v0.
 | `external_evidence_verification_failed` | `--evidence-package-root` re-invocation of the v0.2.7 verifier fails on the original composed gateway evidence package |
 
 The runner-only codes `acceptance_package_validation_failed` and `review_fixture_insufficient` are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
+## Acceptance Handoff Runner (v0.3.0)
+
+Builds a deterministic, hash-anchored portable Silver acceptance handoff package by composing an already-verified v0.2.7 composed gateway evidence package, a v0.2.8 relying-party acceptance package, and a v0.2.9 revocation/challenge drill package. Pure-stdlib. Atomic staging-then-replace; a refused or self-validation-failed run leaves no partial handoff package on disk.
+
+```bash
+python3 tools/silver/build_silver_acceptance_handoff_v0_1_0.py \
+  --composed-evidence-manifest /tmp/proofrail-silver-composed-gateway-demo-v0.2.7/composed-gateway-evidence-manifest.json \
+  --acceptance-manifest /tmp/proofrail-silver-relying-party-acceptance-v0.2.8/acceptance-package-manifest.json \
+  --drill-manifest /tmp/proofrail-silver-revocation-challenge-drill-v0.2.9/revocation-challenge-drill-manifest.json \
+  --generated-at 2026-06-28T00:00:00Z \
+  --output-dir /tmp/proofrail-silver-acceptance-handoff-v0.3.0 \
+  [--handoff-id <id>] [--handoff-purpose <text>] [--recipient-role <text>] \
+  [--source-package-family <text>] [--force] [--self-validate]
+```
+
+The runner:
+
+1. Subprocess-invokes the unchanged **v0.2.7 verifier** on the composed-evidence manifest and refuses with `FAIL: composed_evidence_validation_failed: <detail>` and exit code 1 if verification fails.
+2. Subprocess-invokes the unchanged **v0.2.8 acceptance validator** on the acceptance manifest WITHOUT `--evidence-package-root` and refuses with `FAIL: acceptance_package_validation_failed: <detail>` and exit code 1 if validation fails.
+3. Subprocess-invokes the unchanged **v0.2.9 drill verifier** on the drill manifest WITHOUT `--evidence-package-root` and refuses with `FAIL: drill_package_validation_failed: <detail>` and exit code 1 if verification fails.
+4. Byte-copies the three nested package roots into a sibling staging directory under the fixed top-level names `composed-gateway-evidence/`, `acceptance-package/`, and `revocation-challenge-drill/`.
+5. Performs four v0.3.0-owned chain-binding cross-checks: (a) top-level composed-gateway-evidence manifest sha256 = nested v0.2.8 record `evidence_package.manifest_sha256`; (b) top-level acceptance-package manifest sha256 = nested v0.2.9 drill report `base_acceptance.acceptance_package_manifest_sha256`; (c) inner copy `acceptance-package/evidence/composed-gateway-evidence-manifest.json` sha256 = subject [0] sha256; (d) inner copy `revocation-challenge-drill/acceptance-package/acceptance-package-manifest.json` sha256 = subject [1] sha256. Any mismatch yields `FAIL: handoff_chain_binding_failed: <detail>` and exit code 1.
+6. Maps the nested v0.2.9 `recommended_local_posture` onto a minimum handoff posture rank (`acceptance_stands_for_demo_scope` → rank 0, `acceptance_requires_review_before_reuse` → rank 1, `acceptance_not_reusable_without_governed_review` → rank 2) and selects `recommended_handoff_posture` from the matching closed set.
+7. Emits `silver-acceptance-handoff-summary.json` and `silver-acceptance-handoff-manifest.json` with four subjects in the fixed v0.3.0 order (composed-gateway-evidence manifest, acceptance-package manifest, drill manifest, handoff summary).
+8. With `--self-validate`, subprocess-invokes the v0.3.0 handoff verifier on the staged manifest BEFORE the atomic move; on failure it removes the staging directory, leaves the destination untouched, and refuses with `FAIL: self_validation_failed: <detail>` and exit code 1.
+9. Atomically moves the staging directory to `--output-dir`.
+
+### Runner-Only Refusal Codes
+
+| Reason | Description |
+|---|---|
+| `composed_evidence_validation_failed` | Subprocess invocation of the unchanged v0.2.7 verifier on the supplied composed-evidence manifest fails |
+| `acceptance_package_validation_failed` | Subprocess invocation of the unchanged v0.2.8 acceptance validator on the supplied acceptance manifest fails |
+| `drill_package_validation_failed` | Subprocess invocation of the unchanged v0.2.9 drill verifier on the supplied drill manifest fails |
+| `handoff_chain_binding_failed` | One or more of the four v0.3.0-owned chain-binding cross-checks fails during runner-side preparation |
+| `self_validation_failed` | `--self-validate` subprocess invocation of the v0.3.0 handoff verifier on the staged package fails before the atomic move |
+
+These five runner-only refusal codes are deliberately distinct from the 17 verifier failure reasons. The verifier never emits any of these codes.
+
+Exit codes: 0 (handoff package written), 1 (refusal — no partial output), 2 (usage/input error).
+
+## Acceptance Handoff Verifier (v0.3.0)
+
+Validates a v0.3.0 Silver acceptance handoff package. Pure-stdlib. Hash-first ordering. The verifier owns the four v0.3.0-specific chain-binding cross-checks and re-runs the unchanged v0.2.7 verifier, v0.2.8 acceptance validator, and v0.2.9 drill verifier as subprocesses, each WITHOUT `--evidence-package-root`.
+
+```bash
+python3 tools/silver/verify_silver_acceptance_handoff_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-acceptance-handoff-v0.3.0/silver-acceptance-handoff-manifest.json
+```
+
+The verifier delegates nested package validation to the three unchanged subordinate validators and re-derives the four v0.3.0-owned chain-binding cross-checks, the posture-rank ordering, and the overclaim guard independently.
+
+### Handoff Verifier Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_handoff_manifest` | Manifest shape, type, version, hash algorithm, or subject count/order/roles invalid |
+| `handoff_subject_file_missing` | A manifest subject file is missing |
+| `handoff_subject_path_traversal` | A subject path contains `..` or is absolute |
+| `handoff_subject_hash_mismatch` | Recomputed SHA-256 differs from recorded hash |
+| `nested_composed_evidence_invalid` | Subprocess invocation of the unchanged v0.2.7 verifier on the nested composed-gateway-evidence manifest fails |
+| `nested_acceptance_package_invalid` | Subprocess invocation of the unchanged v0.2.8 acceptance validator on the nested acceptance-package manifest fails |
+| `nested_revocation_challenge_drill_invalid` | Subprocess invocation of the unchanged v0.2.9 drill verifier on the nested drill manifest fails |
+| `handoff_summary_invalid` | `silver-acceptance-handoff-summary.json` malformed or fails shape checks (wrong `document_type`, missing required fields, etc.) |
+| `handoff_summary_binding_mismatch` | Summary's recorded composed/acceptance/drill manifest sha256 fields disagree with the recomputed subject hashes, or summary's `recommended_local_posture` disagrees with the nested v0.2.9 drill report |
+| `handoff_chain_binding_mismatch` | One or more of the four v0.3.0-owned cross-copy chain-binding checks (a)/(b)/(c)/(d) fails on the assembled package |
+| `handoff_record_mismatch` | Summary's recorded v0.2.8 acceptance record id, decision status, policy id, or related binding fields disagree with the nested v0.2.8 record |
+| `handoff_purpose_mismatch` | Summary's recorded purpose id disagrees with the nested v0.2.8 record's purpose id |
+| `handoff_posture_invalid` | `recommended_handoff_posture` is not in the closed set, or the nested drill `recommended_local_posture` is not in its closed set |
+| `handoff_posture_downgrade` | `recommended_handoff_posture` rank is lower (weaker) than the minimum rank implied by the nested v0.2.9 drill posture |
+| `handoff_overclaim` | A forbidden positive overclaim token (e.g., `certified`, `approved`, `audited`, `legally accepted`, `legally revoked`, `gold certified`, `production-approved`, `trust transferred`) appears in a summary string outside `scope_limitations` / `non_claims` |
+| `handoff_limitations_missing` | `handoff_summary.scope_limitations` is empty |
+| `handoff_non_claims_missing` | `handoff_summary.non_claims` is empty |
+
+The five runner-only refusal codes (`composed_evidence_validation_failed`, `acceptance_package_validation_failed`, `drill_package_validation_failed`, `handoff_chain_binding_failed`, `self_validation_failed`) are **never** emitted by the verifier.
 
 JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
 
