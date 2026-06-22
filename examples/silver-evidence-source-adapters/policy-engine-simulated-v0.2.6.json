@@ -1,0 +1,90 @@
+{
+  "document_type": "proofrail.silver.evidence_source_adapter",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.2.6",
+  "adapter_id": "proofrail-adapter-policy-engine-simulated-v0.2.6",
+  "adapter_version": "v0.1.0",
+  "source": {
+    "source_type": "policy_engine",
+    "source_name": "Simulated policy engine evidence source",
+    "vendor_or_project": "simulated",
+    "product_or_component": "simulated-policy-decision-point",
+    "source_version": "example",
+    "deployment_scope": "simulated_external"
+  },
+  "trust_boundary": {
+    "source_is_trust_authority": false,
+    "proofrail_role": "evidence_source",
+    "reliance_statement": "This adapter describes a simulated policy engine decision shape. The engine is an evidence source, not a ProofRail trust authority."
+  },
+  "control_surface": {
+    "control_surface_type": "policy_decision_point",
+    "description": "Simulated policy engine emitting decision events for protected actions evaluated against declared policies.",
+    "controlled_path_required": true,
+    "protected_action_channel": "policy_evaluation_request",
+    "bypass_observation_point": "out_of_band_invocation_not_observed_by_pdp",
+    "revocation_observation_point": "policy_engine_policy_snapshot_or_authority_revocation_input"
+  },
+  "protected_action_mapping": {
+    "protected_action_ids": [
+      "payment.release",
+      "vendor.approve",
+      "data.export",
+      "deploy.change"
+    ],
+    "source_action_field": "request.action",
+    "source_actor_field": "request.subject.id",
+    "source_subject_field": "request.resource.id"
+  },
+  "evidence_capabilities": {
+    "decision_event": {
+      "status": "provided",
+      "event_type": "policy.decision",
+      "timestamp_field": "decision.timestamp",
+      "decision_field": "decision.effect",
+      "reason_field": "decision.rationale",
+      "source_record_id_field": "decision.id",
+      "description": "Simulated policy engine emits a structured decision record per evaluated protected action."
+    },
+    "bypass_evidence": {
+      "status": "not_applicable",
+      "limitation": "A policy engine only sees evaluations submitted to it. Out-of-band actions are not observable here; bypass evidence should come from a gateway or SIEM."
+    },
+    "revocation_status": {
+      "status": "provided",
+      "event_type": "policy.revocation_input",
+      "description": "Policy engine records the authority/policy snapshot identifier used at decision time, enabling revocation linkage."
+    },
+    "subject_hashes": {
+      "status": "provided",
+      "hash_algorithm": "sha256",
+      "description": "Policy engine can expose SHA-256 of the policy bundle and decision payload."
+    },
+    "source_identity": {
+      "status": "provided",
+      "description": "Source identity is the policy decision point identity declared in adapter metadata; this is not a trust decision."
+    },
+    "timestamp_integrity": {
+      "status": "provided",
+      "description": "Decision records carry engine timestamps; v0.2.6 does not verify clock trust."
+    }
+  },
+  "normalization": {
+    "normalized_event_type": "proofrail.adapter.normalized_protected_action_event",
+    "normalization_notes": [
+      "Maps policy effects (permit/deny) to ProofRail allow/deny-style decision observations.",
+      "Maps policy rationale strings to the normalized reason field unchanged.",
+      "Does not assert that the policy bundle itself is correct or up to date."
+    ]
+  },
+  "adapter_limitations": [
+    "Static descriptor only; no real policy engine integration.",
+    "Policy engine only observes evaluations submitted to it; it cannot prove no out-of-band invocations occurred.",
+    "Does not assert that any declared policy is sufficient for the relying-party's purposes."
+  ],
+  "non_claims": [
+    "This adapter is not a certification.",
+    "This adapter does not make the policy engine a trust authority.",
+    "This adapter does not assert that any real policy engine product is conformant."
+  ]
+}

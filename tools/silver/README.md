@@ -18,6 +18,7 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Multi-Agent Harness Evidence Manifest v0.1.0
 - Silver Multi-Agent Demo Package Manifest v0.1.0
 - Silver Multi-Agent Demo Summary v0.1.0
+- Silver Evidence Source Adapter Descriptor v0.1.0
 
 ## Demo Issuer Generator
 
@@ -626,6 +627,55 @@ Verification ordering (hash-first, then parse, then semantic cross-check, then n
 JSON parse errors on `demo-summary.json` are caught and surfaced as `invalid_demo_summary` — no Python traceback leaks. Nested verifier failures are surfaced as the stable top-level reason `nested_harness_evidence_invalid` with the underlying nested context included as a detail string (e.g., `subject_hash_mismatch`).
 
 Exit codes: 0 (package valid), 1 (package invalid), 2 (usage/input error).
+
+## Evidence Source Adapter Validator (v0.2.6)
+
+Validates a Silver Evidence Source Adapter descriptor or a directory of descriptors. Pure-stdlib (no PyYAML, no cryptography). Operates only on the parsed JSON; reads no external logs, fetches no URLs, calls no vendor APIs, and makes no trust decisions.
+
+```bash
+# Validate a single descriptor
+python3 tools/silver/validate_evidence_source_adapter_v0_1_0.py \
+  --adapter examples/silver-evidence-source-adapters/native-proofrail-v0.2.6.json
+
+# Validate a directory of descriptors (with duplicate adapter_id detection)
+python3 tools/silver/validate_evidence_source_adapter_v0_1_0.py \
+  --examples-dir examples/silver-evidence-source-adapters
+```
+
+Validation rules:
+
+1. Top-level shape: required fields, `document_type`, `schema_version`, `proofrail_release`, `adapter_id` matches `^[a-z0-9][a-z0-9._-]*$`.
+2. `source.source_type` must be one of: `native_proofrail`, `gateway`, `observability_trace`, `siem_log`, `policy_engine`, `grc_platform`.
+3. `trust_boundary.source_is_trust_authority` must be exactly `false`; `proofrail_role` must equal `evidence_source`.
+4. `control_surface` block fields present and non-empty (boolean for `controlled_path_required`).
+5. `protected_action_mapping` has non-empty `protected_action_ids` (dotted identifiers) and non-empty source field strings.
+6. All six required evidence capabilities present with `status` ∈ {`provided`, `not_provided`, `not_applicable`}; `provided` requires non-empty `description`; non-provided requires non-empty `limitation`.
+7. `decision_event` must be `provided` and carry all five mapping fields (`event_type`, `timestamp_field`, `decision_field`, `reason_field`, `source_record_id_field`).
+8. `normalization` carries a non-empty `normalized_event_type` and a non-empty `normalization_notes` list (no empty/whitespace-only entries).
+9. `adapter_limitations` and `non_claims` are non-empty lists of non-empty/non-whitespace strings.
+10. Optional `sample_artifact_refs[i].path` rejected if absolute or containing `..`.
+11. Directory mode rejects two descriptors sharing the same `adapter_id`.
+
+### Adapter Validator Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_adapter_descriptor` | Top-level shape error, missing required field, bad `adapter_id`, malformed JSON, etc. |
+| `invalid_source_type` | `source.source_type` not in the v0.2.6 closed set |
+| `source_marked_as_trust_authority` | `trust_boundary.source_is_trust_authority` is not exactly `false` |
+| `control_surface_missing` | `control_surface` block missing or has missing/empty/wrong-typed fields |
+| `protected_action_mapping_missing` | `protected_action_mapping` block missing or has empty / malformed protected action IDs / missing source fields |
+| `evidence_capability_missing` | A required capability missing, has an unknown status, or lacks the required `description`/`limitation` |
+| `decision_event_mapping_missing` | `decision_event` not `provided`, or its required mapping fields are absent/empty |
+| `normalization_notes_missing` | `normalization` block missing, or `normalization_notes` empty / has empty entries |
+| `adapter_limitations_missing` | `adapter_limitations` empty or has empty / whitespace-only entries |
+| `adapter_non_claims_missing` | `non_claims` empty or has empty / whitespace-only entries |
+| `evidence_artifact_path_traversal` | `sample_artifact_refs[i].path` is absolute or contains `..` |
+| `duplicate_adapter_id` | Two descriptors in the same directory share an `adapter_id` |
+
+JSON parse errors are caught and surfaced as `invalid_adapter_descriptor` — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (validation failure), 2 (usage / input-file error).
 
 ## Security Notes
 

@@ -1,0 +1,91 @@
+{
+  "document_type": "proofrail.silver.evidence_source_adapter",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.2.6",
+  "adapter_id": "proofrail-adapter-gateway-mcp-simulated-v0.2.6",
+  "adapter_version": "v0.1.0",
+  "source": {
+    "source_type": "gateway",
+    "source_name": "Simulated MCP gateway evidence source",
+    "vendor_or_project": "simulated",
+    "product_or_component": "simulated-mcp-gateway",
+    "source_version": "example",
+    "deployment_scope": "simulated_external"
+  },
+  "trust_boundary": {
+    "source_is_trust_authority": false,
+    "proofrail_role": "evidence_source",
+    "reliance_statement": "This adapter describes a simulated MCP gateway evidence shape. ProofRail does not treat the gateway as a trust authority."
+  },
+  "control_surface": {
+    "control_surface_type": "mcp_gateway",
+    "description": "Simulated MCP gateway decision event stream observed at the controlled actuation path.",
+    "controlled_path_required": true,
+    "protected_action_channel": "tool_call",
+    "bypass_observation_point": "gateway_denied_or_unseen_direct_call_event",
+    "revocation_observation_point": "gateway_policy_snapshot_or_revocation_check_event"
+  },
+  "protected_action_mapping": {
+    "protected_action_ids": [
+      "payment.release",
+      "vendor.approve",
+      "data.export",
+      "deploy.change"
+    ],
+    "source_action_field": "tool.name",
+    "source_actor_field": "principal.id",
+    "source_subject_field": "resource.id"
+  },
+  "evidence_capabilities": {
+    "decision_event": {
+      "status": "provided",
+      "event_type": "gateway.decision",
+      "timestamp_field": "time",
+      "decision_field": "decision",
+      "reason_field": "reason",
+      "source_record_id_field": "event_id",
+      "description": "Simulated gateway emits a structured decision event per protected tool call attempt."
+    },
+    "bypass_evidence": {
+      "status": "provided",
+      "event_type": "gateway.bypass_attempt",
+      "description": "Records direct-call or off-path attempts observed by the gateway or adjacent monitor."
+    },
+    "revocation_status": {
+      "status": "provided",
+      "event_type": "gateway.revocation_check",
+      "description": "Records policy or authority revocation check result at decision time."
+    },
+    "subject_hashes": {
+      "status": "provided",
+      "hash_algorithm": "sha256",
+      "description": "Source exposes SHA-256 of policy snapshot, decision payload, or selected evidence subjects."
+    },
+    "source_identity": {
+      "status": "provided",
+      "description": "Source identity is declared by gateway deployment metadata; this is not a trust decision."
+    },
+    "timestamp_integrity": {
+      "status": "provided",
+      "description": "Gateway records event timestamps; v0.2.6 does not verify clock trust."
+    }
+  },
+  "normalization": {
+    "normalized_event_type": "proofrail.adapter.normalized_protected_action_event",
+    "normalization_notes": [
+      "Maps gateway decision values to ProofRail allow/deny-style decision observations.",
+      "Maps gateway reason codes to a free-form normalized reason string.",
+      "Does not assert source event authenticity or completeness."
+    ]
+  },
+  "adapter_limitations": [
+    "Static descriptor only; no real MCP gateway integration.",
+    "Does not prove source event authenticity.",
+    "Does not assert that the gateway is correctly deployed in any environment."
+  ],
+  "non_claims": [
+    "This adapter is not a certification.",
+    "This adapter does not make the gateway a trust authority.",
+    "This adapter does not assert that any real gateway product is conformant."
+  ]
+}

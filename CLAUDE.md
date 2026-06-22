@@ -36,6 +36,7 @@ bash tests/test_silver_verifier_output_attestation_v0_1_0.sh
 bash tests/test_silver_multi_principal_authority_v0_2_3.sh
 bash tests/test_silver_multi_agent_attack_harness_v0_2_4.sh
 bash tests/test_silver_multi_agent_trust_boundary_demo_v0_2_5.sh
+bash tests/test_silver_evidence_source_adapter_v0_2_6.sh
 
 # Validate a claim file
 python3 scripts/proofrail_claim.py validate <claim.yaml>
@@ -108,6 +109,15 @@ make run-silver-multi-agent-demo-v0-2-5
 make verify-silver-multi-agent-demo-v0-2-5
 bash tests/test_silver_multi_agent_trust_boundary_demo_v0_2_5.sh
 
+# Silver v0.2.6 evidence source adapter descriptors
+make validate-silver-evidence-source-adapters-v0-2-6
+make verify-silver-evidence-source-adapter-v0-2-6
+bash tests/test_silver_evidence_source_adapter_v0_2_6.sh
+
+# Silver v0.2.6 evidence source adapter validator standalone
+python3 tools/silver/validate_evidence_source_adapter_v0_1_0.py --adapter <adapter.json>
+python3 tools/silver/validate_evidence_source_adapter_v0_1_0.py --examples-dir <dir>
+
 # Silver multi-agent harness tools standalone
 python3 tools/silver/run_multi_agent_attack_harness_v0_1_0.py --script <harness-script.yaml> --authority-fixture <authority-fixture.yaml> --output-dir <output-dir> [--force]
 python3 tools/silver/verify_multi_agent_harness_evidence_v0_1_0.py --manifest <harness-evidence-manifest.json>
@@ -178,10 +188,15 @@ Two claim types: `composed_bronze` (uses existing infrastructure) and `native_br
 - `verify_multi_agent_harness_evidence_v0_1_0.py` — Harness evidence manifest verifier (manifest type/version, path traversal rejection, SHA-256 recomputation, run report and decision report semantic checks)
 - `package_multi_agent_trust_boundary_demo_v0_1_0.py` — Silver v0.2.5 multi-agent trust-boundary demo packager (invokes v0.2.4 harness runner and verifier as subprocesses, derives the eight required claims from the nested run report and transcript, emits `demo-summary.json` and `demo-package-manifest.json`)
 - `verify_multi_agent_trust_boundary_demo_v0_1_0.py` — Silver v0.2.5 demo package verifier (parses the package manifest, recomputes SHA-256 for every package subject, validates `demo-summary.json` and cross-checks claim rules against nested run report / decision reports, then delegates nested verification to the unchanged v0.2.4 verifier; surfaces nested failures as the stable top-level reason `nested_harness_evidence_invalid`)
+- `validate_evidence_source_adapter_v0_1_0.py` — Silver v0.2.6 evidence source adapter descriptor validator (pure-stdlib structural validator; closed set of six `source_type` values; six required evidence capabilities with `provided`/`not_provided`/`not_applicable` statuses; `decision_event` must be `provided` with full mapping fields; rejects empty/whitespace-only strings; supports `--adapter <file>` and `--examples-dir <dir>` modes with duplicate adapter_id detection)
 
 ### Silver Multi-Agent Trust-Boundary Demo: `demos/silver-demo-003-multi-agent-trust-boundary/`
 
 v0.2.5 packages the v0.2.4 multi-agent attack harness into a local demo. The committed demo directory holds only the README and walkthrough; the packager writes runtime output under `/tmp` (default `/tmp/proofrail-silver-multi-agent-demo-v0.2.5/`) and is never staged into the repository. Eight claims are derived deterministically from the v0.2.4 harness run report: `harmless_messages_proceed`, `protected_actions_require_scoped_authority`, `unauthorized_delegation_fails`, `bypass_attempts_blocked`, `revoked_authority_fails`, `out_of_scope_actions_fail`, `evidence_is_hash_verifiable`, and `no_protected_actions_executed`. The verifier re-invokes the unchanged v0.2.4 verifier on the nested manifest. See `docs/silver/silver-multi-agent-trust-boundary-demo-v0.2.5.md` and `docs/gold/gold-boundary-v0.2.5.md`.
+
+### Silver Evidence Source Adapter Profile: `examples/silver-evidence-source-adapters/`
+
+v0.2.6 adds a descriptor profile for evidence sources (gateway, observability trace, SIEM, policy engine, GRC platform, native ProofRail). Six canonical static JSON descriptors live in `examples/silver-evidence-source-adapters/`. A descriptor declares how a source's events map to ProofRail-relevant evidence fields and what the source does **not** assert. Descriptors are not evidence, not trust decisions, and not certifications. The GRC platform example is explicitly framed as workflow / risk / approval evidence only, with limitations stating workflow approval is not technical enforcement and not sufficient by itself for protected-action reliance. The local structural validator `tools/silver/validate_evidence_source_adapter_v0_1_0.py` rejects out-of-set source types, missing capabilities, missing `decision_event` mapping, empty/whitespace-only strings, sample-artifact-ref path traversal, and duplicate adapter IDs in directory mode. See `docs/silver/silver-evidence-source-adapter-profile-v0.2.6.md` and `schemas/silver-evidence-source-adapter-v0.1.0.md`.
 
 ### Independent Silver Verifier Demo: `demos/silver-demo-002-independent-verifier/`
 

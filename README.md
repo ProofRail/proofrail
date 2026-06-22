@@ -2,17 +2,17 @@
 
 Status: public documentation repository and capability demonstrations. Specifications, profiles, sanitized attestations, and examples are published here. Raw deployment evidence and security-sensitive operational details remain private.
 
-ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence and Silver v0.2.5 multi-agent trust-boundary demo packaging plus the first Gold boundary documentation.
+ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence, Silver v0.2.5 multi-agent trust-boundary demo packaging plus the first Gold boundary documentation, and Silver v0.2.6 evidence source adapter descriptors.
 
 As AI agents gain access to tools, APIs, workflows, other AI agents, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
 ProofRail defines that evidence layer.
 
-This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.2 adds detached verifier output attestations, making Silver verification outputs attributable and tamper-evident while preserving the boundary between Silver evidence-package reliance and Gold governed acceptance. v0.2.3 adds deterministic multi-principal authority fixtures, showing that protected actions can be evaluated against scoped, revocation-aware authority before any simulated actuator path is allowed. v0.2.4 adds a deterministic, scripted multi-principal agent attack harness that drives the unchanged v0.2.3 evaluator across a canonical attack scenario and produces hash-anchored local harness evidence. v0.2.5 packages that harness evidence into a local multi-agent trust-boundary demo with eight deterministically derived claims, hash-anchored package manifest, and the first explicit Gold boundary documentation. v0.2.5 names the Gold boundary. It does not cross it.
+This project began with Iron-plus, a live reference profile for MCP actuation control, and extended through Bronze, a local-enterprise conformance profile that can be implemented either through ProofRail-native components or through composed stacks using existing gateways, identity providers, observability tools, SIEM/logging systems, and runbooks. Silver adds signed, revocable, reportable, and independently verifiable evidence-package reliance. ProofRail v0.2.2 adds detached verifier output attestations, making Silver verification outputs attributable and tamper-evident while preserving the boundary between Silver evidence-package reliance and Gold governed acceptance. v0.2.3 adds deterministic multi-principal authority fixtures, showing that protected actions can be evaluated against scoped, revocation-aware authority before any simulated actuator path is allowed. v0.2.4 adds a deterministic, scripted multi-principal agent attack harness that drives the unchanged v0.2.3 evaluator across a canonical attack scenario and produces hash-anchored local harness evidence. v0.2.5 packages that harness evidence into a local multi-agent trust-boundary demo with eight deterministically derived claims, hash-anchored package manifest, and the first explicit Gold boundary documentation. v0.2.5 names the Gold boundary. It does not cross it. v0.2.6 adds an evidence source adapter profile: six canonical static JSON descriptors and a local structural validator that declare how evidence sources (gateway, observability trace, SIEM, policy engine, GRC platform, native ProofRail) map their outputs into ProofRail-relevant evidence fields. v0.2.6 defines how evidence sources describe their outputs. It does not make those sources trustworthy.
 
 ## Current Proof Chain
 
-Iron-plus → Composed Bronze → Bronze v0.1.2 checksums → Bronze v0.1.3 bundle manifest → Minimal Silver signed assertion → local revocation → structured verifier report → verification outside the repo source tree → Silver relying-party profile → profile conformance report → verifier output attestation → deterministic authority fixtures
+Iron-plus → Composed Bronze → Bronze v0.1.2 checksums → Bronze v0.1.3 bundle manifest → Minimal Silver signed assertion → local revocation → structured verifier report → verification outside the repo source tree → Silver relying-party profile → profile conformance report → verifier output attestation → deterministic authority fixtures → multi-agent attack harness → multi-agent trust-boundary demo → evidence source adapter descriptors
 
 ProofRail v0.2.0 defines and validates a local Silver relying-party profile for accepting a signed, revocable, reportable evidence package, with a stronger independent verification mode.  v0.2.2 provides verifier output attestation as attribution and tamper evidence for verifier outputs. It is not certification, regulator approval, production PKI, or Gold governed acceptance. v0.2.3 adds deterministic multi-principal authority fixtures.
 
@@ -124,6 +124,7 @@ This is still a demo-grade framework. It does not claim production certification
 | Silver | Multi-Agent Harness Evidence Manifest | v0.1.0 | SHA-256 manifest over harness output artifacts |
 | Silver | Multi-Agent Demo Package Manifest | v0.1.0 | SHA-256 manifest packaging the v0.2.4 harness evidence into a local demo |
 | Silver | Multi-Agent Demo Summary | v0.1.0 | Eight deterministically derived claims over the packaged harness evidence |
+| Silver | Evidence Source Adapter Descriptor | v0.1.0 | Static declaration of how an evidence source maps into ProofRail-relevant fields |
 
 Artifact schema versions and repository release versions intentionally differ. Repository releases advance when a new profile, demo, evidence chain, or conformance behavior becomes available; individual schemas advance only when that artifact changes.
 
@@ -195,9 +196,33 @@ make verify-silver-multi-agent-demo-v0-2-5
 
 ---
 
+## What ProofRail v0.2.6 Adds
+
+ProofRail v0.2.6 introduces the **Silver Evidence Source Adapter** profile. It adds:
+
+- a structured descriptor schema (`schemas/silver-evidence-source-adapter-v0.1.0.md`);
+- six canonical static JSON descriptors (`examples/silver-evidence-source-adapters/`) covering native ProofRail, gateway, observability trace, SIEM, policy engine, and GRC platform sources;
+- a local pure-stdlib structural validator (`tools/silver/validate_evidence_source_adapter_v0_1_0.py`) supporting single-file and directory modes;
+- an 18-step regression test (`tests/test_silver_evidence_source_adapter_v0_2_6.sh`).
+
+A descriptor declares how an evidence source maps its records into ProofRail-relevant evidence fields, and — crucially — what the source does **not** assert. Each descriptor lists six required evidence capabilities (`decision_event`, `bypass_evidence`, `revocation_status`, `subject_hashes`, `source_identity`, `timestamp_integrity`) with `provided`, `not_provided`, or `not_applicable` status, mandatory limitation text for non-provided capabilities, and explicit `adapter_limitations` and `non_claims` blocks.
+
+The GRC platform descriptor is explicitly framed as workflow / risk / approval evidence only. Its limitations state that workflow approval is **not technical enforcement** and **not sufficient by itself** for protected-action reliance — technical decision evidence from a gateway, policy engine, or native ProofRail run is required.
+
+> v0.2.6 defines how evidence sources describe their outputs. It does not make those sources trustworthy.
+
+Run and verify the v0.2.6 descriptors locally:
+
+```bash
+make validate-silver-evidence-source-adapters-v0-2-6
+make verify-silver-evidence-source-adapter-v0-2-6
+```
+
+---
+
 ## What ProofRail Does Not Claim
 
-ProofRail v0.2.5 does not claim:
+ProofRail v0.2.6 does not claim:
 
 - Gold certification;
 - third-party certification;
@@ -205,9 +230,10 @@ ProofRail v0.2.5 does not claim:
 - production PKI;
 - production deployment assurance;
 - audit opinion;
-- public accreditation.
+- public accreditation;
+- that any real gateway, observability stack, SIEM, policy engine, or GRC platform is conformant with ProofRail.
 
-Silver profile conformance is local relying-party verification, not certification of a live system. The v0.2.5 multi-agent trust-boundary demo is a local, deterministic re-packaging of v0.2.4 harness evidence; it does not execute live agents, does not invoke live actuators, does not parse natural-language prompts, does not detect prompt injection, and does not cross the Gold boundary.
+Silver profile conformance is local relying-party verification, not certification of a live system. The v0.2.5 multi-agent trust-boundary demo is a local, deterministic re-packaging of v0.2.4 harness evidence; it does not execute live agents, does not invoke live actuators, does not parse natural-language prompts, does not detect prompt injection, and does not cross the Gold boundary. The v0.2.6 evidence source adapter descriptors are static declarations only; they do not integrate with any real product, do not certify their declared sources, and do not assert that a declared source actually behaves as described.
 
 ---
 

@@ -1,0 +1,89 @@
+{
+  "document_type": "proofrail.silver.evidence_source_adapter",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.2.6",
+  "adapter_id": "proofrail-adapter-siem-log-simulated-v0.2.6",
+  "adapter_version": "v0.1.0",
+  "source": {
+    "source_type": "siem_log",
+    "source_name": "Simulated SIEM/security log evidence source",
+    "vendor_or_project": "simulated",
+    "product_or_component": "simulated-siem-correlator",
+    "source_version": "example",
+    "deployment_scope": "simulated_external"
+  },
+  "trust_boundary": {
+    "source_is_trust_authority": false,
+    "proofrail_role": "evidence_source",
+    "reliance_statement": "This adapter describes a simulated SIEM/security log evidence shape. SIEM correlations are observations, not authoritative ProofRail decisions."
+  },
+  "control_surface": {
+    "control_surface_type": "siem_correlation",
+    "description": "Simulated SIEM/security log records correlating actor identity, protected action invocation, and observed decision outcome.",
+    "controlled_path_required": true,
+    "protected_action_channel": "security_log_record",
+    "bypass_observation_point": "siem_alert_unauthorized_direct_path_invocation",
+    "revocation_observation_point": "not_supplied_by_this_source"
+  },
+  "protected_action_mapping": {
+    "protected_action_ids": [
+      "payment.release",
+      "vendor.approve",
+      "data.export",
+      "deploy.change"
+    ],
+    "source_action_field": "event.action",
+    "source_actor_field": "event.actor.id",
+    "source_subject_field": "event.subject.id"
+  },
+  "evidence_capabilities": {
+    "decision_event": {
+      "status": "provided",
+      "event_type": "siem.decision_record",
+      "timestamp_field": "event.observed_at",
+      "decision_field": "event.outcome",
+      "reason_field": "event.outcome_reason",
+      "source_record_id_field": "event.record_id",
+      "description": "Simulated SIEM record summarizing a correlated decision observation for a protected action."
+    },
+    "bypass_evidence": {
+      "status": "provided",
+      "event_type": "siem.bypass_alert",
+      "description": "Simulated correlation alert when a protected action is observed outside the controlled path."
+    },
+    "revocation_status": {
+      "status": "not_provided",
+      "limitation": "SIEM correlations do not author authoritative revocation status; revocation evidence should come from the authority/gateway/policy source."
+    },
+    "subject_hashes": {
+      "status": "not_provided",
+      "limitation": "Security log payloads typically do not include content hashes of decision subjects; the manifest or gateway should supply subject hashes."
+    },
+    "source_identity": {
+      "status": "provided",
+      "description": "Source identity is the SIEM/correlator identity declared in adapter metadata; this is not a trust decision."
+    },
+    "timestamp_integrity": {
+      "status": "provided",
+      "description": "SIEM records observation timestamps; v0.2.6 does not verify collector clock trust or log immutability."
+    }
+  },
+  "normalization": {
+    "normalized_event_type": "proofrail.adapter.normalized_protected_action_event",
+    "normalization_notes": [
+      "Maps SIEM outcome strings to ProofRail allow/deny-style decision observations.",
+      "Maps SIEM correlation reason codes to the normalized reason field unchanged.",
+      "Does not assert that the SIEM log is tamper-evident or complete."
+    ]
+  },
+  "adapter_limitations": [
+    "Static descriptor only; no real SIEM integration.",
+    "SIEM correlations are observations, not authoritative decisions.",
+    "Does not prove log authenticity, immutability, or completeness."
+  ],
+  "non_claims": [
+    "This adapter is not a certification.",
+    "This adapter does not make the SIEM a trust authority.",
+    "This adapter does not assert that any real SIEM product is conformant."
+  ]
+}

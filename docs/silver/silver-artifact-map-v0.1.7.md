@@ -341,3 +341,25 @@ Bronze claim
 ```
 
 v0.2.5 names the Gold boundary. It does not cross it. There is no Gold schema, validator, or certificate in this release. See `docs/gold/gold-boundary-v0.2.5.md`.
+
+## v0.2.6 Update: Evidence Source Adapter Profile
+
+Silver v0.2.6 adds an evidence source adapter descriptor profile. Six canonical static JSON descriptors declare how representative evidence sources map their outputs into ProofRail-relevant evidence fields. The descriptors are not evidence, not trust decisions, and not certifications.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Evidence Source Adapter Descriptor | v0.1.0 | Static declaration of how an evidence source maps to ProofRail-relevant fields | `schemas/silver-evidence-source-adapter-v0.1.0.md` |
+| Doc | Silver Evidence Source Adapter Profile | v0.2.6 | Profile narrative document | `docs/silver/silver-evidence-source-adapter-profile-v0.2.6.md` |
+
+Canonical descriptors (`examples/silver-evidence-source-adapters/`) cover six closed source types:
+
+- `native_proofrail` — first-party ProofRail / Iron-plus / Bronze evidence emitter
+- `gateway` — MCP / API / actuator gateway
+- `observability_trace` — distributed trace collector
+- `siem_log` — security log / correlator
+- `policy_engine` — policy decision point
+- `grc_platform` — governance / risk / compliance workflow source (explicitly framed as workflow approval evidence only, **not** technical enforcement)
+
+The validator `tools/silver/validate_evidence_source_adapter_v0_1_0.py` is pure-stdlib and operates only on the parsed descriptor JSON. It rejects out-of-set source types, missing capabilities, missing `decision_event` mapping, empty/whitespace-only strings, sample-artifact-ref path traversal, and duplicate adapter IDs in directory mode.
+
+The evidence chain is unchanged. Adapter descriptors sit **next to** Bronze claims and Silver bundles as static declarations of source-evidence shape, not above or below them. v0.2.6 defines how evidence sources describe their outputs. It does not make those sources trustworthy.

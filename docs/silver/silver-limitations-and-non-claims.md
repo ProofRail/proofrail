@@ -307,6 +307,34 @@ There is no Gold schema, no Gold validator, no Gold certificate, no governing bo
 
 ---
 
+## v0.2.6 Evidence Source Adapter Profile
+
+Silver v0.2.6 adds an evidence source adapter descriptor profile: a structured way for an evidence source (gateway, observability trace system, SIEM, policy engine, GRC platform, or native ProofRail tooling) to declare how its records map into ProofRail-relevant evidence fields.
+
+The v0.2.6 profile is:
+
+- A schema, six canonical static JSON descriptors, and a pure-stdlib structural validator.
+- A local, deterministic descriptor check (`tools/silver/validate_evidence_source_adapter_v0_1_0.py`).
+- A statement of capability presence/absence per source, including explicit limitation strings for non-provided capabilities.
+- A statement of `adapter_limitations` and `non_claims` per descriptor.
+
+The v0.2.6 profile is **not**:
+
+- Evidence by itself. A descriptor declares how an adapter would emit evidence; it is not evidence.
+- A trust decision. `trust_boundary.source_is_trust_authority` must be exactly `false`. The descriptor's `proofrail_role` is `evidence_source`.
+- A certification. The descriptors do not certify any real gateway, observability stack, SIEM, policy engine, or GRC platform.
+- A runtime integration. Descriptors are static documents. No vendor APIs are called and no external logs are read.
+- A claim that a declared source actually behaves as described. The validator only checks the descriptor shape.
+- A claim that workflow approval is technical enforcement. The GRC platform descriptor is explicitly framed as workflow / risk / approval evidence only; its limitations state that workflow approval is **not technical enforcement** and **not sufficient by itself** for protected-action reliance — technical decision evidence from a gateway, policy engine, or native ProofRail run is required.
+
+The key claim:
+
+> v0.2.6 defines how evidence sources describe their outputs. It does not make those sources trustworthy.
+
+ProofRail is not the gateway, not the SIEM, not the policy engine, and not the GRC platform. v0.2.6 records what each kind of source contributes to ProofRail evidence and, just as importantly, what it explicitly does not assert.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

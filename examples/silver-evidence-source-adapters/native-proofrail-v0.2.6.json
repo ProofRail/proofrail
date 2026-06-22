@@ -1,0 +1,91 @@
+{
+  "document_type": "proofrail.silver.evidence_source_adapter",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.2.6",
+  "adapter_id": "proofrail-adapter-native-proofrail-v0.2.6",
+  "adapter_version": "v0.1.0",
+  "source": {
+    "source_type": "native_proofrail",
+    "source_name": "Native ProofRail evidence source",
+    "vendor_or_project": "proofrail",
+    "product_or_component": "proofrail-silver-tooling",
+    "source_version": "v0.2.5",
+    "deployment_scope": "native_local"
+  },
+  "trust_boundary": {
+    "source_is_trust_authority": false,
+    "proofrail_role": "evidence_source",
+    "reliance_statement": "This adapter describes evidence produced by existing ProofRail tools. The tools generate local evidence; they are not a trust authority."
+  },
+  "control_surface": {
+    "control_surface_type": "proofrail_native",
+    "description": "Evidence produced by the ProofRail multi-principal authority evaluator and multi-agent harness over local fixtures.",
+    "controlled_path_required": true,
+    "protected_action_channel": "evaluator_invocation",
+    "bypass_observation_point": "harness_recorded_bypass_attempt_event",
+    "revocation_observation_point": "authority_fixture_revocation_marker_and_decision_time"
+  },
+  "protected_action_mapping": {
+    "protected_action_ids": [
+      "payment.release",
+      "vendor.approve",
+      "data.export",
+      "deploy.change"
+    ],
+    "source_action_field": "request.action_id",
+    "source_actor_field": "request.requesting_principal_id",
+    "source_subject_field": "request.parameters.resource_id"
+  },
+  "evidence_capabilities": {
+    "decision_event": {
+      "status": "provided",
+      "event_type": "proofrail.protected_action_decision_report",
+      "timestamp_field": "decision_time",
+      "decision_field": "decision.status",
+      "reason_field": "decision.reason",
+      "source_record_id_field": "request.request_id",
+      "description": "ProofRail decision reports from the v0.2.3 authority evaluator. Each report carries execution.performed == false."
+    },
+    "bypass_evidence": {
+      "status": "provided",
+      "event_type": "proofrail.harness.bypass_attempt",
+      "description": "v0.2.4 harness transcript records bypass attempts with harness_outcome bypass_blocked and harness_reason bypass_attempt_detected."
+    },
+    "revocation_status": {
+      "status": "provided",
+      "event_type": "proofrail.harness.revocation_marker",
+      "description": "Revocation marker events in the v0.2.4 harness transcript drive decision-time-based revocation checks against the v0.2.3 fixture."
+    },
+    "subject_hashes": {
+      "status": "provided",
+      "hash_algorithm": "sha256",
+      "description": "Bronze evidence bundle manifest, harness evidence manifest, and multi-agent demo package manifest all carry SHA-256 over their subjects."
+    },
+    "source_identity": {
+      "status": "provided",
+      "description": "Source identity is the local ProofRail toolchain version recorded in each report's report_version / report_type fields. Declaration only; not a trust decision."
+    },
+    "timestamp_integrity": {
+      "status": "provided",
+      "description": "Timestamps are wall-clock values recorded by the local toolchain. v0.2.6 does not verify clock trust."
+    }
+  },
+  "normalization": {
+    "normalized_event_type": "proofrail.adapter.normalized_protected_action_event",
+    "normalization_notes": [
+      "Maps ProofRail decision.status (allow/deny) to the normalized decision observation.",
+      "Maps decision.reason to the normalized reason field unchanged.",
+      "Does not assert that the underlying ProofRail run is itself trustworthy."
+    ]
+  },
+  "adapter_limitations": [
+    "Static descriptor only; describes existing ProofRail tooling behavior.",
+    "Does not prove that the local ProofRail toolchain has not been tampered with.",
+    "Does not assert that local timestamps are authoritative."
+  ],
+  "non_claims": [
+    "This adapter is not a certification.",
+    "This adapter does not make the local ProofRail toolchain a trust authority.",
+    "This adapter does not constitute Gold acceptance."
+  ]
+}

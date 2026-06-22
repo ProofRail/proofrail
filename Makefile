@@ -154,6 +154,15 @@ run-silver-multi-agent-demo-v0-2-5:
 verify-silver-multi-agent-demo-v0-2-5:
 	bash tests/test_silver_multi_agent_trust_boundary_demo_v0_2_5.sh
 
+.PHONY: validate-silver-evidence-source-adapters-v0-2-6
+validate-silver-evidence-source-adapters-v0-2-6:
+	python3 tools/silver/validate_evidence_source_adapter_v0_1_0.py \
+	  --examples-dir examples/silver-evidence-source-adapters
+
+.PHONY: verify-silver-evidence-source-adapter-v0-2-6
+verify-silver-evidence-source-adapter-v0-2-6:
+	bash tests/test_silver_evidence_source_adapter_v0_2_6.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -165,3 +174,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-authority-v0-2-3
 	$(MAKE) verify-silver-multi-agent-harness-v0-2-4
 	$(MAKE) verify-silver-multi-agent-demo-v0-2-5
+	$(MAKE) verify-silver-evidence-source-adapter-v0-2-6

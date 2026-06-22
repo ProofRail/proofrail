@@ -1,0 +1,91 @@
+{
+  "document_type": "proofrail.silver.evidence_source_adapter",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.2.6",
+  "adapter_id": "proofrail-adapter-grc-platform-simulated-v0.2.6",
+  "adapter_version": "v0.1.0",
+  "source": {
+    "source_type": "grc_platform",
+    "source_name": "Simulated GRC workflow/risk/approval evidence source",
+    "vendor_or_project": "simulated",
+    "product_or_component": "simulated-grc-workflow-platform",
+    "source_version": "example",
+    "deployment_scope": "simulated_external"
+  },
+  "trust_boundary": {
+    "source_is_trust_authority": false,
+    "proofrail_role": "evidence_source",
+    "reliance_statement": "This adapter describes a simulated GRC workflow/risk/approval evidence shape. Workflow approvals are organizational decisions; they are not technical enforcement of a protected action."
+  },
+  "control_surface": {
+    "control_surface_type": "grc_workflow",
+    "description": "Simulated GRC platform emitting workflow/risk/approval decision records for declared change, access, or release requests. Approvals are governance signals, not runtime enforcement.",
+    "controlled_path_required": false,
+    "protected_action_channel": "workflow_decision_record",
+    "bypass_observation_point": "not_supplied_by_this_source",
+    "revocation_observation_point": "workflow_approval_withdrawal_record"
+  },
+  "protected_action_mapping": {
+    "protected_action_ids": [
+      "payment.release",
+      "vendor.approve",
+      "data.export",
+      "deploy.change"
+    ],
+    "source_action_field": "workflow.request_type",
+    "source_actor_field": "workflow.requestor.id",
+    "source_subject_field": "workflow.subject.id"
+  },
+  "evidence_capabilities": {
+    "decision_event": {
+      "status": "provided",
+      "event_type": "grc.workflow_decision",
+      "timestamp_field": "decision.recorded_at",
+      "decision_field": "decision.outcome",
+      "reason_field": "decision.justification",
+      "source_record_id_field": "decision.workflow_id",
+      "description": "Simulated GRC workflow/risk/approval decision evidence. This is a recorded organizational approval, not a runtime protected-action enforcement event."
+    },
+    "bypass_evidence": {
+      "status": "not_provided",
+      "limitation": "GRC platforms record approvals; they do not observe whether the protected action was actually invoked through a controlled path. Bypass evidence must come from a gateway, SIEM, or native ProofRail bypass tester."
+    },
+    "revocation_status": {
+      "status": "provided",
+      "event_type": "grc.approval_withdrawn",
+      "description": "Workflow can record withdrawal of a prior approval; this is approval-level revocation, not runtime authority revocation."
+    },
+    "subject_hashes": {
+      "status": "not_provided",
+      "limitation": "GRC workflow records typically reference subjects by identifier rather than by content hash; subject hashes should come from the manifest or a technical evidence source."
+    },
+    "source_identity": {
+      "status": "provided",
+      "description": "Source identity is the GRC platform identity declared in adapter metadata; this is not a trust decision."
+    },
+    "timestamp_integrity": {
+      "status": "not_provided",
+      "limitation": "GRC platforms record administrative timestamps; v0.2.6 does not verify clock trust or assert that workflow timestamps reflect runtime enforcement times."
+    }
+  },
+  "normalization": {
+    "normalized_event_type": "proofrail.adapter.normalized_protected_action_event",
+    "normalization_notes": [
+      "Maps GRC workflow outcomes (approved/rejected) to ProofRail allow/deny-style decision observations as workflow-level evidence only.",
+      "Maps workflow justification strings to the normalized reason field unchanged.",
+      "Does not assert that workflow approval implies the protected action was technically enforced at runtime."
+    ]
+  },
+  "adapter_limitations": [
+    "Static descriptor only; no real GRC platform integration.",
+    "Workflow approval is not technical enforcement.",
+    "Workflow approval alone is not sufficient for protected-action reliance; technical decision evidence from a gateway, policy engine, or native ProofRail run is required.",
+    "Does not prove that the approved action was actually invoked through a controlled path."
+  ],
+  "non_claims": [
+    "This adapter is not a certification.",
+    "This adapter does not make the GRC platform a trust authority.",
+    "This adapter does not assert that workflow approval substitutes for technical enforcement.",
+    "This adapter does not assert that any real GRC product is conformant."
+  ]
+}
