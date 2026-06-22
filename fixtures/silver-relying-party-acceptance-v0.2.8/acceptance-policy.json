@@ -1,0 +1,43 @@
+{
+  "allowed_decisions": [
+    "accepted",
+    "rejected",
+    "accepted_with_exceptions"
+  ],
+  "allowed_evidence_types": [
+    "proofrail.silver.composed_gateway_evidence_manifest"
+  ],
+  "allowed_purposes": [
+    "demo_trust_boundary_review"
+  ],
+  "challenge_window": {
+    "maximum_days": 90,
+    "minimum_days": 7,
+    "required": true
+  },
+  "document_type": "proofrail.silver.relying_party_acceptance_policy",
+  "non_claims": [
+    "This policy is local to the demo relying party.",
+    "This policy is not Gold certification.",
+    "This policy does not create regulator approval or legal reliance."
+  ],
+  "policy_id": "proofrail-demo-relying-party-policy-v0.2.8",
+  "policy_version": "v0.1.0",
+  "proofrail_release": "v0.2.8",
+  "relying_party": {
+    "display_name": "Demo Relying Party",
+    "relying_party_id": "demo.relying_party"
+  },
+  "required_verification": {
+    "required_result": "pass",
+    "verifier_tool": "tools/silver/verify_composed_gateway_evidence_demo_v0_1_0.py"
+  },
+  "revocation_requirements": {
+    "accepted_outcomes": [
+      "no_revoked_authority_accepted",
+      "revoked_authority_rejected"
+    ],
+    "revocation_review_required": true
+  },
+  "schema_version": "v0.1.0"
+}

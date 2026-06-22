@@ -399,3 +399,38 @@ Bronze claim
   → multi-agent trust-boundary demo package manifest + demo summary
   → composed gateway evidence report + composed gateway evidence manifest
 ```
+
+## v0.2.8 Update: Relying-Party Acceptance Record
+
+Silver v0.2.8 introduces a local, hash-anchored relying-party acceptance record over a verified v0.2.7 composed gateway evidence package. The record binds a named local policy, declared purpose, verifier outcome, revocation review, exceptions, scope limitations, and challenge window. It is the first ProofRail artifact that explicitly names a relying-party decision.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Relying-Party Acceptance Policy | v0.1.0 | Static local policy declaring what a relying party will accept | `schemas/silver-relying-party-acceptance-policy-v0.1.0.md` |
+| Silver | Relying-Party Acceptance Record | v0.1.0 | Local decision over a verified Silver evidence package | `schemas/silver-relying-party-acceptance-record-v0.1.0.md` |
+| Silver | Relying-Party Acceptance Package Manifest | v0.1.0 | Three-subject hash anchor binding policy, evidence manifest, and record | `schemas/silver-relying-party-acceptance-package-manifest-v0.1.0.md` |
+| Doc | Silver Relying-Party Acceptance Record | v0.2.8 | Release narrative document | `docs/silver/silver-relying-party-acceptance-record-v0.2.8.md` |
+
+The generator (`tools/silver/generate_relying_party_acceptance_record_v0_1_0.py`) subprocess-invokes the unchanged v0.2.7 verifier, derives the revocation review outcome from the sibling composed gateway evidence report's `revoked_authority_fails` claim, and refuses `--decision accepted` with `FAIL: evidence_verification_failed: <detail>` (exit 1) when v0.2.7 verification fails. The validator (`tools/silver/validate_relying_party_acceptance_record_v0_1_0.py`) runs 22 ordered hash-first checks against a 21-reason stable set and never emits the generator-only `evidence_verification_failed`. Three verification-related failure codes (`evidence_verification_required`, `evidence_verification_failed`, `external_evidence_verification_failed`) are deliberately distinct.
+
+A relying-party acceptance record is not a Gold certificate, regulator approval, third-party audit, or legal acceptance instrument. v0.2.8 records acceptance context. It does not execute acceptance governance.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+  → multi-principal authority decision reports
+  → multi-agent harness transcript + run report + evidence manifest
+  → multi-agent trust-boundary demo package manifest + demo summary
+  → composed gateway evidence report + composed gateway evidence manifest
+  → relying-party acceptance policy + acceptance record + acceptance package manifest
+```

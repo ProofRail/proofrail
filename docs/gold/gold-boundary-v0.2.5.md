@@ -117,3 +117,29 @@ And:
 ## 8. Changelog
 
 - **v0.2.5 (2026-06-21):** First Gold boundary document. Documentation only.
+
+---
+
+## 9. Note on v0.2.8 Relying-Party Acceptance Record
+
+Silver v0.2.8 introduces a deterministic, hash-anchored local relying-party acceptance record over a verified v0.2.7 composed gateway evidence package. The record binds a named local acceptance policy, declared purpose, verifier outcome, revocation review, exceptions, scope limitations, and challenge window.
+
+The v0.2.8 acceptance record is the first ProofRail artifact that explicitly names a relying-party acceptance decision. It is **still Silver, not Gold**:
+
+- It records *one* fictional demo relying party's decision under that party's *own* local policy. It does not coordinate, chain, federate, or arbitrate decisions across parties.
+- It is not signed. v0.2.8 ships local hash anchors only.
+- It does not invoke any external acceptance authority, governance workflow, regulator, auditor, registry, or sign-off body.
+- The fixture relying party (`demo.relying_party`) is fictional. No real relying-party has authored that policy.
+- The record's challenge window is a *local* placeholder for the period during which the relying party will entertain a recorded objection; it is not a formal dispute process.
+
+Gold-level acceptance (as inventoried in §5 above) still requires the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity, retention, change-control, revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.2.8 does not add any of those.
+
+The release sentence holds:
+
+> v0.2.8 records a relying party's local acceptance decision over verified Silver evidence. It does not certify the evidence, the system, the gateway, or the relying party.
+
+A relying-party acceptance record is not a Gold certificate, regulator approval, third-party audit, or legal acceptance instrument.
+
+v0.2.8 records acceptance context. It does not execute acceptance governance.
+
+v0.2.8 names a relying-party decision. It does not cross the Gold boundary.

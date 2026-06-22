@@ -755,6 +755,82 @@ JSON parse errors are caught and surfaced as the appropriate stable reason — n
 
 Exit codes: 0 (valid), 1 (validation failure), 2 (usage/input error).
 
+## Relying-Party Acceptance Record Generator (v0.2.8)
+
+Generates a local, hash-anchored relying-party acceptance record over a verified v0.2.7 composed gateway evidence package. Pure-stdlib. Subprocess-invokes the unchanged v0.2.7 verifier. Does not sign the record, does not contact any real relying party, and does not execute any protected action.
+
+```bash
+python3 tools/silver/generate_relying_party_acceptance_record_v0_1_0.py \
+  --policy fixtures/silver-relying-party-acceptance-v0.2.8/acceptance-policy.json \
+  --evidence-manifest /tmp/proofrail-silver-composed-gateway-demo-v0.2.7/composed-gateway-evidence-manifest.json \
+  --decision accepted \
+  --purpose demo_trust_boundary_review \
+  --decision-maker demo.relying_party.local_reviewer \
+  --generated-at 2026-06-22T00:00:00Z \
+  --challenge-closes-at 2026-07-22T00:00:00Z \
+  --output-dir /tmp/proofrail-silver-relying-party-acceptance-v0.2.8 \
+  --force
+```
+
+The generator:
+
+1. Refuses to overwrite a non-empty `--output-dir` unless `--force` is supplied.
+2. Validates ISO-8601 Z-suffixed `--generated-at`, `--challenge-closes-at`, and optional `--challenge-opens-at`.
+3. Parses the acceptance policy and confirms `--decision` is in `policy.allowed_decisions` and `--purpose` is in `policy.allowed_purposes`.
+4. Subprocess-invokes the v0.2.7 verifier on `--evidence-manifest` and captures pass/fail with first-line failure reason.
+5. **Refusal:** for `--decision accepted` with a non-zero v0.2.7 verifier exit, prints `FAIL: evidence_verification_failed: <detail>` to stderr and exits **1** without writing any partial package.
+6. Derives `revocation_review.outcome` from the sibling `composed-gateway-evidence-report.json`'s `revoked_authority_fails` claim status (`pass` → `no_revoked_authority_accepted`; `fail` or missing → `revoked_authority_rejected`).
+7. Copies the policy and the evidence manifest into the output directory under their canonical paths (only the manifest is copied; the full v0.2.7 package remains external).
+8. Emits `acceptance-record.json` with deterministic field shape.
+9. Emits `acceptance-package-manifest.json` with three subjects in the fixed v0.2.8 order (`acceptance-policy.json`, `evidence/composed-gateway-evidence-manifest.json`, `acceptance-record.json`).
+10. Optionally subprocess-invokes the v0.2.8 validator when `--self-validate` is supplied.
+
+Exit codes: 0 (success), 1 (generation refused / self-validate failed), 2 (usage/input error).
+
+## Relying-Party Acceptance Record Validator (v0.2.8)
+
+Validates a v0.2.8 relying-party acceptance package. Pure-stdlib. Hash-first ordering. Optional `--evidence-package-root` re-invokes the v0.2.7 verifier against the original package.
+
+```bash
+python3 tools/silver/validate_relying_party_acceptance_record_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-relying-party-acceptance-v0.2.8/acceptance-package-manifest.json \
+  [--evidence-package-root /tmp/proofrail-silver-composed-gateway-demo-v0.2.7]
+```
+
+The validator runs 22 ordered checks and never emits the generator-only `evidence_verification_failed` code.
+
+### Acceptance Validator Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_acceptance_package_manifest` | Manifest shape, type, version, hash algorithm, subject count/order/roles, or required limitations/non-claims invalid |
+| `acceptance_subject_file_missing` | A manifest subject file is missing |
+| `acceptance_subject_path_traversal` | A subject path contains `..` or is absolute |
+| `acceptance_subject_hash_mismatch` | Recomputed SHA-256 differs from recorded hash |
+| `invalid_acceptance_policy` | Acceptance policy JSON malformed or fails structural checks (e.g., wrong `document_type`, missing `allowed_decisions` set) |
+| `invalid_acceptance_record` | Acceptance record JSON malformed or fails structural checks (no Python traceback leaks) |
+| `policy_mismatch` | Record's `relying_party.policy_id` or `policy_version` disagrees with the policy |
+| `relying_party_mismatch` | Record's `relying_party.relying_party_id` disagrees with the policy |
+| `purpose_not_allowed` | Record's `decision.purpose_id` is not in `policy.allowed_purposes` |
+| `evidence_type_not_allowed` | Record's `evidence_package.evidence_type` is not in `policy.allowed_evidence_types` |
+| `evidence_manifest_hash_mismatch` | Recomputed SHA-256 of copied evidence manifest disagrees with `record.evidence_package.manifest_sha256` |
+| `evidence_verification_required` | Record's verifier metadata missing or disagrees with `policy.required_verification` |
+| `accepted_record_verification_failed` | `decision.status == "accepted"` and `verification.verification_result` does not equal `policy.required_verification.required_result` |
+| `accepted_record_has_blocking_exception` | `decision.status == "accepted"` but an exception with `severity == "blocking"` is present |
+| `accepted_with_exceptions_missing_exception` | `decision.status == "accepted_with_exceptions"` but no exception with all three fields is present |
+| `rejected_record_missing_reason` | `decision.status == "rejected"` but both `decision.rejection_reason` and `verification.failure_reason` are empty |
+| `revocation_review_missing` | Policy mandates revocation review but `record.revocation_review.performed == false` or `outcome` is not in `policy.accepted_outcomes` |
+| `challenge_window_invalid` | Policy mandates a challenge window but `opens_at >= closes_at` or span is outside `[minimum_days, maximum_days]` |
+| `scope_limitations_missing` | `record.scope_limitations` is empty |
+| `acceptance_non_claims_missing` | `record.non_claims` is empty |
+| `external_evidence_verification_failed` | `--evidence-package-root` re-invocation of the v0.2.7 verifier fails, or the external manifest sha256 disagrees with `record.evidence_package.manifest_sha256` |
+
+The generator-only code `evidence_verification_failed` is **never** emitted by the validator.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (validation failure), 2 (usage/input error).
+
 ## Security Notes
 
 - This is a demo signing system. Do not use generated keys for production.

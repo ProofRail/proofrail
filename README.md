@@ -2,7 +2,7 @@
 
 Status: public documentation repository and capability demonstrations. Specifications, profiles, sanitized attestations, and examples are published here. Raw deployment evidence and security-sensitive operational details remain private.
 
-ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence, Silver v0.2.5 multi-agent trust-boundary demo packaging plus the first Gold boundary documentation, Silver v0.2.6 evidence source adapter descriptors, and Silver v0.2.7 composed gateway evidence demo.
+ProofRail™ is a vendor-neutral conformance and governance framework for AI agent actuation control. The current public release is [v0.2.3](https://github.com/ProofRail/proofrail/releases/tag/v0.2.3). The main branch includes Silver v0.2.4 deterministic multi-agent attack harness evidence, Silver v0.2.5 multi-agent trust-boundary demo packaging plus the first Gold boundary documentation, Silver v0.2.6 evidence source adapter descriptors, Silver v0.2.7 composed gateway evidence demo, and Silver v0.2.8 relying-party acceptance record.
 
 As AI agents gain access to tools, APIs, workflows, other AI agents, and enterprise systems, organizations need more than logs or model-side guardrails. They need evidence that protected actions are actually controlled: declared, mediated, rate-limited, stoppable, bypass-tested, auditable, and owned by accountable operators.
 
@@ -247,9 +247,36 @@ make verify-silver-composed-gateway-demo-v0-2-7
 
 ---
 
+## What ProofRail v0.2.8 Adds
+
+ProofRail v0.2.8 introduces the **Silver Relying-Party Acceptance Record**. It adds:
+
+- an acceptance policy schema (`schemas/silver-relying-party-acceptance-policy-v0.1.0.md`) declaring the relying party's allowed purposes, allowed evidence types, required verification, revocation requirements, challenge window, and allowed decisions (`accepted`, `rejected`, `accepted_with_exceptions`);
+- an acceptance record schema (`schemas/silver-relying-party-acceptance-record-v0.1.0.md`) for the decision itself (relying party / policy binding, decision status, verifier outcome, revocation review, exceptions, scope limitations, challenge window, non-claims);
+- a three-subject package manifest schema (`schemas/silver-relying-party-acceptance-package-manifest-v0.1.0.md`) binding the policy, the verified v0.2.7 evidence manifest, and the record;
+- a static fixture (`fixtures/silver-relying-party-acceptance-v0.2.8/acceptance-policy.json`) describing a fictional demo relying party;
+- a generator (`tools/silver/generate_relying_party_acceptance_record_v0_1_0.py`) that subprocess-invokes the unchanged v0.2.7 verifier and refuses `--decision accepted` with `FAIL: evidence_verification_failed: <detail>` (exit 1) when v0.2.7 verification fails;
+- a validator (`tools/silver/validate_relying_party_acceptance_record_v0_1_0.py`) running 22 ordered checks over 21 stable failure reasons, with an optional `--evidence-package-root` re-verification mode that emits `external_evidence_verification_failed`;
+- a 30-step regression test (`tests/test_silver_relying_party_acceptance_record_v0_2_8.sh`) covering every stable validator failure reason plus the generator-only `evidence_verification_failed` refusal.
+
+The generator writes runtime output to `/tmp/proofrail-silver-relying-party-acceptance-v0.2.8/` (never committed). The acceptance record is not signed; v0.2.8 ships local hash anchors only.
+
+> v0.2.8 records a relying party's local acceptance decision over verified Silver evidence. It does not certify the evidence, the system, the gateway, or the relying party.
+
+A relying-party acceptance record is not a Gold certificate, regulator approval, third-party audit, or legal acceptance instrument. v0.2.8 records acceptance context; it does not execute acceptance governance.
+
+Run and verify the v0.2.8 acceptance demo locally:
+
+```bash
+make run-silver-relying-party-acceptance-demo-v0-2-8
+make verify-silver-relying-party-acceptance-demo-v0-2-8
+```
+
+---
+
 ## What ProofRail Does Not Claim
 
-ProofRail v0.2.7 does not claim:
+ProofRail v0.2.8 does not claim:
 
 - Gold certification;
 - third-party certification;
@@ -260,7 +287,7 @@ ProofRail v0.2.7 does not claim:
 - public accreditation;
 - that any real gateway, observability stack, SIEM, policy engine, or GRC platform is conformant with ProofRail.
 
-Silver profile conformance is local relying-party verification, not certification of a live system. The v0.2.5 multi-agent trust-boundary demo is a local, deterministic re-packaging of v0.2.4 harness evidence; it does not execute live agents, does not invoke live actuators, does not parse natural-language prompts, does not detect prompt injection, and does not cross the Gold boundary. The v0.2.6 evidence source adapter descriptors are static declarations only; they do not integrate with any real product, do not certify their declared sources, and do not assert that a declared source actually behaves as described. The v0.2.7 composed gateway evidence demo is a substrate-neutral local composition over a static JSONL fixture; it does not integrate with any real MCP gateway, SIEM, observability stack, policy engine, or GRC platform, does not execute any protected action, does not establish the gateway as a trust authority, does not sign the composed report, and does not constitute a relying-party acceptance record.
+Silver profile conformance is local relying-party verification, not certification of a live system. The v0.2.5 multi-agent trust-boundary demo is a local, deterministic re-packaging of v0.2.4 harness evidence; it does not execute live agents, does not invoke live actuators, does not parse natural-language prompts, does not detect prompt injection, and does not cross the Gold boundary. The v0.2.6 evidence source adapter descriptors are static declarations only; they do not integrate with any real product, do not certify their declared sources, and do not assert that a declared source actually behaves as described. The v0.2.7 composed gateway evidence demo is a substrate-neutral local composition over a static JSONL fixture; it does not integrate with any real MCP gateway, SIEM, observability stack, policy engine, or GRC platform, does not execute any protected action, does not establish the gateway as a trust authority, does not sign the composed report, and does not constitute a relying-party acceptance record. The v0.2.8 relying-party acceptance record is a local hash-anchored artifact recording a fictional demo relying party's decision over verified v0.2.7 evidence; it does not certify the evidence, does not certify any system, does not sign the record, does not coordinate multiple relying parties, does not establish a new trust authority, and is not a Gold certificate, regulator approval, third-party audit, or legal acceptance instrument.
 
 ---
 

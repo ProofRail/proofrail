@@ -179,6 +179,33 @@ run-silver-composed-gateway-demo-v0-2-7:
 verify-silver-composed-gateway-demo-v0-2-7:
 	bash tests/test_silver_composed_gateway_evidence_v0_2_7.sh
 
+.PHONY: run-silver-relying-party-acceptance-demo-v0-2-8
+run-silver-relying-party-acceptance-demo-v0-2-8:
+	python3 tools/silver/compose_gateway_evidence_demo_v0_1_0.py \
+	  --demo-root demos/silver-demo-004-composed-gateway-evidence \
+	  --adapter examples/silver-evidence-source-adapters/gateway-mcp-simulated-v0.2.6.json \
+	  --gateway-events fixtures/silver-composed-gateway-evidence-v0.2.7/gateway-events.jsonl \
+	  --output-dir /tmp/proofrail-silver-composed-gateway-demo-v0.2.7 \
+	  --generated-at 2026-06-22T00:00:00Z \
+	  --force
+	python3 tools/silver/generate_relying_party_acceptance_record_v0_1_0.py \
+	  --policy fixtures/silver-relying-party-acceptance-v0.2.8/acceptance-policy.json \
+	  --evidence-manifest /tmp/proofrail-silver-composed-gateway-demo-v0.2.7/composed-gateway-evidence-manifest.json \
+	  --decision accepted \
+	  --purpose demo_trust_boundary_review \
+	  --decision-maker demo.relying_party.local_reviewer \
+	  --generated-at 2026-06-22T00:00:00Z \
+	  --challenge-closes-at 2026-07-22T00:00:00Z \
+	  --output-dir /tmp/proofrail-silver-relying-party-acceptance-v0.2.8 \
+	  --force
+	python3 tools/silver/validate_relying_party_acceptance_record_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-relying-party-acceptance-v0.2.8/acceptance-package-manifest.json \
+	  --evidence-package-root /tmp/proofrail-silver-composed-gateway-demo-v0.2.7
+
+.PHONY: verify-silver-relying-party-acceptance-demo-v0-2-8
+verify-silver-relying-party-acceptance-demo-v0-2-8:
+	bash tests/test_silver_relying_party_acceptance_record_v0_2_8.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -192,3 +219,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-multi-agent-demo-v0-2-5
 	$(MAKE) verify-silver-evidence-source-adapter-v0-2-6
 	$(MAKE) verify-silver-composed-gateway-demo-v0-2-7
+	$(MAKE) verify-silver-relying-party-acceptance-demo-v0-2-8

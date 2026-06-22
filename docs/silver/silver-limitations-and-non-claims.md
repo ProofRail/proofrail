@@ -364,6 +364,33 @@ The simulated gateway is an evidence source, not a trust authority. Composed Sil
 
 ---
 
+## v0.2.8 Relying-Party Acceptance Record
+
+Silver v0.2.8 introduces a deterministic local relying-party acceptance record over a verified v0.2.7 composed gateway evidence package. The record binds a named local acceptance policy, a declared purpose, the v0.2.7 verifier outcome, a revocation review derived from the v0.2.7 report's `revoked_authority_fails` claim, exceptions, scope limitations, and a challenge window.
+
+The v0.2.8 record is:
+
+- **A local acceptance artifact**: a single named (fictional) relying party records its own decision (`accepted`, `rejected`, or `accepted_with_exceptions`) over a *verified* v0.2.7 evidence manifest.
+- **Hash-anchored**: a three-subject package manifest binds the policy, the copied evidence manifest, and the record, all under SHA-256, with subject paths refused if they contain `..` or are absolute.
+- **Bound to verification**: for `--decision accepted`, the generator refuses with `FAIL: evidence_verification_failed: <detail>` (exit 1) when the v0.2.7 verifier fails; the validator emits `accepted_record_verification_failed` for an accepted record whose recorded `verification_result` is not `pass`.
+- **Optionally externally re-verifiable**: the validator's `--evidence-package-root` flag re-invokes the v0.2.7 verifier and re-checks the original package's manifest sha256, emitting `external_evidence_verification_failed` on disagreement.
+
+The v0.2.8 record is **not**:
+
+- A Gold certificate. A relying-party acceptance record is local, single-party, unsigned, and bound to a fictional demo policy. It does not certify the evidence, the system, the gateway, the policy, or the relying party.
+- A regulator approval, third-party audit, or legal acceptance instrument. v0.2.8 records *one* relying party's local decision. It does not chain decisions, does not coordinate parties, and does not invoke any governance authority.
+- A signed acceptance artifact. v0.2.8 ships local hash anchors only.
+- A claim about any real relying party. The fixture relying party (`demo.relying_party`) is fictional.
+- A change to Bronze, Silver Signed Bundle Assertion, Revocation List, Verification Report, Profile, Verifier Output Attestation, Multi-principal Authority, Multi-agent Harness, Multi-agent Trust-boundary, Evidence Source Adapter, or Composed Gateway Evidence semantics.
+
+The key claim:
+
+> v0.2.8 records a relying party's local acceptance decision over verified Silver evidence. It does not certify the evidence, the system, the gateway, or the relying party.
+
+A relying-party acceptance record is not a Gold certificate, regulator approval, third-party audit, or legal acceptance instrument. v0.2.8 records acceptance context. It does not execute acceptance governance.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.
