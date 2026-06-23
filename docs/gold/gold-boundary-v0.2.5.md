@@ -198,3 +198,31 @@ A Silver acceptance handoff package is not a Gold certificate, Gold conformance,
 v0.3.0 packages acceptance evidence. It does not execute acceptance governance.
 
 v0.3.0 names a portable Silver handoff. It does not cross the Gold boundary.
+
+---
+
+## 12. Note on v0.3.1 Silver Handoff Inspector + Gold Gap Inventory
+
+ProofRail v0.3.1 makes a v0.3.0 Silver acceptance handoff package independently inspectable. The v0.3.1 inspection package binds three subjects in fixed order — the unchanged v0.3.0 handoff manifest, a committed local Gold-boundary requirement set, and a re-derived inspection report — anchored by a 3-subject SHA-256 manifest. v0.3.1 introduces no new evidence source, signature scheme, trust authority, or runtime substrate.
+
+The v0.3.1 inspection package is the first ProofRail artifact that explicitly enumerates the Gold-boundary prerequisites a Silver chain does not satisfy. It is **still Silver, not Gold**:
+
+- It is a deterministic local derivation. The runner subprocess-invokes the unchanged v0.3.0 handoff verifier and the v0.3.1 verifier in `--validate-requirement-set` mode, byte-copies the v0.3.0 handoff root under `silver-acceptance-handoff/`, byte-copies the committed Gold-boundary requirement set, and re-derives every field of the inspection report from the nested v0.3.0 summary and the bound requirement set.
+- The bound Gold-boundary requirement set is a **local ProofRail demo inventory**, not an external compliance standard, regulator framework, audit checklist, certification scheme, legal instrument, or governance policy. It enumerates exactly 13 governance domains (`governed_acceptance_policy`, `named_acceptance_authority`, `independent_verifier_identity`, `evidence_retention_policy`, `change_control_policy`, `revocation_operations`, `challenge_dispute_process`, `audit_trail_and_review`, `runtime_operating_boundary`, `external_accountability`, `public_or_shared_acceptance_record`, `legal_or_contractual_basis`, `production_use_authorization`) and assigns each row exactly one of four closed-set statuses: `silver_evidence_present`, `silver_evidence_partial`, `gold_prerequisite_unmet`, `out_of_scope_for_silver`.
+- The status `silver_evidence_present` does **not** mean the corresponding Gold prerequisite is satisfied. It means relevant Silver evidence is present inside the ProofRail Silver chain (for example, an independent verifier identity is bound at the v0.2.2 verifier output attestation layer). The Gold prerequisite (a governed, externally-accountable verifier identity registered under a named acceptance authority) remains unmet by this fact alone. The report-level `gold_boundary_status` is forced to `gold_not_claimed` whenever any row is partial, unmet, or out-of-scope.
+- The verifier's overclaim guard explicitly rejects positive tokens including `certified`, `approved`, `audited`, `legally accepted`, `legally revoked`, `gold accepted`, `gold certified`, `gold ready`, `gold-ready`, `compliant`, `production-approved`, `production-ready`, `regulator-ready`, `regulator approval`, `trust transferred`, `trust transfer`, `governance complete`, `acceptance governance executed` anywhere in the inspection report outside `scope_limitations` and `non_claims`. The inspection report is structurally prevented from claiming Gold readiness, Gold certification, regulator approval, audit, legal acceptance, or trust transfer.
+- It is not signed. v0.3.1 ships local hash anchors only.
+- It does not invoke any external governance authority, regulator, auditor, registry, sign-off body, or trust-transfer mechanism.
+- It does not adjudicate, decide, federate, chain, arbitrate, or transfer reliance. The nested v0.2.8 record remains exactly one fictional demo relying party's local decision; the v0.3.0 handoff package remains unchanged on disk.
+
+Gold-level readiness assessment, certification, regulator approval, audit opinion, legal acceptance, and production authorization (as inventoried in §5 above) still require the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity (governed, not merely declared), retention, change-control, revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.3.1 does not add any of those. v0.3.1 enumerates the unmet ones so they cannot be elided.
+
+The release sentence holds:
+
+> v0.3.1 makes a v0.3.0 Silver acceptance handoff package independently inspectable. It does not certify the handoff, the system, or the relying party, and it does not begin Gold governance.
+
+A Silver handoff inspection package is not a Gold certificate, Gold readiness assessment, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, adjudicated challenge resolution, legally revoked acceptance, or production authorization.
+
+v0.3.1 enumerates Gold-boundary prerequisites. It does not satisfy them.
+
+v0.3.1 names an inspectable Silver handoff and its Gold-boundary gap inventory. It does not cross the Gold boundary.

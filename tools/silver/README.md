@@ -30,6 +30,9 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Revocation/Challenge Drill Manifest v0.1.0
 - Silver Acceptance Handoff Summary v0.1.0
 - Silver Acceptance Handoff Manifest v0.1.0
+- Silver-to-Gold Requirement Set v0.1.0
+- Silver Handoff Inspection Report v0.1.0
+- Silver Handoff Inspection Manifest v0.1.0
 
 ## Demo Issuer Generator
 
@@ -990,6 +993,108 @@ The verifier delegates nested package validation to the three unchanged subordin
 | `handoff_non_claims_missing` | `handoff_summary.non_claims` is empty |
 
 The five runner-only refusal codes (`composed_evidence_validation_failed`, `acceptance_package_validation_failed`, `drill_package_validation_failed`, `handoff_chain_binding_failed`, `self_validation_failed`) are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
+## Silver Handoff Inspector Runner (v0.3.1)
+
+Builds a deterministic, local Silver handoff inspection package over an already-verified v0.3.0 Silver acceptance handoff and a committed local Gold-boundary requirement set. Pure-stdlib. Atomic staging-then-replace; a refused or self-validation-failed run leaves no partial inspection package on disk.
+
+```bash
+python3 tools/silver/inspect_silver_acceptance_handoff_v0_1_0.py \
+  --handoff-manifest /tmp/proofrail-silver-acceptance-handoff-v0.3.0/silver-acceptance-handoff-manifest.json \
+  --requirement-set fixtures/silver-handoff-inspector-gap-inventory-v0.3.1/gold-boundary-requirements.json \
+  --generated-at 2026-06-29T00:00:00Z \
+  --output-dir /tmp/proofrail-silver-handoff-inspection-v0.3.1 \
+  [--inspection-id <id>] [--force] [--self-validate]
+```
+
+The runner:
+
+1. Subprocess-invokes the unchanged **v0.3.0 handoff verifier** on `--handoff-manifest` and refuses with `FAIL: handoff_validation_failed: <detail>` and exit code 1 if verification fails.
+2. Subprocess-invokes the **v0.3.1 verifier with `--validate-requirement-set`** on `--requirement-set` and refuses with `FAIL: requirement_set_validation_failed: <detail>` and exit code 1 if validation fails.
+3. Byte-copies the v0.3.0 handoff package root into a sibling staging directory under the fixed top-level name `silver-acceptance-handoff/`, and byte-copies the requirement set fixture to `gold-boundary-requirements.json`.
+4. Parses the nested v0.3.0 handoff summary and re-derives the four blocks of the inspection report:
+   - `base_handoff` — bound handoff id and manifest sha256;
+   - `handoff_summary` — `acceptance_record_id`, `decision_status`, `purpose_id`, `recommended_handoff_posture`, `reuse_warning`;
+   - `component_inspection` — four rows for v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0, each `present_and_verified`;
+   - `gold_gap_inventory` — recomputed counts and a `gold_boundary_status` forced to `gold_not_claimed` whenever any row is `silver_evidence_partial`, `gold_prerequisite_unmet`, or `out_of_scope_for_silver`.
+5. Emits `silver-handoff-inspection-report.json` and `silver-handoff-inspection-manifest.json` with three subjects in the fixed v0.3.1 order (handoff manifest, requirement set, inspection report).
+6. With `--self-validate`, subprocess-invokes the v0.3.1 verifier on the staged manifest BEFORE the atomic move; on failure it removes the staging directory, leaves the destination untouched, and refuses with `FAIL: inspection_self_validation_failed: <detail>` and exit code 1.
+7. Atomically moves the staging directory to `--output-dir`.
+
+### Runner-Only Refusal Codes
+
+| Reason | Description |
+|---|---|
+| `handoff_validation_failed` | Subprocess invocation of the unchanged v0.3.0 handoff verifier on the supplied handoff manifest fails |
+| `requirement_set_validation_failed` | Subprocess invocation of the v0.3.1 verifier with `--validate-requirement-set` on the supplied requirement set fails |
+| `inspection_self_validation_failed` | `--self-validate` subprocess invocation of the v0.3.1 verifier on the staged package fails before the atomic move |
+
+These three runner-only refusal codes are deliberately distinct from the 20 verifier failure reasons. The verifier never emits any of these codes.
+
+Exit codes: 0 (inspection package written), 1 (refusal — no partial output), 2 (usage/input error).
+
+## Silver Handoff Inspection Verifier (v0.3.1)
+
+Validates a v0.3.1 Silver handoff inspection package. Pure-stdlib. Hash-first ordering. The verifier owns every cross-check of the inspection report against the nested v0.3.0 handoff summary and the bound Gold-boundary requirement set, and re-runs the unchanged **v0.3.0 handoff verifier** on the nested handoff manifest as a subprocess.
+
+```bash
+# Full inspection package verification
+python3 tools/silver/verify_silver_handoff_inspection_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-handoff-inspection-v0.3.1/silver-handoff-inspection-manifest.json
+
+# Requirement-set-only validation entry point (used by the runner)
+python3 tools/silver/verify_silver_handoff_inspection_v0_1_0.py \
+  --validate-requirement-set fixtures/silver-handoff-inspector-gap-inventory-v0.3.1/gold-boundary-requirements.json
+```
+
+The verifier:
+
+1. Validates the inspection manifest shape: `document_type`, `schema_version`, `proofrail_release`, hash algorithm, exactly three subjects in the fixed order, non-empty limitations and non-claims (presence/type only at this stage).
+2. Rejects subject paths containing `..` or starting with `/`.
+3. Rejects missing subject files.
+4. Recomputes SHA-256 for every subject and rejects any mismatch.
+5. Subprocess-invokes the unchanged **v0.3.0 handoff verifier** on subject [0] and surfaces failure as the stable top-level reason `nested_handoff_invalid`.
+6. Re-validates the requirement set bound at subject [1]: structural shape → duplicate id/domain detection → required-domain completeness check (all 13 domains) → recursive overclaim guard.
+7. Validates the inspection report shape (presence/type only at this stage).
+8. Cross-checks `base_handoff` binding against subject [0] sha256.
+9. Reads the nested v0.3.0 handoff summary and runs the two-path summary cross-check:
+   - non-posture summary fields (`acceptance_record_id`, `decision_status`, `purpose_id`) → `inspection_handoff_summary_mismatch`;
+   - posture path (`recommended_handoff_posture` rank, `reuse_warning`) → `inspection_review_posture_downgrade` (reached independently even when non-posture cross-checks pass).
+10. Cross-checks `component_inspection` rows (4 entries, each `present_and_verified`).
+11. Cross-checks `gold_gap_inventory`: `requirements_sha256` matches subject [1], per-row id/domain/status matches, recomputed counts match, and `gold_boundary_status` is forced.
+12. Runs a recursive overclaim guard over the inspection report (excluding `scope_limitations` and `non_claims`) against 18 forbidden positive tokens.
+13. Re-checks emptiness of `scope_limitations` and `non_claims` for the manifest, requirement set, and inspection report (reachable even when early structural checks pass).
+
+### Inspection Verifier Failure Reason Codes
+
+| Reason | Description |
+|---|---|
+| `invalid_inspection_manifest` | Manifest shape, type, version, hash algorithm, or subject count/order/roles invalid |
+| `inspection_subject_path_traversal` | A subject path contains `..` or is absolute |
+| `inspection_subject_file_missing` | A manifest subject file is missing |
+| `inspection_subject_hash_mismatch` | Recomputed SHA-256 differs from recorded hash |
+| `inspection_limitations_missing` | `scope_limitations` empty or contains only whitespace entries in the manifest, requirement set, or inspection report |
+| `inspection_non_claims_missing` | `non_claims` empty or contains only whitespace entries in the manifest, requirement set, or inspection report |
+| `requirement_set_invalid` | Requirement set JSON malformed, wrong `document_type`, or contains a row with an unknown status |
+| `requirement_duplicate` | Two requirement rows share an `id` or `domain` |
+| `requirement_domain_missing` | One or more of the 13 required governance domains is absent from the requirement set |
+| `inspection_report_invalid` | Inspection report JSON malformed or fails shape checks (no Python traceback leaks) |
+| `inspection_report_binding_mismatch` | Report `base_handoff.handoff_manifest_sha256` disagrees with subject [0] sha256 |
+| `inspection_handoff_summary_mismatch` | Non-posture summary field (`acceptance_record_id`, `decision_status`, or `purpose_id`) disagrees with the nested v0.3.0 summary |
+| `inspection_review_posture_downgrade` | `recommended_handoff_posture` rank is weaker than the nested v0.3.0 summary's rank, OR `reuse_warning` is missing/blank when the nested rank is ≥ 1 |
+| `inspection_component_status_mismatch` | A `component_inspection` row references the wrong component id or its `status` is not `present_and_verified` |
+| `inspection_requirement_missing` | A row in `gold_gap_inventory.requirements` is missing relative to the bound requirement set |
+| `inspection_requirement_status_mismatch` | A row's id, domain, or status disagrees with the bound requirement set |
+| `inspection_count_mismatch` | `gold_gap_inventory.counts` disagrees with the recomputed per-status counts |
+| `inspection_gold_status_invalid` | `gold_boundary_status` is not in the closed set `{gold_not_claimed, gold_gap_inventory_only}` |
+| `inspection_gold_overclaim` | `gold_boundary_status` is `gold_gap_inventory_only` when at least one row is partial / unmet / out-of-scope (forced status mismatch), OR a forbidden positive overclaim token appears in a report string outside `scope_limitations` / `non_claims` |
+| `nested_handoff_invalid` | Subprocess invocation of the unchanged v0.3.0 handoff verifier on subject [0] fails |
+
+The three runner-only refusal codes (`handoff_validation_failed`, `requirement_set_validation_failed`, `inspection_self_validation_failed`) are **never** emitted by the verifier.
 
 JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
 

@@ -448,6 +448,37 @@ The key claim:
 
 ---
 
+## v0.3.1 Silver Handoff Inspector + Gold Gap Inventory
+
+Silver v0.3.1 makes a v0.3.0 Silver acceptance handoff package independently inspectable by deriving a deterministic, hash-anchored review report that summarizes the verified chain, the carried-forward caution posture, and the unresolved Gold-boundary prerequisites. v0.3.1 introduces no new evidence source, signature scheme, trust authority, or runtime substrate.
+
+The v0.3.1 inspection package is:
+
+- **A derived review artifact**: the runner subprocess-invokes the unchanged v0.3.0 handoff verifier and the v0.3.1 verifier in `--validate-requirement-set` mode, byte-copies the v0.3.0 handoff package root under `silver-acceptance-handoff/`, byte-copies the committed Gold-boundary requirement set, and re-derives the inspection report from the nested v0.3.0 handoff summary and the bound requirement set.
+- **Hash-anchored**: a three-subject inspection manifest binds the v0.3.0 handoff manifest, the requirement set, and the inspection report under SHA-256 in fixed order. Subject paths are refused if they contain `..` or are absolute.
+- **Chain-bound by v0.3.1**: `base_handoff.handoff_manifest_sha256` is cross-checked against subject [0]; `gold_gap_inventory.requirements_sha256` is cross-checked against subject [1]; every non-posture handoff summary field is cross-checked against the nested v0.3.0 summary under the dedicated reason `inspection_handoff_summary_mismatch`; the posture path (`recommended_handoff_posture` rank and `reuse_warning`) is reserved for the dedicated reason `inspection_review_posture_downgrade`, which remains reachable even when the non-posture cross-checks pass.
+- **Status-set closed**: each row in `gold_gap_inventory.requirements` carries exactly one of four statuses: `silver_evidence_present`, `silver_evidence_partial`, `gold_prerequisite_unmet`, or `out_of_scope_for_silver`. The report-level `gold_boundary_status` is forced to `gold_not_claimed` whenever any row is partial, unmet, or out-of-scope; `inspection_gold_overclaim` fires if the report tries to record `gold_gap_inventory_only` under those conditions or includes a forbidden positive overclaim token in any string outside `scope_limitations` / `non_claims`.
+- **Domain-complete**: the bound requirement set must cover exactly one row per each of 13 named governance domains (`governed_acceptance_policy`, `named_acceptance_authority`, `independent_verifier_identity`, `evidence_retention_policy`, `change_control_policy`, `revocation_operations`, `challenge_dispute_process`, `audit_trail_and_review`, `runtime_operating_boundary`, `external_accountability`, `public_or_shared_acceptance_record`, `legal_or_contractual_basis`, `production_use_authorization`). Missing domains fire `requirement_domain_missing`; duplicate ids or domains fire `requirement_duplicate`; malformed structure or unknown statuses fire `requirement_set_invalid`.
+- **Self-validated before atomic move**: with `--self-validate`, the runner invokes the v0.3.1 verifier against the staging directory **before** `os.replace()`. On failure it removes staging, leaves the destination untouched, and exits 1 with `FAIL: inspection_self_validation_failed: <detail>`.
+- **Stable-failure-reasoned**: 20 stable verifier failure reasons and 3 deliberately distinct runner-only refusal codes (`handoff_validation_failed`, `requirement_set_validation_failed`, `inspection_self_validation_failed`). The verifier never emits the runner-only codes.
+
+The v0.3.1 inspection package is **not**:
+
+- A Gold certificate, Gold readiness assessment, regulator approval, auditor approval, legal acceptance, transferred reliance, adjudicated challenge resolution, or production authorization.
+- A change to the v0.3.0 Silver acceptance handoff package, the v0.2.9 revocation/challenge drill, the v0.2.8 relying-party acceptance, or the v0.2.7 composed gateway evidence. The full v0.3.0 handoff package root is byte-copied under `silver-acceptance-handoff/`; its semantics and on-disk bytes are unchanged.
+- A signed Silver artifact. v0.3.1 ships local hash anchors only.
+- A live integration with any real governance authority, regulator, auditor, or compliance framework.
+- A consultation of an external compliance standard. The bound Gold-boundary requirement set is a local ProofRail demo inventory.
+- A claim that `silver_evidence_present` rows satisfy any Gold prerequisite. `silver_evidence_present` means relevant Silver evidence is present inside the ProofRail chain; the corresponding Gold prerequisite (governed acceptance authority, governed change control, externally-published acceptance record, legal basis, audited operating boundary, etc.) remains unmet.
+- A transfer of reliance to a downstream party. v0.3.1 records that a local reviewer could deterministically re-derive the same chain summary and gap inventory from the v0.3.0 handoff package; it does not authorize anyone to act on that summary.
+- A change to Bronze, Silver Signed Bundle Assertion, Revocation List, Verification Report, Profile, Verifier Output Attestation, Multi-principal Authority, Multi-agent Harness, Multi-agent Trust-boundary Demo, Evidence Source Adapter, Composed Gateway Evidence, Relying-Party Acceptance Record, Revocation/Challenge Drill, or Silver Acceptance Handoff semantics.
+
+The key claim:
+
+> v0.3.1 makes a v0.3.0 Silver acceptance handoff package independently inspectable. It does not certify the handoff, the system, or the relying party, and it does not begin Gold governance. `silver_evidence_present` in the gap inventory does not mean the corresponding Gold prerequisite is satisfied.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

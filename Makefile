@@ -277,6 +277,22 @@ run-silver-acceptance-handoff-v0-3-0:
 verify-silver-acceptance-handoff-v0-3-0:
 	bash tests/test_silver_acceptance_handoff_v0_3_0.sh
 
+.PHONY: run-silver-handoff-inspection-v0-3-1
+run-silver-handoff-inspection-v0-3-1: run-silver-acceptance-handoff-v0-3-0
+	python3 tools/silver/inspect_silver_acceptance_handoff_v0_1_0.py \
+	  --handoff-manifest /tmp/proofrail-silver-acceptance-handoff-v0.3.0/silver-acceptance-handoff-manifest.json \
+	  --requirement-set fixtures/silver-handoff-inspector-gap-inventory-v0.3.1/gold-boundary-requirements.json \
+	  --generated-at 2026-06-29T00:00:00Z \
+	  --output-dir /tmp/proofrail-silver-handoff-inspection-v0.3.1 \
+	  --force \
+	  --self-validate
+	python3 tools/silver/verify_silver_handoff_inspection_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-handoff-inspection-v0.3.1/silver-handoff-inspection-manifest.json
+
+.PHONY: verify-silver-handoff-inspection-v0-3-1
+verify-silver-handoff-inspection-v0-3-1:
+	bash tests/test_silver_handoff_inspector_v0_3_1.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -293,3 +309,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-relying-party-acceptance-demo-v0-2-8
 	$(MAKE) verify-silver-revocation-challenge-drill-v0-2-9
 	$(MAKE) verify-silver-acceptance-handoff-v0-3-0
+	$(MAKE) verify-silver-handoff-inspection-v0-3-1

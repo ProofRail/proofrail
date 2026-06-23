@@ -1,0 +1,157 @@
+{
+  "document_type": "proofrail.silver_to_gold.requirement_set",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.3.1",
+  "requirement_set_id": "proofrail-gold-boundary-requirements-demo-v0.3.1",
+  "requirement_set_version": "v0.1.0",
+  "scope": "demo_gold_boundary_gap_inventory",
+  "requirements": [
+    {
+      "requirement_id": "GOLD-REQ-001-governed-acceptance-policy",
+      "domain": "governed_acceptance_policy",
+      "title": "Named governed acceptance policy",
+      "gold_prerequisite": "A Gold relying-party decision requires a named, version-controlled governed acceptance policy with defined decision authority and stable scope.",
+      "silver_evidence_mapping": [
+        "silver_acceptance_handoff",
+        "relying_party_acceptance_record"
+      ],
+      "expected_gap_status": "gold_prerequisite_unmet",
+      "reason": "The v0.2.8 acceptance policy is a fictional local demo policy authored for ProofRail. No external governed acceptance policy is established by the v0.3.0 handoff."
+    },
+    {
+      "requirement_id": "GOLD-REQ-002-named-acceptance-authority",
+      "domain": "named_acceptance_authority",
+      "title": "Named acceptance authority",
+      "gold_prerequisite": "A Gold relying-party decision requires a named acceptance authority with declared scope, accountability, and a documented authority binding.",
+      "silver_evidence_mapping": [
+        "relying_party_acceptance_record"
+      ],
+      "expected_gap_status": "gold_prerequisite_unmet",
+      "reason": "The v0.2.8 fixture relying party (demo.relying_party.local_reviewer) is fictional. No real acceptance authority is bound by the Silver chain."
+    },
+    {
+      "requirement_id": "GOLD-REQ-003-independent-verifier-identity",
+      "domain": "independent_verifier_identity",
+      "title": "Independent verifier identity binding",
+      "gold_prerequisite": "A Gold relying party requires a named, key-bound, independent verifier identity with rotation discipline and an accountable operator.",
+      "silver_evidence_mapping": [
+        "silver_verifier_output_attestation"
+      ],
+      "expected_gap_status": "silver_evidence_present",
+      "reason": "Silver v0.2.2 verifier output attestation provides a hash-anchored identity binding from a demo attestor key to verification outputs. The attestor key is a local demo key, not a governed verifier identity."
+    },
+    {
+      "requirement_id": "GOLD-REQ-004-evidence-retention-policy",
+      "domain": "evidence_retention_policy",
+      "title": "Evidence retention policy",
+      "gold_prerequisite": "A Gold acceptance requires a documented evidence retention policy specifying duration, format, storage discipline, and hand-off rules.",
+      "silver_evidence_mapping": [],
+      "expected_gap_status": "gold_prerequisite_unmet",
+      "reason": "The v0.3.0 handoff is a portable package. It does not establish a retention policy or storage discipline."
+    },
+    {
+      "requirement_id": "GOLD-REQ-005-change-control-policy",
+      "domain": "change_control_policy",
+      "title": "Change control policy over fixtures and verifier code",
+      "gold_prerequisite": "A Gold relying-party decision requires documented change control over authority fixtures, harness scripts, packager configuration, and verifier code that produced the accepted evidence.",
+      "silver_evidence_mapping": [],
+      "expected_gap_status": "gold_prerequisite_unmet",
+      "reason": "The Silver chain is reproducible from the repository, but no change-control attestation accompanies the v0.3.0 handoff package."
+    },
+    {
+      "requirement_id": "GOLD-REQ-006-revocation-operations",
+      "domain": "revocation_operations",
+      "title": "Operational revocation handling",
+      "gold_prerequisite": "A Gold relying-party decision requires operational revocation handling: real revocation infrastructure, propagation, and acknowledged operator procedures.",
+      "silver_evidence_mapping": [
+        "silver_revocation_list",
+        "revocation_challenge_drill"
+      ],
+      "expected_gap_status": "silver_evidence_partial",
+      "reason": "Silver v0.2.9 provides a local revocation/challenge drill bound to a v0.2.8 acceptance package. The drill is a local evidence artifact, not an operational revocation process."
+    },
+    {
+      "requirement_id": "GOLD-REQ-007-challenge-dispute-process",
+      "domain": "challenge_dispute_process",
+      "title": "Challenge and dispute resolution process",
+      "gold_prerequisite": "A Gold relying-party decision requires a defined challenge / dispute resolution process with named adjudicators and recorded outcomes.",
+      "silver_evidence_mapping": [
+        "revocation_challenge_drill"
+      ],
+      "expected_gap_status": "silver_evidence_partial",
+      "reason": "Silver v0.2.9 classifies within-window challenges against the acceptance record's challenge window and records review triggers, but does not adjudicate any challenge."
+    },
+    {
+      "requirement_id": "GOLD-REQ-008-audit-trail-and-review",
+      "domain": "audit_trail_and_review",
+      "title": "Audit trail and independent review",
+      "gold_prerequisite": "A Gold acceptance requires a tamper-evident audit trail and an independent review process operated by an accountable party.",
+      "silver_evidence_mapping": [
+        "multi_agent_trust_boundary_demo_package",
+        "multi_agent_attack_harness_evidence_manifest"
+      ],
+      "expected_gap_status": "silver_evidence_partial",
+      "reason": "Silver v0.2.4 and v0.2.5 produce hash-anchored harness and trust-boundary evidence. There is no independent review process operated by an accountable party."
+    },
+    {
+      "requirement_id": "GOLD-REQ-009-runtime-operating-boundary",
+      "domain": "runtime_operating_boundary",
+      "title": "Runtime operating boundary evidence",
+      "gold_prerequisite": "A Gold relying-party decision requires evidence that the runtime substrate enforced the same authority semantics observed in the Silver demo.",
+      "silver_evidence_mapping": [
+        "multi_agent_attack_harness_evidence_manifest",
+        "composed_gateway_evidence_manifest"
+      ],
+      "expected_gap_status": "silver_evidence_partial",
+      "reason": "Silver v0.2.4 / v0.2.7 produce evidence from a deterministic harness and a simulated gateway adapter. No real runtime substrate is exercised."
+    },
+    {
+      "requirement_id": "GOLD-REQ-010-external-accountability",
+      "domain": "external_accountability",
+      "title": "External accountability binding",
+      "gold_prerequisite": "A Gold acceptance requires a binding to an externally accountable operator with stated obligations and an external recourse path.",
+      "silver_evidence_mapping": [],
+      "expected_gap_status": "gold_prerequisite_unmet",
+      "reason": "The v0.3.0 handoff is bound to a fictional local relying party. No external accountability is established."
+    },
+    {
+      "requirement_id": "GOLD-REQ-011-public-or-shared-acceptance-record",
+      "domain": "public_or_shared_acceptance_record",
+      "title": "Public or shared acceptance record",
+      "gold_prerequisite": "A Gold acceptance requires a public or otherwise shared acceptance / rejection record with stable references.",
+      "silver_evidence_mapping": [],
+      "expected_gap_status": "gold_prerequisite_unmet",
+      "reason": "The Silver chain produces local hash-anchored records only. No public or shared acceptance ledger is established."
+    },
+    {
+      "requirement_id": "GOLD-REQ-012-legal-or-contractual-basis",
+      "domain": "legal_or_contractual_basis",
+      "title": "Legal or contractual basis for reliance",
+      "gold_prerequisite": "Legal effect or contractual basis for reliance is established outside ProofRail by the relying party and its counterparties.",
+      "silver_evidence_mapping": [],
+      "expected_gap_status": "out_of_scope_for_silver",
+      "reason": "ProofRail does not assert legal effect, contractual reliance, or transferred trust. Legal basis is established by external parties."
+    },
+    {
+      "requirement_id": "GOLD-REQ-013-production-use-authorization",
+      "domain": "production_use_authorization",
+      "title": "Production use authorization",
+      "gold_prerequisite": "Production use authorization is granted outside ProofRail by an accountable operator under its own change-management process.",
+      "silver_evidence_mapping": [],
+      "expected_gap_status": "out_of_scope_for_silver",
+      "reason": "ProofRail does not authorize production use. Production authorization is granted by external parties under their own process."
+    }
+  ],
+  "scope_limitations": [
+    "This requirement set is a local ProofRail demo boundary inventory, not an external compliance standard.",
+    "Domain coverage is fixed at thirteen domains for the v0.3.1 demo; it does not enumerate every governance prerequisite a real relying party would adopt.",
+    "Silver evidence references are pointers to ProofRail Silver artifact types, not assertions of operational use."
+  ],
+  "non_claims": [
+    "This requirement set is not a Gold certification standard.",
+    "This requirement set is not a Gold readiness scorecard.",
+    "This requirement set is not legal advice, regulator approval, or auditor approval.",
+    "This requirement set is not a compliance crosswalk to any external framework.",
+    "silver_evidence_present means relevant Silver evidence is present, not that the Gold prerequisite is satisfied."
+  ]
+}

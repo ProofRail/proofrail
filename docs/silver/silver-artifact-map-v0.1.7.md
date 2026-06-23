@@ -510,3 +510,45 @@ Bronze claim
   → relying-party review events + revocation/challenge drill report + drill manifest
   → Silver acceptance handoff summary + handoff manifest
 ```
+
+## v0.3.1 Update: Silver Handoff Inspector + Gold Gap Inventory
+
+ProofRail v0.3.1 makes a v0.3.0 Silver acceptance handoff package independently inspectable, producing a deterministic, hash-anchored review report that summarizes the verified chain, the carried-forward caution posture, and the unresolved Gold-boundary prerequisites. v0.3.1 introduces no new evidence source, signature scheme, trust authority, or runtime substrate. It introduces a single, deterministic, local inspection package.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Silver-to-Gold Requirement Set | v0.1.0 | Committed local 13-domain Gold-boundary requirement set with a four-status closed set | `schemas/silver-to-gold-requirement-set-v0.1.0.md` |
+| Silver | Silver Handoff Inspection Report | v0.1.0 | Re-derived review report binding the nested v0.3.0 handoff to the requirement set, with recomputed gap counts and forced `gold_boundary_status` | `schemas/silver-handoff-inspection-report-v0.1.0.md` |
+| Silver | Silver Handoff Inspection Manifest | v0.1.0 | Three-subject SHA-256 hash anchor (handoff manifest, requirement set, inspection report) | `schemas/silver-handoff-inspection-manifest-v0.1.0.md` |
+| Doc | Silver Handoff Inspector + Gap Inventory | v0.3.1 | Release narrative document | `docs/gold/silver-handoff-inspector-and-gap-inventory-v0.3.1.md` |
+
+The runner (`tools/silver/inspect_silver_acceptance_handoff_v0_1_0.py`) subprocess-invokes the unchanged v0.3.0 handoff verifier and the v0.3.1 verifier in `--validate-requirement-set` mode, byte-copies the v0.3.0 handoff package root under `silver-acceptance-handoff/`, byte-copies the requirement set, re-derives the inspection report (`base_handoff`, `handoff_summary`, `component_inspection`, `gold_gap_inventory`), runs self-validation against the staging directory **before** the atomic move, and refuses with one of three runner-only codes (`handoff_validation_failed`, `requirement_set_validation_failed`, `inspection_self_validation_failed`) on any failure.
+
+The verifier (`tools/silver/verify_silver_handoff_inspection_v0_1_0.py`) is hash-first, re-runs the unchanged v0.3.0 handoff verifier as a subprocess (failures surface as `nested_handoff_invalid`), re-validates the requirement set, and independently re-derives every field of the inspection report. It resolves 20 stable failure reasons including `inspection_handoff_summary_mismatch` (reserved for non-posture fields `acceptance_record_id`, `decision_status`, `purpose_id`), `inspection_review_posture_downgrade` (reserved for the posture path and reachable even when non-posture cross-checks pass), `requirement_duplicate`, `requirement_domain_missing`, `inspection_count_mismatch`, `inspection_gold_status_invalid`, and `inspection_gold_overclaim`. The three runner-only refusal codes are deliberately distinct and never emitted by the verifier.
+
+The requirement set covers exactly 13 governance domains and one of four statuses per row: `silver_evidence_present` (Silver evidence is present at this domain), `silver_evidence_partial` (Silver provides only a drill or local artifact), `gold_prerequisite_unmet` (Silver does not address this domain), `out_of_scope_for_silver` (domain is outside any ProofRail Silver scope). The report-level `gold_boundary_status` is forced to `gold_not_claimed` whenever any row is partial / unmet / out-of-scope. `silver_evidence_present` means relevant Silver evidence is present inside the ProofRail Silver chain. It does **not** mean the corresponding Gold prerequisite is satisfied.
+
+A Silver handoff inspection package is not a Gold certificate, Gold readiness assessment, regulator approval, auditor approval, legal acceptance, transferred reliance, adjudicated challenge resolution, or production authorization. The bound Gold-boundary requirement set is a local ProofRail demo inventory, not an external compliance standard.
+
+The extended evidence chain:
+
+```text
+Bronze claim
+  → evidence checksums
+  → evidence bundle manifest
+  → signed Silver assertion
+  → local revocation list
+  → Silver verification report
+  → independent verification package
+  → independent verifier
+  → Silver profile conformance report
+  → verifier output attestation
+  → multi-principal authority decision reports
+  → multi-agent harness transcript + run report + evidence manifest
+  → multi-agent trust-boundary demo package manifest + demo summary
+  → composed gateway evidence report + composed gateway evidence manifest
+  → relying-party acceptance policy + acceptance record + acceptance package manifest
+  → relying-party review events + revocation/challenge drill report + drill manifest
+  → Silver acceptance handoff summary + handoff manifest
+  → Gold-boundary requirement set + Silver handoff inspection report + inspection manifest
+```
