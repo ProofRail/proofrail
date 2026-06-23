@@ -226,3 +226,30 @@ A Silver handoff inspection package is not a Gold certificate, Gold readiness as
 v0.3.1 enumerates Gold-boundary prerequisites. It does not satisfy them.
 
 v0.3.1 names an inspectable Silver handoff and its Gold-boundary gap inventory. It does not cross the Gold boundary.
+
+---
+
+## 13. Note on v0.3.2 Silver Trace Binding Profile
+
+ProofRail v0.3.2 binds protected-action claims to deterministic trace event evidence anchored to the unchanged v0.2.6 simulated observability-trace adapter descriptor. The v0.3.2 trace binding package binds four subjects in fixed order — the adapter descriptor, the trace events JSONL fixture, the trace claim binding set, and the derived trace binding report — anchored by a four-subject SHA-256 manifest. v0.3.2 introduces no new signature scheme, trust authority, or runtime substrate.
+
+The v0.3.2 trace binding package is **still Silver, not Gold**:
+
+- It is a deterministic local derivation. The runner runs an adapter trust-authority pre-check, subprocess-invokes the unchanged v0.2.6 adapter validator, parses the static trace events JSONL and binding set JSON, cross-checks every non-gap binding row against its resolved trace event, derives the trace binding report deterministically, and atomically `os.replace()`s the staging directory into place only after optional self-validation passes.
+- It is not a runtime substrate, not OpenTelemetry conformance, not a production observability claim, and not a claim that any real trace system observed the recorded events. The trace event fixture is static and committed; v0.3.2 does not query or consult any live observability substrate.
+- It does not establish the observability source as a trust authority. The adapter declares `trust_boundary.source_is_trust_authority: false`, and the v0.3.2 runner and verifier refuse any adapter that declares otherwise. Tampered adapters are always attributed to the specific reason `trace_source_marked_authority`, not collapsed into the generic `trace_adapter_invalid`.
+- It is not signed. v0.3.2 ships local hash anchors only.
+- It does not extend the substance of any earlier-release Silver evidence. v0.3.2 emits an additional Silver evidence artifact; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 semantics, and the v0.3.1 inspector does not (yet) ingest v0.3.2 trace binding evidence.
+- It does not adjudicate, decide, federate, chain, arbitrate, or transfer reliance. `source_event_ref` values are opaque labels; v0.3.2 does not resolve or cross-validate them against any external package.
+
+Gold-level handoff (as inventoried in §5 above) still requires the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity, retention, change-control, revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.3.2 does not add any of those.
+
+The release sentence holds:
+
+> v0.3.2 binds protected-action claims to deterministic trace evidence for independent Silver review. It does not make the observability source authoritative, prove runtime truth, certify OpenTelemetry conformance, certify the underlying system, transfer reliance, or execute Gold governance.
+
+A Silver trace binding package is not a Gold certificate, OpenTelemetry conformance claim, production observability claim, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, adjudicated challenge resolution, legally revoked acceptance, compliance certification, or production authorization.
+
+v0.3.2 binds trace evidence. It does not prove runtime truth.
+
+v0.3.2 names a trace-bound Silver evidence package. It does not cross the Gold boundary.

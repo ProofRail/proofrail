@@ -551,4 +551,23 @@ Bronze claim
   → relying-party review events + revocation/challenge drill report + drill manifest
   → Silver acceptance handoff summary + handoff manifest
   → Gold-boundary requirement set + Silver handoff inspection report + inspection manifest
+  → trace events + trace claim binding set + Silver trace binding report + trace binding manifest
 ```
+
+## v0.3.2 Update: Silver Trace Binding Profile
+
+ProofRail v0.3.2 binds protected-action claims to deterministic trace event evidence anchored to the unchanged v0.2.6 simulated observability-trace adapter descriptor, producing a hash-anchored four-subject package whose every field a Silver reviewer can independently re-derive. v0.3.2 introduces no new signature scheme, trust authority, or runtime substrate. It introduces a single, deterministic, local trace binding package.
+
+| Layer | Artifact | Version | Primary role | Main file/schema |
+|---|---:|---:|---|---|
+| Silver | Silver Trace Event | v0.1.0 | JSONL trace event record with closed `decision` enum `{allow, deny, observe, block}` | `schemas/silver-trace-event-v0.1.0.md` |
+| Silver | Silver Trace Claim Binding Set | v0.1.0 | Binding rows with closed `expected_binding_status` enum `{bound, bound_with_warning, trace_gap_detected, out_of_scope_for_trace_binding}` and per-row `required_*` fields | `schemas/silver-trace-claim-binding-set-v0.1.0.md` |
+| Silver | Silver Trace Binding Report | v0.1.0 | Deterministically derived report whose `binding_summary` counts are recomputed from `bindings[].binding_status` and never hand-authored | `schemas/silver-trace-binding-report-v0.1.0.md` |
+| Silver | Silver Trace Binding Manifest | v0.1.0 | Four-subject SHA-256 hash anchor in fixed order (adapter, trace events, binding set, trace binding report) | `schemas/silver-trace-binding-manifest-v0.1.0.md` |
+| Doc | Silver Trace Binding Profile | v0.3.2 | Release narrative document | `docs/silver/silver-trace-binding-profile-v0.3.2.md` |
+
+The runner (`tools/silver/build_silver_trace_binding_v0_1_0.py`) performs a structural trust-authority pre-check on the adapter BEFORE the v0.2.6 adapter validator subprocess (Amendment 1), validates the trace events JSONL under strict `(event_time, event_id)` ordering with unique `event_id` and unique `(trace_id, span_id)`, validates the binding set under closed enums, cross-checks every non-gap binding row against its resolved trace event so only `trace_gap_detected` rows may reference an absent event (Amendment 4), runs self-validation against the staging directory **before** the atomic `os.replace()`, and refuses with one of four runner-only codes (`adapter_validation_failed`, `trace_events_validation_failed`, `trace_binding_set_validation_failed`, `trace_binding_self_validation_failed`) on any failure.
+
+The verifier (`tools/silver/verify_silver_trace_binding_v0_1_0.py`) is hash-first and runs 22 stable failure reasons. Two reachability orderings are intentional: `trace_source_marked_authority` is checked BEFORE the v0.2.6 adapter validator subprocess so a tampered adapter is always attributed to the specific reason; `trace_warning_downgrade` is checked BEFORE the generic `trace_report_status_mismatch` so downgrades of `bound_with_warning` / `trace_gap_detected` / `out_of_scope_for_trace_binding` to `bound` are always attributed to the more specific reason. Path traversal is checked BEFORE exact subject-path equality. `scope_limitations` and `non_claims` emptiness checks are reserved for the dedicated `trace_limitations_missing` and `trace_non_claims_missing` reasons. The recursive overclaim guard scans every string value outside `scope_limitations` and `non_claims` for 22 forbidden positive tokens including `runtime proof`, `authoritative trace`, `opentelemetry compliant`, and `opentelemetry conformance`. The four runner-only refusal codes are deliberately distinct and never emitted by the verifier.
+
+A Silver trace binding package is not a Gold certificate, OpenTelemetry conformance claim, production observability claim, regulator approval, third-party audit, legal acceptance, compliance certification, or production authorization. The simulated observability-trace adapter is an evidence-source descriptor, not a trust authority. `source_event_ref` values are opaque labeled strings and v0.3.2 does not cross-validate them against any external package. v0.3.2 binds protected-action claims to deterministic trace evidence for independent Silver review. It does not prove runtime truth.

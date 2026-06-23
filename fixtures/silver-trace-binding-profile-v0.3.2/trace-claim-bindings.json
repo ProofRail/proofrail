@@ -1,0 +1,111 @@
+{
+  "document_type": "proofrail.silver.trace_claim_binding_set",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.3.2",
+  "binding_set_id": "proofrail-trace-binding-set-demo-001",
+  "trace_time_window": {
+    "opens_at": "2026-06-22T00:00:00Z",
+    "closes_at": "2026-06-22T00:10:00Z"
+  },
+  "bindings": [
+    {
+      "claim_id": "trace_binding_payment_release_authorized",
+      "required_trace_event_id": "TRACE-EVT-001-payment-release-allowed",
+      "required_trace_id": "trace-demo-001",
+      "required_span_id": "span-payment-release-001",
+      "required_protected_action_id": "payment.release",
+      "required_principal_id": "BuyerOrg.Agent",
+      "required_decision": "allow",
+      "expected_binding_status": "bound"
+    },
+    {
+      "claim_id": "trace_binding_vendor_approve_authorized",
+      "required_trace_event_id": "TRACE-EVT-002-vendor-approve-allowed",
+      "required_trace_id": "trace-demo-002",
+      "required_span_id": "span-vendor-approve-002",
+      "required_protected_action_id": "vendor.approve",
+      "required_principal_id": "VendorOrg.Agent",
+      "required_decision": "allow",
+      "expected_binding_status": "bound"
+    },
+    {
+      "claim_id": "trace_binding_payment_release_denied_after_revocation",
+      "required_trace_event_id": "TRACE-EVT-003-payment-release-deny-revoked",
+      "required_trace_id": "trace-demo-003",
+      "required_span_id": "span-payment-release-003",
+      "required_protected_action_id": "payment.release",
+      "required_principal_id": "BuyerOrg.Agent",
+      "required_decision": "deny",
+      "expected_binding_status": "bound"
+    },
+    {
+      "claim_id": "trace_binding_data_export_out_of_scope",
+      "required_trace_event_id": "TRACE-EVT-004-data-export-deny-out-of-scope",
+      "required_trace_id": "trace-demo-004",
+      "required_span_id": "span-data-export-004",
+      "required_protected_action_id": "data.export",
+      "required_principal_id": "BuyerOrg.Agent",
+      "required_decision": "deny",
+      "expected_binding_status": "out_of_scope_for_trace_binding"
+    },
+    {
+      "claim_id": "trace_binding_deploy_change_out_of_scope",
+      "required_trace_event_id": "TRACE-EVT-005-deploy-change-deny-out-of-scope",
+      "required_trace_id": "trace-demo-005",
+      "required_span_id": "span-deploy-change-005",
+      "required_protected_action_id": "deploy.change",
+      "required_principal_id": "BuyerOrg.Agent",
+      "required_decision": "deny",
+      "expected_binding_status": "out_of_scope_for_trace_binding"
+    },
+    {
+      "claim_id": "trace_binding_vendor_approve_denied_after_revocation",
+      "required_trace_event_id": "TRACE-EVT-006-vendor-approve-deny-revoked",
+      "required_trace_id": "trace-demo-006",
+      "required_span_id": "span-vendor-approve-006",
+      "required_protected_action_id": "vendor.approve",
+      "required_principal_id": "VendorOrg.Agent",
+      "required_decision": "deny",
+      "expected_binding_status": "bound"
+    },
+    {
+      "claim_id": "trace_binding_bypass_attempt_observed",
+      "required_trace_event_id": "TRACE-EVT-007-bypass-attempt-observed",
+      "required_trace_id": "trace-demo-007",
+      "required_span_id": "span-bypass-attempt-007",
+      "required_protected_action_id": "payment.release",
+      "required_principal_id": "BuyerOrg.Agent",
+      "required_decision": "observe",
+      "expected_binding_status": "bound_with_warning"
+    },
+    {
+      "claim_id": "trace_binding_bypass_attempt_blocked",
+      "required_trace_event_id": "TRACE-EVT-008-bypass-attempt-blocked",
+      "required_trace_id": "trace-demo-008",
+      "required_span_id": "span-bypass-attempt-008",
+      "required_protected_action_id": "payment.release",
+      "required_principal_id": "BuyerOrg.Agent",
+      "required_decision": "block",
+      "expected_binding_status": "bound"
+    },
+    {
+      "claim_id": "trace_binding_known_missing_event",
+      "required_trace_event_id": "TRACE-EVT-099-known-missing-from-fixture",
+      "required_trace_id": "trace-demo-099",
+      "required_span_id": "span-known-missing-099",
+      "required_protected_action_id": "payment.release",
+      "required_principal_id": "BuyerOrg.Agent",
+      "required_decision": "deny",
+      "expected_binding_status": "trace_gap_detected"
+    }
+  ],
+  "scope_limitations": [
+    "This binding set applies only to the deterministic v0.3.2 trace fixture.",
+    "Trace events are inputs; this binding set does not authorize execution."
+  ],
+  "non_claims": [
+    "This binding set does not make the trace source authoritative.",
+    "This binding set does not prove runtime truth.",
+    "This binding set is not OpenTelemetry conformance."
+  ]
+}

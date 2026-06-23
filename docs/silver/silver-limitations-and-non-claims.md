@@ -479,6 +479,35 @@ The key claim:
 
 ---
 
+## v0.3.2 Silver Trace Binding Profile
+
+Silver v0.3.2 binds protected-action claims to deterministic trace event evidence anchored to the unchanged v0.2.6 simulated observability-trace adapter descriptor. v0.3.2 introduces no new signature scheme, trust authority, or runtime substrate.
+
+The v0.3.2 trace binding package is:
+
+- **A derived binding artifact**: the runner runs an adapter trust-authority pre-check, subprocess-invokes the unchanged v0.2.6 adapter validator, parses the static trace events JSONL and binding set JSON, cross-checks every non-gap binding row against its resolved trace event, and derives the trace binding report deterministically.
+- **Hash-anchored**: a four-subject trace binding manifest binds the adapter, the trace events JSONL, the binding set JSON, and the trace binding report under SHA-256 in fixed order. Subject paths are refused if they contain `..` or are absolute, and path traversal is checked **before** exact subject-path equality.
+- **Re-derivable by an independent reviewer**: every field in the trace binding report is re-derivable from the trace events and binding set. The verifier independently re-derives the same fields and rejects any disagreement under one of 22 stable failure reasons.
+- **Reachability-ordered**: `trace_source_marked_authority` is checked **before** the v0.2.6 adapter validator subprocess so a tampered adapter with `source_is_trust_authority: true` is always attributed to the specific reason. `trace_warning_downgrade` is checked **before** the generic `trace_report_status_mismatch` so downgrades of `bound_with_warning` / `trace_gap_detected` / `out_of_scope_for_trace_binding` to `bound` are always attributed to the more specific reason.
+- **Self-validated before atomic move**: with `--self-validate`, the runner invokes the v0.3.2 verifier against the staging directory **before** `os.replace()`. On failure it removes staging, leaves the destination untouched, and exits 1 with `FAIL: trace_binding_self_validation_failed: <detail>`.
+- **Overclaim-guarded**: the verifier's recursive overclaim scan rejects 22 forbidden positive tokens — including `runtime proof`, `authoritative trace`, `opentelemetry compliant`, and `opentelemetry conformance` — anywhere outside `scope_limitations` and `non_claims`.
+
+The v0.3.2 trace binding package is **not**:
+
+- A claim that a real production trace system observed these events. The trace event fixture is static and committed; v0.3.2 does not query or consult any live observability substrate.
+- An assertion that the observability source is a trust authority. The adapter declares `trust_boundary.source_is_trust_authority: false`, and the v0.3.2 runner and verifier refuse any adapter that declares otherwise.
+- OpenTelemetry conformance. v0.3.2 uses OpenTelemetry-style field naming for familiarity only and does not claim conformance to the OpenTelemetry specification.
+- Runtime truth. A trace binding report is evidence of declared trace events, not proof that runtime behavior occurred exactly as described.
+- A signed Silver artifact. v0.3.2 ships local hash anchors only.
+- A relying-party acceptance, an acceptance handoff, or a handoff inspection. v0.3.2 emits an additional Silver evidence artifact; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 semantics, and the v0.3.1 inspector does not (yet) ingest v0.3.2 trace binding evidence.
+- A transfer of reliance to a downstream party. `source_event_ref` values are opaque labels; v0.3.2 does not resolve or cross-validate them against any external package.
+- A regulator approval, third-party audit, auditor approval, legal acceptance, compliance certification, or production authorization.
+- A claim that v0.3.2 begins Gold governance.
+
+> v0.3.2 binds protected-action claims to deterministic trace evidence for independent Silver review. It does not make the observability source authoritative, prove runtime truth, certify OpenTelemetry conformance, certify the underlying system, transfer reliance, or execute Gold governance.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

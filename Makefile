@@ -293,6 +293,24 @@ run-silver-handoff-inspection-v0-3-1: run-silver-acceptance-handoff-v0-3-0
 verify-silver-handoff-inspection-v0-3-1:
 	bash tests/test_silver_handoff_inspector_v0_3_1.sh
 
+.PHONY: run-silver-trace-binding-v0-3-2
+run-silver-trace-binding-v0-3-2:
+	python3 tools/silver/build_silver_trace_binding_v0_1_0.py \
+	  --adapter examples/silver-evidence-source-adapters/observability-trace-simulated-v0.2.6.json \
+	  --trace-events fixtures/silver-trace-binding-profile-v0.3.2/trace-events.jsonl \
+	  --bindings fixtures/silver-trace-binding-profile-v0.3.2/trace-claim-bindings.json \
+	  --trace-binding-report-id proofrail-trace-binding-report-demo-001 \
+	  --generated-at 2026-06-22T00:00:00Z \
+	  --output-dir /tmp/proofrail-silver-trace-binding-v0.3.2 \
+	  --force \
+	  --self-validate
+	python3 tools/silver/verify_silver_trace_binding_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-trace-binding-v0.3.2/silver-trace-binding-manifest.json
+
+.PHONY: verify-silver-trace-binding-v0-3-2
+verify-silver-trace-binding-v0-3-2:
+	bash tests/test_silver_trace_binding_v0_3_2.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -310,3 +328,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-revocation-challenge-drill-v0-2-9
 	$(MAKE) verify-silver-acceptance-handoff-v0-3-0
 	$(MAKE) verify-silver-handoff-inspection-v0-3-1
+	$(MAKE) verify-silver-trace-binding-v0-3-2

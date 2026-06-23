@@ -1100,6 +1100,113 @@ JSON parse errors are caught and surfaced as the appropriate stable reason — n
 
 Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
 
+## Silver Trace Binding Runner (v0.3.2)
+
+Builds a deterministic, local Silver trace binding package that anchors a static fixture of trace events plus a binding set of expectations to an unchanged v0.2.6 observability-trace adapter descriptor. Pure-stdlib. Atomic staging-then-replace; a refused or self-validation-failed run leaves no partial trace binding package on disk.
+
+```bash
+python3 tools/silver/build_silver_trace_binding_v0_1_0.py \
+  --adapter examples/silver-evidence-source-adapters/observability-trace-simulated-v0.2.6.json \
+  --trace-events fixtures/silver-trace-binding-profile-v0.3.2/trace-events.jsonl \
+  --bindings fixtures/silver-trace-binding-profile-v0.3.2/trace-claim-bindings.json \
+  --trace-binding-report-id proofrail-trace-binding-report-demo-001 \
+  --generated-at 2026-06-22T00:00:00Z \
+  --output-dir /tmp/proofrail-silver-trace-binding-v0.3.2 \
+  --force \
+  --self-validate
+```
+
+The runner performs nine ordered steps:
+
+1. Structural pre-check (Amendment 1): refuses if the adapter's `trust_boundary.source_is_trust_authority` is not exactly `false`. Surfaces as the runner-only refusal reason `adapter_validation_failed`.
+2. Subprocess-invokes the unchanged **v0.2.6 adapter validator** on the supplied adapter (same runner-only reason on failure).
+3. Validates the trace events JSONL: closed `decision` enum, unique `event_id`, unique `(trace_id, span_id)`, strict `(event_time, event_id)` ascending order. Surfaces as `trace_events_validation_failed`.
+4. Validates the binding set JSON: closed `expected_binding_status` and `required_decision` enums, unique `claim_id`, time-window correctness, and the cross-check that every non-gap row resolves to an existing event with all `required_*` fields equal (Amendment 4). Surfaces as `trace_binding_set_validation_failed`.
+5. Stages the package directory under a sibling staging path.
+6. Derives `silver-trace-binding-report.json` deterministically; `binding_summary` counts are recomputed from `bindings[].binding_status` and may not be hand-authored.
+7. Emits `silver-trace-binding-manifest.json` with four subjects in the fixed v0.3.2 order: `adapter/<filename>`, `trace-events.jsonl`, `trace-claim-bindings.json`, `silver-trace-binding-report.json`.
+8. With `--self-validate`, subprocess-invokes the v0.3.2 verifier on the staged manifest BEFORE the atomic move; on failure it removes the staging directory, leaves the destination untouched, and refuses with `FAIL: trace_binding_self_validation_failed: <detail>` and exit code 1.
+9. Atomically `os.replace()` the staging directory into `--output-dir`.
+
+Runner-only refusal reasons (4):
+
+| Reason | Triggered when |
+|---|---|
+| `adapter_validation_failed` | Adapter trust-authority pre-check fails OR v0.2.6 adapter validator subprocess fails |
+| `trace_events_validation_failed` | Trace events JSONL fails structural / enum / ordering / uniqueness checks |
+| `trace_binding_set_validation_failed` | Binding set JSON fails structural / enum / cross-check / time-window checks |
+| `trace_binding_self_validation_failed` | `--self-validate` subprocess invocation of the v0.3.2 verifier on the staged package fails before the atomic move |
+
+Exit codes: 0 (success), 1 (trace binding refused or self-validation failed), 2 (usage/input error).
+
+## Silver Trace Binding Verifier (v0.3.2)
+
+Validates a v0.3.2 Silver trace binding package. Pure-stdlib. Hash-first ordering. The verifier owns every cross-check of the trace binding report against the trace events fixture and the binding set, and subprocess-invokes the unchanged **v0.2.6 adapter validator** on the adapter subject.
+
+```bash
+python3 tools/silver/verify_silver_trace_binding_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-trace-binding-v0.3.2/silver-trace-binding-manifest.json
+```
+
+Ordered verifier checks (each maps to a single stable failure reason; no OR-accept):
+
+1. Parse and structurally validate the manifest (`invalid_trace_binding_manifest`).
+2. Subject path traversal — checked BEFORE exact path equality (`trace_subject_path_traversal`).
+3. Exact subject path + role equality against the fixed v0.3.2 SUBJECT_ORDER (`invalid_trace_binding_manifest`).
+4. Subject file existence (`trace_subject_file_missing`).
+5. Subject SHA-256 and size recomputation (`trace_subject_hash_mismatch`).
+6. Adapter structural pre-check (Amendment 1, BEFORE the v0.2.6 validator subprocess) — refuses any adapter whose `trust_boundary.source_is_trust_authority` is not exactly `false` (`trace_source_marked_authority`).
+7. Subprocess-invokes the unchanged v0.2.6 adapter validator (`trace_adapter_invalid`).
+8. Parses trace events; field and enum checks (`trace_events_invalid`).
+9. Unique `event_id` and unique `(trace_id, span_id)` (`trace_event_duplicate`).
+10. Strict `(event_time, event_id)` ordering (`trace_event_time_order_invalid`).
+11. Parses binding set; field and enum checks (`trace_binding_set_invalid`).
+12. Unique `claim_id` (`trace_binding_duplicate`).
+13. Non-gap rows: referenced event exists (`trace_binding_event_missing`).
+14. Non-gap rows: `required_*` fields equal resolved event fields (`trace_binding_field_mismatch`).
+15. Non-gap rows: `event_time` inside `trace_time_window` (`trace_binding_time_window_mismatch`).
+16. Parses report; field and enum checks (`trace_report_invalid`).
+17. Cross-check report hashes / counts / time-window / ids vs manifest and inputs (`trace_report_binding_mismatch`).
+18. Warning/gap/out-of-scope downgrade (Amendment 2, BEFORE generic status mismatch) (`trace_warning_downgrade`).
+19. Per-row re-derivation equality (`trace_report_status_mismatch`).
+20. Re-compute `binding_summary` counts (`trace_report_count_mismatch`).
+21. Overclaim scan OUTSIDE `scope_limitations` / `non_claims` for 22 forbidden positive tokens including `runtime proof`, `authoritative trace`, `opentelemetry compliant`, and `opentelemetry conformance` (`trace_overclaim`).
+22. `scope_limitations` non-empty / non-blank across manifest, binding set, and report (`trace_limitations_missing`).
+23. `non_claims` non-empty / non-blank across manifest, binding set, and report (`trace_non_claims_missing`).
+
+Stable verifier failure reasons (22 total):
+
+| Reason | Triggered when |
+|---|---|
+| `invalid_trace_binding_manifest` | Manifest is unparseable, missing required fields, has wrong `document_type` / `schema_version`, or subject layout / roles do not match the fixed v0.3.2 order |
+| `trace_subject_path_traversal` | Any subject path is absolute or contains `..` |
+| `trace_subject_file_missing` | Any subject file is missing on disk |
+| `trace_subject_hash_mismatch` | Recomputed SHA-256 or size disagrees with the manifest |
+| `trace_source_marked_authority` | Adapter declares `trust_boundary.source_is_trust_authority` other than exactly `false` |
+| `trace_adapter_invalid` | Subprocess invocation of the unchanged v0.2.6 adapter validator on the adapter subject fails |
+| `trace_events_invalid` | Trace events JSONL has structural, field, or enum errors |
+| `trace_event_duplicate` | Duplicate `event_id` or duplicate `(trace_id, span_id)` |
+| `trace_event_time_order_invalid` | Events not strictly ordered by `(event_time, event_id)` ascending |
+| `trace_binding_set_invalid` | Binding set has structural, field, or enum errors |
+| `trace_binding_duplicate` | Duplicate `claim_id` in the binding set |
+| `trace_binding_event_missing` | A non-gap binding row references an event absent from the trace fixture |
+| `trace_binding_field_mismatch` | A non-gap binding row's `required_*` fields disagree with the resolved event |
+| `trace_binding_time_window_mismatch` | A non-gap binding row resolves to an event with `event_time` outside `trace_time_window` |
+| `trace_report_invalid` | Report has structural, field, or enum errors |
+| `trace_report_binding_mismatch` | Report hashes / counts / time-window / ids disagree with the manifest, events, or binding set |
+| `trace_warning_downgrade` | A row whose `expected_binding_status` is `bound_with_warning`, `trace_gap_detected`, or `out_of_scope_for_trace_binding` has been silently downgraded to `bound` |
+| `trace_report_status_mismatch` | Any per-row re-derivation disagrees (non-downgrade case) |
+| `trace_report_count_mismatch` | Recomputed `binding_summary` counts disagree with `bindings[].binding_status` |
+| `trace_limitations_missing` | `scope_limitations` empty or blank across manifest, binding set, or report |
+| `trace_non_claims_missing` | `non_claims` empty or blank across manifest, binding set, or report |
+| `trace_overclaim` | Any string outside `scope_limitations` / `non_claims` contains a forbidden positive token |
+
+The four runner-only refusal codes (`adapter_validation_failed`, `trace_events_validation_failed`, `trace_binding_set_validation_failed`, `trace_binding_self_validation_failed`) are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
 ## Security Notes
 
 - This is a demo signing system. Do not use generated keys for production.
