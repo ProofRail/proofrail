@@ -1,0 +1,37 @@
+{
+  "document_type": "proofrail.silver.challenge_record",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.3.4",
+  "challenge_record_id": "proofrail-challenge-record-demo-001",
+  "filed_at": "2026-06-29T00:10:00Z",
+  "filed_by": {
+    "principal_id": "verifier-auditor-demo",
+    "role": "verifier_auditor"
+  },
+  "target": {
+    "target_type": "silver_acceptance_handoff",
+    "target_manifest_path": "target-handoff/silver-acceptance-handoff-manifest.json",
+    "target_manifest_sha256": "sha256:TO_BE_BOUND_BY_RUNNER",
+    "target_record_id": "proofrail-silver-acceptance-handoff-demo-001"
+  },
+  "challenge": {
+    "challenge_reason": "post_acceptance_review_required",
+    "challenge_status": "filed",
+    "challenge_basis": [
+      "A local reviewer requested post-acceptance review of the handoff before reuse."
+    ],
+    "requested_action": "review_before_reuse"
+  },
+  "evidence_refs": [
+    "target-handoff/silver-acceptance-handoff-summary.json",
+    "target-handoff/silver-acceptance-handoff-manifest.json"
+  ],
+  "scope_limitations": [
+    "This challenge record only records that a local review challenge was filed."
+  ],
+  "non_claims": [
+    "This challenge record does not adjudicate the challenge.",
+    "This challenge record does not legally revoke reliance.",
+    "This challenge record does not implement Gold governance."
+  ]
+}

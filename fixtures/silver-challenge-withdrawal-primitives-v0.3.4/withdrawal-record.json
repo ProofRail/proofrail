@@ -1,0 +1,37 @@
+{
+  "document_type": "proofrail.silver.withdrawal_record",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.3.4",
+  "withdrawal_record_id": "proofrail-withdrawal-record-demo-001",
+  "recorded_at": "2026-06-29T00:20:00Z",
+  "effective_at": "2026-06-29T00:20:00Z",
+  "recorded_by": {
+    "principal_id": "relying-party-reviewer-demo",
+    "role": "relying_party_reviewer"
+  },
+  "target": {
+    "target_type": "silver_acceptance_handoff",
+    "target_manifest_path": "target-handoff/silver-acceptance-handoff-manifest.json",
+    "target_manifest_sha256": "sha256:TO_BE_BOUND_BY_RUNNER",
+    "target_record_id": "proofrail-silver-acceptance-handoff-demo-001"
+  },
+  "related_challenge_record_id": "proofrail-challenge-record-demo-001",
+  "withdrawal": {
+    "withdrawal_reason": "challenge_pending_review",
+    "withdrawal_status": "withdrawal_recorded",
+    "withdrawal_effect": "local_reuse_paused_for_review"
+  },
+  "evidence_refs": [
+    "records/challenge-record.json",
+    "target-handoff/silver-acceptance-handoff-summary.json",
+    "target-handoff/silver-acceptance-handoff-manifest.json"
+  ],
+  "scope_limitations": [
+    "This withdrawal record only records a local pause or withdrawal posture for review."
+  ],
+  "non_claims": [
+    "This withdrawal record does not legally revoke reliance.",
+    "This withdrawal record does not adjudicate the related challenge.",
+    "This withdrawal record does not implement Gold governance."
+  ]
+}

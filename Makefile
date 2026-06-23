@@ -330,6 +330,23 @@ run-silver-adapter-pilot-v0-3-3:
 verify-silver-adapter-pilot-v0-3-3:
 	bash tests/test_silver_adapter_pilot_v0_3_3.sh
 
+.PHONY: run-silver-challenge-withdrawal-primitives-v0-3-4
+run-silver-challenge-withdrawal-primitives-v0-3-4:
+	python3 tools/silver/build_silver_challenge_withdrawal_primitives_v0_1_0.py \
+	  --target-handoff-root /tmp/proofrail-silver-acceptance-handoff-v0.3.0 \
+	  --challenge-record fixtures/silver-challenge-withdrawal-primitives-v0.3.4/challenge-record.json \
+	  --withdrawal-record fixtures/silver-challenge-withdrawal-primitives-v0.3.4/withdrawal-record.json \
+	  --generated-at 2026-06-29T00:30:00Z \
+	  --output-dir /tmp/proofrail-silver-challenge-withdrawal-primitives-v0.3.4 \
+	  --force \
+	  --self-validate
+	python3 tools/silver/verify_silver_challenge_withdrawal_primitives_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-challenge-withdrawal-primitives-v0.3.4/silver-challenge-withdrawal-manifest.json
+
+.PHONY: verify-silver-challenge-withdrawal-primitives-v0-3-4
+verify-silver-challenge-withdrawal-primitives-v0-3-4:
+	bash tests/test_silver_challenge_withdrawal_primitives_v0_3_4.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -349,3 +366,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-handoff-inspection-v0-3-1
 	$(MAKE) verify-silver-trace-binding-v0-3-2
 	$(MAKE) verify-silver-adapter-pilot-v0-3-3
+	$(MAKE) verify-silver-challenge-withdrawal-primitives-v0-3-4

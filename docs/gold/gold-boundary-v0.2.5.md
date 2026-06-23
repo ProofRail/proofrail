@@ -280,3 +280,32 @@ A Silver adapter pilot package is not a Gold certificate, OpenTelemetry conforma
 v0.3.3 pilots an adapter normalization flow. It does not prove runtime truth.
 
 v0.3.3 names an adapter-piloted Silver evidence package. It does not cross the Gold boundary.
+
+---
+
+## 15. Note on v0.3.4 Silver Challenge / Withdrawal Record Primitives
+
+ProofRail v0.3.4 layers two structurally validated, hash-bound local records over an unchanged v0.3.0 acceptance handoff target: a challenge record under a closed `challenge_reason` (10 values) / `challenge_status` (4 values) vocabulary and a withdrawal record under a closed `withdrawal_reason` (7 values) / `withdrawal_status` (4 values) / `withdrawal_effect` (4 values) vocabulary, with a closed `withdrawal_effect → posture` derivation table (5 posture values). The v0.3.4 challenge / withdrawal primitives package binds four subjects in fixed order — the byte-copied v0.3.0 acceptance handoff manifest, the bound challenge record, the bound withdrawal record, and the derived challenge / withdrawal summary — anchored by a four-subject SHA-256 manifest. v0.3.4 introduces no new signature scheme, trust authority, runtime substrate, or adjudication.
+
+The v0.3.4 challenge / withdrawal primitives package is **still Silver, not Gold**:
+
+- It is a deterministic local record. The runner subprocess-invokes the unchanged v0.3.0 acceptance handoff verifier on the target handoff manifest, structurally validates the input records under closed enums (accepting the literal placeholder `sha256:TO_BE_BOUND_BY_RUNNER` in **input** fixtures only), performs four runner-owned binding cross-checks against the parsed v0.3.0 handoff manifest, byte-copies the v0.3.0 handoff package root under `target-handoff/`, recomputes the SHA-256 of the copied target manifest, rewrites the placeholder in both packaged record copies under `records/` to that recomputed hash label, and derives the summary deterministically with `posture` forced from the closed `withdrawal_effect → posture` table. The verifier independently re-checks every binding, rejects the placeholder in **packaged** records via the dedicated consolidated `challenge_record_target_mismatch` / `withdrawal_record_target_mismatch` reasons (each covering placeholder-unbound, `target_manifest_sha256` drift against subject [0], and `target_record_id` drift against the v0.3.0 `handoff_id`), and re-invokes the unchanged v0.3.0 handoff verifier on subject [0].
+- It is not an adjudication. The challenge record records that a challenge was filed under a closed vocabulary; it does not decide its merits. The v0.3.4 verifier does not consult any external adjudicator, regulator, auditor, or counterparty.
+- It is not a legal revocation of reliance. The withdrawal record's `withdrawal_effect` describes the filer's local posture only; the closed posture vocabulary (`challenged_with_local_reuse_paused_for_review`, `challenged_with_local_reliance_withdrawn_for_review`, `record_superseded`, plus collapse from `acceptance_reuse_blocked_pending_review`) explicitly scopes the effect to local reuse / reliance, never to legal revocation of any prior acceptance instrument.
+- It is not a certification of the target handoff. The v0.3.0 handoff target is byte-copied and re-verified by the unchanged v0.3.0 verifier; v0.3.4 does not certify, approve, or audit the underlying handoff.
+- It is not signed. v0.3.4 ships local hash anchors only.
+- It does not extend the substance of any earlier-release Silver evidence. v0.3.4 emits an additional Silver evidence artifact over a v0.3.0 target; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 / v0.3.3 semantics, the v0.3.0 handoff verifier is invoked unmodified, and v0.3.4 does not bind a v0.3.2 trace binding manifest or a v0.3.3 adapter pilot manifest into the challenge / withdrawal package.
+- It does not federate, chain, arbitrate, notify external parties, or transfer reliance. v0.3.4 records the filer's local challenge / withdrawal posture only; it does not contact, notify, or consult any regulator, auditor, third party, counterparty, or downstream relying party.
+- It does not verify the substantive truth of any free-text field. The challenge record's free-text `challenge_reason_description` and counterparty references and the withdrawal record's free-text fields are not adjudicated by v0.3.4; the overclaim guard scans every string outside `scope_limitations` / `non_claims` (including the optional `claim.description` field) for forbidden positive tokens.
+
+Gold-level handoff (as inventoried in §5 above) still requires the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity, retention, change-control, governed challenge adjudication, governed revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.3.4 does not add any of those, and explicitly does not introduce challenge / withdrawal primitives as a Gold prerequisite or as a Gold satisfaction.
+
+The release sentence holds:
+
+> v0.3.4 records local challenge / withdrawal primitives over an unchanged v0.3.0 acceptance handoff target. It does not adjudicate the challenge, does not legally revoke reliance, does not certify the target handoff, does not notify or consult any external party, does not prove the substantive truth of free-text fields, and does not extend the substance of any earlier-release Silver evidence.
+
+A Silver challenge / withdrawal primitives package is not a Gold certificate, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, adjudicated challenge resolution, legally revoked acceptance, compliance certification, or production authorization.
+
+v0.3.4 records challenge / withdrawal primitives. It does not decide their merits.
+
+v0.3.4 names a challenge / withdrawal primitives Silver evidence package. It does not cross the Gold boundary.

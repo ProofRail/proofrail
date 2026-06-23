@@ -538,6 +538,35 @@ The v0.3.3 adapter pilot package is **not**:
 
 ---
 
+## v0.3.4 Silver Challenge / Withdrawal Record Primitives
+
+Silver v0.3.4 layers two structurally validated, hash-bound local records over an unchanged v0.3.0 acceptance handoff target: a challenge record under a closed `challenge_reason` / `challenge_status` enum vocabulary and a withdrawal record under a closed `withdrawal_reason` / `withdrawal_status` / `withdrawal_effect` enum vocabulary, with a closed `withdrawal_effect → posture` derivation table. v0.3.4 introduces no new signature scheme, trust authority, runtime substrate, or adjudication.
+
+The v0.3.4 challenge / withdrawal primitives package is:
+
+- **Local and deterministic.** All input fixtures are committed; the runner consumes them with no network access and no live system queries.
+- **Hash-anchored under a fixed four-subject manifest.** The manifest order — target handoff manifest / challenge record / withdrawal record / challenge-withdrawal summary — never varies.
+- **Re-derived from inputs.** The verifier re-derives the seven required claims independently from the bound records and the copied target manifest, and re-derives `summary.posture` from the closed `withdrawal_effect → posture` table.
+- **Layered on the unchanged v0.3.0 acceptance handoff.** The runner subprocess-invokes the unmodified v0.3.0 handoff verifier on the target handoff manifest; the v0.3.4 verifier re-invokes the unmodified v0.3.0 handoff verifier on subject [0]. v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 / v0.3.3 tooling and semantics are unchanged.
+- **Self-validated before atomic move.** With `--self-validate`, the runner invokes the v0.3.4 verifier against the staging directory **before** `os.replace()`. On failure it removes staging, leaves the destination untouched, and exits 1 with `FAIL: challenge_withdrawal_self_validation_failed: <detail>`. A refused run leaves no final directory and no staging sibling, so the Make target is safely repeatable.
+- **Pre-bind vs post-bind disciplined.** The runner accepts the literal placeholder `sha256:TO_BE_BOUND_BY_RUNNER` as a syntactically valid `target.target_manifest_sha256` value in **input** fixtures so authors can write fixtures without knowing the target hash; the verifier rejects the placeholder in **packaged** records via the dedicated consolidated `challenge_record_target_mismatch` / `withdrawal_record_target_mismatch` reasons (each of which also covers `target_manifest_sha256` drift against subject [0] and `target_record_id` drift against the v0.3.0 `handoff_id`).
+
+The v0.3.4 challenge / withdrawal primitives package is **not**:
+
+- An adjudication of the challenge. The challenge record records that a challenge was filed under a closed vocabulary; it does not decide its merits.
+- A legal revocation of reliance. The withdrawal record's `withdrawal_effect` describes the filer's local posture only and does not constitute legal revocation of any prior acceptance instrument.
+- A certification of the target handoff. The v0.3.0 handoff target is byte-copied under `target-handoff/` and re-verified by the unchanged v0.3.0 verifier; v0.3.4 does not certify, approve, or audit the underlying handoff.
+- A Gold certificate, regulator approval, third-party audit, legal acceptance, compliance certification, or production authorization.
+- An assertion that any external counterparty, regulator, auditor, or downstream relying party has been contacted, notified, or consulted. v0.3.4 records local records only.
+- A verification of the substantive truth of the challenge record's free-text `challenge_reason_description` or counterparty references, or of the withdrawal record's free-text fields.
+- A signed Silver artifact. v0.3.4 ships local hash anchors only.
+- An extension of the substance of any earlier-release Silver evidence. v0.3.4 emits an additional Silver evidence artifact over a v0.3.0 target; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 / v0.3.3 semantics, and it does not bind a v0.3.2 trace binding manifest or a v0.3.3 adapter pilot manifest into the challenge / withdrawal package.
+- A claim that v0.3.4 begins Gold governance.
+
+> v0.3.4 records local challenge / withdrawal primitives over an unchanged v0.3.0 acceptance handoff target. It does not adjudicate the challenge, does not legally revoke reliance, does not certify the target handoff, does not notify or consult any external party, does not prove the substantive truth of free-text fields, and does not extend the substance of any earlier-release Silver evidence.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

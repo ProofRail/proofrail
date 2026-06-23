@@ -1324,6 +1324,127 @@ JSON parse errors are caught and surfaced as the appropriate stable reason — n
 
 Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
 
+## Silver Challenge / Withdrawal Record Primitives Runner (v0.3.4)
+
+Builds a deterministic, local Silver challenge / withdrawal primitives package over an unchanged v0.3.0 acceptance handoff target. Pure-stdlib. Atomic staging-then-replace; a refused or self-validation-failed run leaves no partial package on disk and no staging sibling.
+
+```bash
+python3 tools/silver/build_silver_challenge_withdrawal_primitives_v0_1_0.py \
+  --target-handoff-root /tmp/proofrail-silver-acceptance-handoff-v0.3.0 \
+  --challenge-record fixtures/silver-challenge-withdrawal-primitives-v0.3.4/challenge-record.json \
+  --withdrawal-record fixtures/silver-challenge-withdrawal-primitives-v0.3.4/withdrawal-record.json \
+  --generated-at 2026-06-29T00:30:00Z \
+  --output-dir /tmp/proofrail-silver-challenge-withdrawal-primitives-v0.3.4 \
+  --force \
+  --self-validate
+```
+
+What the runner does, in order:
+
+1. Subprocess-invokes the unchanged v0.3.0 acceptance handoff verifier against `<target-handoff-root>/silver-acceptance-handoff-manifest.json` (`handoff_validation_failed`).
+2. Structurally validates the input challenge record under the v0.3.4 closed enum vocabulary (10 reasons, 4 statuses). Accepts the literal placeholder `sha256:TO_BE_BOUND_BY_RUNNER` as a syntactically valid `target.target_manifest_sha256` value so input fixtures can be authored independently of the target hash (`challenge_record_validation_failed`).
+3. Structurally validates the input withdrawal record under the v0.3.4 closed enum vocabulary (7 reasons, 4 statuses, 4 effects) and the same placeholder rule (`withdrawal_record_validation_failed`).
+4. Performs four binding cross-checks against the parsed v0.3.0 handoff manifest (`challenge_withdrawal_binding_failed`):
+   - both records' `target.target_record_id` equal the v0.3.0 handoff manifest's `handoff_id`;
+   - the withdrawal record's `related_challenge_record_id` equals the input challenge record's `challenge_record_id`;
+   - the time-order chain `target.generated_at ≤ challenge.filed_at ≤ withdrawal.recorded_at ≤ withdrawal.effective_at` is monotone;
+   - both records' `target.target_manifest_path` equal the packaged subject [0] path `target-handoff/silver-acceptance-handoff-manifest.json`.
+5. Stages the package directory under `<output-dir>.staging.<pid>`.
+6. Byte-copies the v0.3.0 handoff package root into `target-handoff/`.
+7. Recomputes the SHA-256 of the copied target handoff manifest and rewrites the literal placeholder `sha256:TO_BE_BOUND_BY_RUNNER` in both packaged record copies under `records/` to that recomputed hash label.
+8. Derives `silver-challenge-withdrawal-summary.json` deterministically from the copied target manifest, the bound challenge record, and the bound withdrawal record; pre-bakes the seven required claims with `status: pass`; forces `summary.posture` from the closed `withdrawal_effect → posture` mapping table.
+9. Emits `silver-challenge-withdrawal-manifest.json` with exactly four subjects in fixed order: `target-handoff/silver-acceptance-handoff-manifest.json` / `records/challenge-record.json` / `records/withdrawal-record.json` / `silver-challenge-withdrawal-summary.json`.
+10. With `--self-validate`, subprocess-invokes the v0.3.4 verifier on the staged manifest BEFORE the atomic move; on failure it removes the staging directory, leaves the destination untouched, and refuses with `FAIL: challenge_withdrawal_self_validation_failed: <detail>` and exit code 1.
+11. Atomic publish: only AFTER staging build and (optional) self-validation succeed does the runner remove an existing `--output-dir` (required `--force`) and `os.replace()` the staging directory into place. Any earlier failure leaves staging cleaned up and `--output-dir` untouched.
+
+Runner-only refusal reasons (5):
+
+| Reason | Triggered when |
+|---|---|
+| `handoff_validation_failed` | Subprocess invocation of the unchanged v0.3.0 acceptance handoff verifier on the target handoff manifest fails |
+| `challenge_record_validation_failed` | Input challenge record fails structural / enum / placeholder-syntax checks |
+| `withdrawal_record_validation_failed` | Input withdrawal record fails structural / enum / placeholder-syntax checks |
+| `challenge_withdrawal_binding_failed` | Any of the four runner-owned binding cross-checks against the parsed v0.3.0 handoff manifest disagree |
+| `challenge_withdrawal_self_validation_failed` | `--self-validate` subprocess invocation of the v0.3.4 verifier on the staged package fails before the atomic move |
+
+Exit codes: 0 (success), 1 (package refused or self-validation failed), 2 (usage/input error).
+
+## Silver Challenge / Withdrawal Record Primitives Verifier (v0.3.4)
+
+Validates a v0.3.4 Silver challenge / withdrawal primitives package. Pure-stdlib. Hash-first ordering. The verifier owns every cross-check of the summary against the target handoff manifest, the bound challenge record, and the bound withdrawal record. Subprocess-invokes the unchanged **v0.3.0 acceptance handoff verifier** on subject [0].
+
+```bash
+python3 tools/silver/verify_silver_challenge_withdrawal_primitives_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-challenge-withdrawal-primitives-v0.3.4/silver-challenge-withdrawal-manifest.json
+```
+
+Ordered verifier checks (29 numbered steps mapping to 24 stable failure reasons; manifest structural failures throughout steps 1–9 share `invalid_challenge_withdrawal_manifest`; step 29 covers both `_limitations_missing` and `_non_claims_missing`; no OR-accept):
+
+1. Parse manifest JSON (`invalid_challenge_withdrawal_manifest`).
+2. Manifest top-level shape: `document_type`, `schema_version`, `proofrail_release`, `manifest_id`, `generated_at`, `hash_algorithm`, and presence-only `scope_limitations` / `non_claims` (`invalid_challenge_withdrawal_manifest`).
+3. Subjects array shape: exactly 4 entries (`invalid_challenge_withdrawal_manifest`).
+4. Each subject is an object with a non-empty `path` string (`invalid_challenge_withdrawal_manifest`).
+5. Subject path traversal — checked BEFORE exact path equality (`challenge_withdrawal_subject_path_traversal`).
+6. Exact subject path + role equality against the fixed v0.3.4 SUBJECT_ORDER (`invalid_challenge_withdrawal_manifest`).
+7. Each subject `sha256` / `size_bytes` shape (`invalid_challenge_withdrawal_manifest`).
+8. Each subject file exists on disk (`challenge_withdrawal_subject_file_missing`).
+9. Recompute SHA-256 and size for each subject; size mismatches fold to `invalid_challenge_withdrawal_manifest` while hash mismatches surface as `challenge_withdrawal_subject_hash_mismatch`.
+10. Subprocess-invokes the unchanged v0.3.0 handoff verifier on subject [0] (`nested_handoff_invalid`).
+11. Parses the target handoff manifest for `handoff_id` / `generated_at` cross-checks (`nested_handoff_invalid`).
+12. Parses and structurally validates (presence-only) the packaged challenge record (`challenge_record_invalid`).
+13. Parses and structurally validates (presence-only) the packaged withdrawal record (`withdrawal_record_invalid`).
+14. Closed-enum check on `challenge.challenge_reason` (`challenge_record_reason_invalid`).
+15. Closed-enum check on `challenge.challenge_status` (`challenge_record_status_invalid`).
+16. Challenge record `evidence_refs` validation — no `..`, no absolute, all non-empty strings (`challenge_record_evidence_ref_invalid`).
+17. Closed-enum check on `withdrawal.withdrawal_reason` (`withdrawal_record_reason_invalid`).
+18. Closed-enum check on `withdrawal.withdrawal_status` (`withdrawal_record_status_invalid`).
+19. Withdrawal record `evidence_refs` validation — no `..`, no absolute, all non-empty strings (`withdrawal_record_evidence_ref_invalid`).
+20. Packaged challenge record target binding — chains placeholder-unbound → `target_manifest_sha256` drift vs subject [0] → `target_record_id` drift vs the parsed v0.3.0 `handoff_id`; every variant emits the single consolidated reason (`challenge_record_target_mismatch`).
+21. Packaged withdrawal record target binding — same three checks chained, single consolidated reason (`withdrawal_record_target_mismatch`).
+22. Withdrawal's `related_challenge_record_id` equals challenge's `challenge_record_id` (`withdrawal_record_challenge_ref_mismatch`).
+23. Monotone time-order chain across target / challenge / withdrawal (`challenge_withdrawal_time_order_invalid`).
+24. Parses and structurally validates the summary, including the seven required claims list (claim count, `claim_id` order, `status: pass`, non-empty `evidence_refs` within the allowed package-local prefix set with no `..`, optional `description` non-empty); any structural problem with the claims folds into `challenge_withdrawal_summary_invalid` (the approved taxonomy intentionally has no dedicated reason for a missing or failing required claim).
+25. Summary `target.*` and `records.*` cross-bind to manifest subjects, AND `challenge_status` / `withdrawal_status` / `withdrawal_effect` echo the bound records — all surface as `challenge_withdrawal_summary_binding_mismatch` (the previous `_summary_status_mismatch` reason is folded into this single reason).
+26. `summary.summary.challenge_count == 1` and `withdrawal_count == 1` (`challenge_withdrawal_summary_count_mismatch`, singular).
+27. `summary.summary.posture` is in the closed set AND matches the closed `withdrawal_effect → posture` table (`challenge_withdrawal_posture_invalid`).
+28. Overclaim scan OUTSIDE `scope_limitations` / `non_claims` including the optional `claim.description` field (`challenge_withdrawal_overclaim`).
+29. `scope_limitations` non-empty / non-blank across manifest and summary (`challenge_withdrawal_limitations_missing`), then `non_claims` non-empty / non-blank across manifest and summary (`challenge_withdrawal_non_claims_missing`).
+
+Stable verifier failure reasons (24 total):
+
+| Reason | Triggered when |
+|---|---|
+| `invalid_challenge_withdrawal_manifest` | Manifest is unparseable, missing required fields, has wrong `document_type` / `schema_version`, has a malformed subjects array, has subject `sha256` / `size_bytes` of the wrong shape, has a size mismatch, or subject layout / roles do not match the fixed v0.3.4 order |
+| `challenge_withdrawal_subject_path_traversal` | Any subject path is absolute or contains `..` (checked BEFORE exact path equality) |
+| `challenge_withdrawal_subject_file_missing` | Any subject file is missing on disk |
+| `challenge_withdrawal_subject_hash_mismatch` | Recomputed SHA-256 disagrees with the manifest |
+| `nested_handoff_invalid` | Subprocess invocation of the unchanged v0.3.0 handoff verifier on subject [0] fails, or its manifest can't be re-parsed for the `handoff_id` / `generated_at` cross-checks |
+| `challenge_record_invalid` | Packaged challenge record fails presence-only structural checks (shape / required fields / target block / scope_limitations / non_claims / evidence_refs list type) |
+| `withdrawal_record_invalid` | Packaged withdrawal record fails presence-only structural checks (same family) |
+| `challenge_record_target_mismatch` | Packaged challenge record `target.target_manifest_sha256` still equals the literal placeholder, OR disagrees with subject [0] sha256, OR `target.target_record_id` disagrees with the v0.3.0 handoff `handoff_id` (single consolidated reason for all three variants) |
+| `withdrawal_record_target_mismatch` | Packaged withdrawal record `target.target_manifest_sha256` still equals the literal placeholder, OR disagrees with subject [0] sha256, OR `target.target_record_id` disagrees with the v0.3.0 handoff `handoff_id` (single consolidated reason for all three variants) |
+| `challenge_record_reason_invalid` | Packaged challenge record `challenge.challenge_reason` is outside the closed 10-value enum |
+| `challenge_record_status_invalid` | Packaged challenge record `challenge.challenge_status` is outside the closed 4-value enum |
+| `challenge_record_evidence_ref_invalid` | Packaged challenge record `evidence_refs` contains an absolute path, a `..` segment, or a non-string / empty entry |
+| `withdrawal_record_reason_invalid` | Packaged withdrawal record `withdrawal.withdrawal_reason` is outside the closed 7-value enum |
+| `withdrawal_record_status_invalid` | Packaged withdrawal record `withdrawal.withdrawal_status` is outside the closed 4-value enum |
+| `withdrawal_record_evidence_ref_invalid` | Packaged withdrawal record `evidence_refs` contains an absolute path, a `..` segment, or a non-string / empty entry |
+| `withdrawal_record_challenge_ref_mismatch` | Withdrawal's `related_challenge_record_id` disagrees with the challenge's `challenge_record_id` |
+| `challenge_withdrawal_time_order_invalid` | Time-order chain across target / challenge / withdrawal is not monotone |
+| `challenge_withdrawal_summary_invalid` | Summary has structural / field / enum errors, OR a required claim id is missing or out of order, OR a required claim has `status` other than `pass`, OR a required claim has an unsafe / out-of-prefix-set `evidence_refs` entry, OR an optional `claim.description` is present but blank |
+| `challenge_withdrawal_summary_binding_mismatch` | Summary `target.*` / `records.*` ids / hashes / paths disagree with the manifest subjects, OR `summary.summary.challenge_status` / `withdrawal_status` / `withdrawal_effect` disagree with the bound records (folded into a single binding reason) |
+| `challenge_withdrawal_summary_count_mismatch` | `summary.summary.challenge_count` or `withdrawal_count` is not exactly 1 |
+| `challenge_withdrawal_posture_invalid` | `summary.summary.posture` is out of the closed set, OR disagrees with the closed `withdrawal_effect → posture` mapping table |
+| `challenge_withdrawal_overclaim` | Any string outside `scope_limitations` / `non_claims` (including optional `claim.description`) contains a forbidden positive token |
+| `challenge_withdrawal_limitations_missing` | `scope_limitations` empty, missing, or contains a blank entry in manifest or summary |
+| `challenge_withdrawal_non_claims_missing` | `non_claims` empty, missing, or contains a blank entry in manifest or summary |
+
+The five runner-only refusal codes (`handoff_validation_failed`, `challenge_record_validation_failed`, `withdrawal_record_validation_failed`, `challenge_withdrawal_binding_failed`, `challenge_withdrawal_self_validation_failed`) are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
 ## Security Notes
 
 - This is a demo signing system. Do not use generated keys for production.
