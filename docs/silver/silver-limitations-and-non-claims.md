@@ -508,6 +508,36 @@ The v0.3.2 trace binding package is **not**:
 
 ---
 
+## v0.3.3 Silver Adapter Pilot Package
+
+Silver v0.3.3 pilots a local external-evidence adapter flow that normalizes an OpenTelemetry-shaped local source-export fixture into ProofRail v0.3.2 trace-binding inputs under a declarative, evidence-only mapping. v0.3.3 introduces no new signature scheme, trust authority, or runtime substrate.
+
+The v0.3.3 adapter pilot package is:
+
+- **Local and deterministic.** All input fixtures are committed; the runner consumes them with no network access and no live system queries.
+- **Hash-anchored under a fixed seven-subject manifest.** The manifest order — adapter / source export / normalization map / normalized trace events / normalized trace claim bindings / nested v0.3.2 manifest / adapter pilot report — never varies.
+- **Re-derived from inputs.** The verifier re-derives the normalized trace-events JSONL byte-for-byte from the source export and the normalization map, and re-derives the seven required claims independently from the inputs.
+- **Layered on unchanged v0.2.6 and v0.3.2 tooling.** The runner subprocess-invokes the unmodified v0.2.6 adapter validator and the unmodified v0.3.2 trace-binding builder + verifier; the verifier re-invokes the unmodified v0.3.2 verifier on the nested manifest.
+- **Self-validated before atomic move.** With `--self-validate`, the runner invokes the v0.3.3 verifier against the staging directory **before** `os.replace()`. On failure it removes staging, leaves the destination untouched, and exits 1 with `FAIL: adapter_pilot_self_validation_failed: <detail>`. A refused run leaves no final directory and no staging sibling, so the Make target is safely repeatable.
+
+The v0.3.3 adapter pilot package is **not**:
+
+- A claim that a real production OpenTelemetry collector emitted these spans. The source-export fixture is static and committed; v0.3.3 does not query or consult any live OpenTelemetry, vendor, observability, SIEM, GRC, gateway, policy-engine, or ticketing system.
+- An assertion that the source system is a trust authority. The adapter declares `trust_boundary.source_is_trust_authority: false`, and the v0.3.3 runner and verifier refuse any adapter that declares otherwise; the adapter pilot report forces every `source_is_trust_authority` / `runtime_truth_claimed` flag to `false`.
+- OpenTelemetry conformance. v0.3.3 uses an OpenTelemetry-shaped envelope and the explicit `export_format: "proofrail.simulated_otel_trace_export.v0.1"` to disclaim conformance to any version of the OpenTelemetry specification.
+- A vendor certification. v0.3.3 does not certify any vendor adapter, vendor product, vendor integration, or vendor compliance.
+- A production integration. v0.3.3 ships a deterministic local pilot, not a connection to any real production system.
+- Proof of runtime truth. v0.3.3 binds normalized v0.3.2 trace inputs to a static source-export fixture; it does not prove that the runtime behavior described occurred.
+- A signed Silver artifact. v0.3.3 ships local hash anchors only.
+- A relying-party acceptance, an acceptance handoff, or a handoff inspection. v0.3.3 emits an additional Silver evidence artifact; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 semantics, and is not consumed by the v0.2.8 acceptance flow, the v0.3.0 handoff, or the v0.3.1 inspector.
+- A transfer of reliance to a downstream party. `source_event_ref` values are opaque labels carried unchanged through normalization; v0.3.3 does not resolve or cross-validate them against any external package.
+- An extension of the substance of any earlier-release Silver evidence.
+- A claim that v0.3.3 begins Gold governance.
+
+> v0.3.3 pilots a local external-evidence adapter flow. It does not perform a real OpenTelemetry, vendor, observability, SIEM, GRC, gateway, policy-engine, or ticketing-system integration; does not establish the source system as a trust authority; does not certify OpenTelemetry conformance; does not certify any vendor integration; does not prove runtime truth; and does not extend the substance of any earlier-release Silver evidence.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

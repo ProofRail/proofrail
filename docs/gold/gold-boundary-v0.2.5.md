@@ -253,3 +253,30 @@ A Silver trace binding package is not a Gold certificate, OpenTelemetry conforma
 v0.3.2 binds trace evidence. It does not prove runtime truth.
 
 v0.3.2 names a trace-bound Silver evidence package. It does not cross the Gold boundary.
+
+---
+
+## 14. Note on v0.3.3 Silver Adapter Pilot Package
+
+ProofRail v0.3.3 pilots a local external-evidence adapter flow that normalizes an OpenTelemetry-shaped local source-export fixture into ProofRail v0.3.2 trace-binding inputs under a declarative, evidence-only mapping. The v0.3.3 adapter pilot package binds seven subjects in fixed order — the v0.2.6 adapter descriptor, the source-export JSONL fixture, the normalization map, the normalized trace events JSONL, the normalized trace claim binding set, the nested v0.3.2 trace-binding manifest, and the derived adapter pilot report — anchored by a seven-subject SHA-256 manifest. v0.3.3 introduces no new signature scheme, trust authority, or runtime substrate.
+
+The v0.3.3 adapter pilot package is **still Silver, not Gold**:
+
+- It is a deterministic local pilot. The runner subprocess-invokes the unchanged v0.2.6 adapter validator and the unchanged v0.3.2 trace-binding builder + verifier, byte-copies inputs, derives normalized trace events under a tiny declarative mapping language (`<source.dot.path>` and `"constant:<literal>"` only; longest-prefix key matching at each step), and re-derives every required claim from the inputs. The verifier independently re-derives the normalized trace-events JSONL byte-for-byte from the source export and the normalization map, and re-invokes the unchanged v0.3.2 verifier on the nested manifest.
+- It is not a runtime substrate, not OpenTelemetry conformance, not a vendor certification, not a production integration, and not a claim that any real trace system observed the recorded events. The source-export fixture is static and committed; v0.3.3 does not query or consult any live OpenTelemetry collector, vendor service, observability platform, SIEM, GRC, gateway, policy-engine, or ticketing system.
+- It does not establish the source system as a trust authority. The adapter declares `trust_boundary.source_is_trust_authority: false`, and the v0.3.3 runner and verifier refuse any adapter that declares otherwise. Tampered adapters are always attributed to the specific reason `adapter_pilot_source_marked_authority`, not collapsed into the generic `adapter_pilot_adapter_invalid`.
+- It is not signed. v0.3.3 ships local hash anchors only.
+- It does not extend the substance of any earlier-release Silver evidence. v0.3.3 emits an additional Silver evidence artifact; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 semantics, is not consumed by the v0.2.8 acceptance flow, the v0.3.0 handoff, or the v0.3.1 inspector, and the v0.3.2 verifier is invoked unmodified.
+- It does not adjudicate, decide, federate, chain, arbitrate, or transfer reliance. `source_event_ref` values are opaque labels carried unchanged through normalization; v0.3.3 does not resolve or cross-validate them against any external package.
+
+Gold-level handoff (as inventoried in §5 above) still requires the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity, retention, change-control, revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.3.3 does not add any of those, and explicitly does not introduce a live adapter integration as a Gold prerequisite or as a Gold satisfaction.
+
+The release sentence holds:
+
+> v0.3.3 pilots a local external-evidence adapter flow. It does not perform a real OpenTelemetry, vendor, observability, SIEM, GRC, gateway, policy-engine, or ticketing-system integration; does not establish the source system as a trust authority; does not certify OpenTelemetry conformance; does not certify any vendor integration; does not prove runtime truth; and does not extend the substance of any earlier-release Silver evidence.
+
+A Silver adapter pilot package is not a Gold certificate, OpenTelemetry conformance claim, vendor certification, production integration, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, adjudicated challenge resolution, legally revoked acceptance, compliance certification, or production authorization.
+
+v0.3.3 pilots an adapter normalization flow. It does not prove runtime truth.
+
+v0.3.3 names an adapter-piloted Silver evidence package. It does not cross the Gold boundary.

@@ -311,6 +311,25 @@ run-silver-trace-binding-v0-3-2:
 verify-silver-trace-binding-v0-3-2:
 	bash tests/test_silver_trace_binding_v0_3_2.sh
 
+.PHONY: run-silver-adapter-pilot-v0-3-3
+run-silver-adapter-pilot-v0-3-3:
+	python3 tools/silver/build_silver_adapter_pilot_v0_1_0.py \
+	  --adapter examples/silver-evidence-source-adapters/observability-trace-simulated-v0.2.6.json \
+	  --source-export fixtures/silver-adapter-pilot-package-v0.3.3/source-otel-trace-export.jsonl \
+	  --normalization-map fixtures/silver-adapter-pilot-package-v0.3.3/normalization-map.json \
+	  --bindings fixtures/silver-trace-binding-profile-v0.3.2/trace-claim-bindings.json \
+	  --adapter-pilot-report-id silver-adapter-pilot-v0.3.3-demo-001 \
+	  --generated-at 2026-06-22T00:10:00Z \
+	  --output-dir /tmp/proofrail-silver-adapter-pilot-v0.3.3 \
+	  --force \
+	  --self-validate
+	python3 tools/silver/verify_silver_adapter_pilot_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-adapter-pilot-v0.3.3/silver-adapter-pilot-manifest.json
+
+.PHONY: verify-silver-adapter-pilot-v0-3-3
+verify-silver-adapter-pilot-v0-3-3:
+	bash tests/test_silver_adapter_pilot_v0_3_3.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -329,3 +348,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-acceptance-handoff-v0-3-0
 	$(MAKE) verify-silver-handoff-inspection-v0-3-1
 	$(MAKE) verify-silver-trace-binding-v0-3-2
+	$(MAKE) verify-silver-adapter-pilot-v0-3-3

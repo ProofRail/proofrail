@@ -1207,6 +1207,123 @@ JSON parse errors are caught and surfaced as the appropriate stable reason — n
 
 Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
 
+## Silver Adapter Pilot Package Runner (v0.3.3)
+
+Builds a deterministic, local Silver adapter pilot package that normalizes an OpenTelemetry-shaped local source-export fixture into ProofRail v0.3.2 trace-binding inputs under a declarative, evidence-only mapping. Pure-stdlib. Atomic staging-then-replace; a refused or self-validation-failed run leaves no partial adapter pilot package on disk and no staging sibling.
+
+```bash
+python3 tools/silver/build_silver_adapter_pilot_v0_1_0.py \
+  --adapter examples/silver-evidence-source-adapters/observability-trace-simulated-v0.2.6.json \
+  --source-export fixtures/silver-adapter-pilot-package-v0.3.3/source-otel-trace-export.jsonl \
+  --normalization-map fixtures/silver-adapter-pilot-package-v0.3.3/normalization-map.json \
+  --bindings fixtures/silver-trace-binding-profile-v0.3.2/trace-claim-bindings.json \
+  --adapter-pilot-report-id silver-adapter-pilot-v0.3.3-demo-001 \
+  --generated-at 2026-06-22T00:10:00Z \
+  --output-dir /tmp/proofrail-silver-adapter-pilot-v0.3.3 \
+  --force \
+  --self-validate
+```
+
+What the runner does, in order:
+
+1. Structural pre-check: refuse if the adapter declares `trust_boundary.source_is_trust_authority` other than exactly `false` (`adapter_validation_failed`).
+2. Subprocess-invokes the unchanged v0.2.6 adapter validator on `--adapter` (`adapter_validation_failed`).
+3. Parses the OpenTelemetry-shaped source-export JSONL: closed `export_format = "proofrail.simulated_otel_trace_export.v0.1"`, closed `proofrail.decision` enum, required `span.attributes["proofrail.*"]` fields, unique `export_record_id`, unique `(trace_id, span_id)`, strict `(span.start_time, export_record_id)` ascending ordering (`source_export_validation_failed`).
+4. Parses and structurally validates the normalization map JSON: mapping language admits only `<source.dot.path>` and `"constant:<literal>"` values; `source_format` and `target_document_type` are closed (`normalization_map_validation_failed`).
+5. Parses the v0.3.2 binding set JSON structurally (`binding_set_validation_failed`).
+6. Stages the package directory under `<output-dir>.staging.<pid>`.
+7. Applies the normalization map to derive normalized trace events. Dot-path resolution uses LONGEST-PREFIX KEY MATCHING at each step so OpenTelemetry-style flat-with-dots attribute keys (e.g. `proofrail.event_id`) can be addressed without quoting. Any required-field shortfall is surfaced as `normalization_map_validation_failed`.
+8. Subprocess-invokes the unchanged v0.3.2 trace-binding builder with `--force --self-validate` on the normalized files; failure is surfaced as `nested_trace_binding_generation_failed`.
+9. Derives `silver-adapter-pilot-report.json` deterministically; pre-bakes the seven required claims with `status: pass` and forces every `source_is_trust_authority` / `runtime_truth_claimed` / `normalization_status` / `normalized_events_match_source` / `nested_trace_binding_status` flag.
+10. Emits `silver-adapter-pilot-manifest.json` with exactly seven subjects in fixed order: `adapter/<filename>` / `source/source-otel-trace-export.jsonl` / `normalization/normalization-map.json` / `normalized/trace-events.jsonl` / `normalized/trace-claim-bindings.json` / `trace-binding/silver-trace-binding-manifest.json` / `silver-adapter-pilot-report.json`.
+11. With `--self-validate`, subprocess-invokes the v0.3.3 verifier on the staged manifest BEFORE the atomic move; on failure it removes the staging directory, leaves the destination untouched, and refuses with `FAIL: adapter_pilot_self_validation_failed: <detail>` and exit code 1.
+12. Atomic publish: only AFTER staging build and (optional) self-validation succeed does the runner remove an existing `--output-dir` (required `--force`) and `os.replace()` the staging directory into place. Any earlier failure leaves staging cleaned up and `--output-dir` untouched.
+
+Runner-only refusal reasons (6):
+
+| Reason | Triggered when |
+|---|---|
+| `adapter_validation_failed` | Adapter trust-authority pre-check fails, or the v0.2.6 adapter validator subprocess fails |
+| `source_export_validation_failed` | Source-export JSONL fails structural / enum / uniqueness / ordering / required-attribute checks |
+| `normalization_map_validation_failed` | Normalization map JSON fails structural checks, or a required v0.3.2 target field cannot be populated for any record |
+| `binding_set_validation_failed` | Binding set JSON fails structural checks |
+| `nested_trace_binding_generation_failed` | Subprocess invocation of the unchanged v0.3.2 trace-binding builder on the normalized files fails |
+| `adapter_pilot_self_validation_failed` | `--self-validate` subprocess invocation of the v0.3.3 verifier on the staged package fails before the atomic move |
+
+Exit codes: 0 (success), 1 (adapter pilot refused or self-validation failed), 2 (usage/input error).
+
+## Silver Adapter Pilot Package Verifier (v0.3.3)
+
+Validates a v0.3.3 Silver adapter pilot package. Pure-stdlib. Hash-first ordering. The verifier owns every cross-check of the adapter pilot report against the source export, normalization map, normalized trace events, normalized binding set, and nested v0.3.2 manifest. Subprocess-invokes the unchanged **v0.2.6 adapter validator** on the adapter subject and the unchanged **v0.3.2 trace-binding verifier** on the nested manifest.
+
+```bash
+python3 tools/silver/verify_silver_adapter_pilot_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-adapter-pilot-v0.3.3/silver-adapter-pilot-manifest.json
+```
+
+Ordered verifier checks (25 numbered steps mapping to 24 stable failure reasons; steps 1 and 3 share `invalid_adapter_pilot_manifest`; no OR-accept):
+
+1. Parse and structurally validate the manifest (`invalid_adapter_pilot_manifest`).
+2. Subject path traversal — checked BEFORE exact path equality (`adapter_pilot_subject_path_traversal`).
+3. Exact subject path + role equality against the fixed v0.3.3 SUBJECT_ORDER (`invalid_adapter_pilot_manifest`).
+4. Subject file existence (`adapter_pilot_subject_file_missing`).
+5. Subject SHA-256 and size recomputation (`adapter_pilot_subject_hash_mismatch`).
+6. Adapter structural pre-check (BEFORE the v0.2.6 validator subprocess) — refuses any adapter whose `trust_boundary.source_is_trust_authority` is not exactly `false` (`adapter_pilot_source_marked_authority`).
+7. Subprocess-invokes the unchanged v0.2.6 adapter validator (`adapter_pilot_adapter_invalid`).
+8. Parses the source export; field and enum checks (`source_export_invalid`).
+9. Unique `export_record_id` and unique `(trace_id, span_id)` (`source_export_duplicate`).
+10. Strict `(span.start_time, export_record_id)` ascending ordering (`source_export_time_order_invalid`).
+11. Parses the normalization map; field and mapping-language checks (`normalization_map_invalid`).
+12. Re-derives normalized events; required v0.3.2 target field must be populated per record (`normalization_required_field_missing`).
+13. Parses the packaged normalized trace events (`normalized_trace_invalid`).
+14. Re-derived normalized bytes equal packaged normalized bytes (`normalized_trace_mismatch`).
+15. Subprocess-invokes the unchanged v0.3.2 verifier on the nested manifest (`nested_trace_binding_invalid`).
+16. Cross-check nested manifest subjects [0]/[1]/[2] hashes equal outer subjects [0]/[3]/[4] (`nested_trace_binding_mismatch`).
+17. Parses the report; field and enum checks (`adapter_pilot_report_invalid`).
+18. Cross-check report hashes / paths / source_format / target_document_type / report ids vs manifest and inputs (`adapter_pilot_report_binding_mismatch`).
+19. Re-compute `source_record_count` and `normalized_event_count` (`adapter_pilot_report_count_mismatch`).
+20. Required claim IDs present (`adapter_pilot_claim_missing`).
+21. Required claims status equals `pass` (`adapter_pilot_claim_failed`).
+22. Evidence refs package-local and safe — no `..`, no absolute paths, whitelisted prefix (`adapter_pilot_evidence_ref_invalid`).
+23. `scope_limitations` non-empty / non-blank across manifest and report (`adapter_pilot_limitations_missing`).
+24. `non_claims` non-empty / non-blank across manifest and report (`adapter_pilot_non_claims_missing`).
+25. Overclaim scan OUTSIDE `scope_limitations` / `non_claims` for 23 forbidden positive tokens including `runtime truth proved`, `opentelemetry conformance`, `vendor certified`, and `production approved` (`adapter_pilot_overclaim`).
+
+Stable verifier failure reasons (24 total):
+
+| Reason | Triggered when |
+|---|---|
+| `invalid_adapter_pilot_manifest` | Manifest is unparseable, missing required fields, has wrong `document_type` / `schema_version`, or subject layout / roles do not match the fixed v0.3.3 order |
+| `adapter_pilot_subject_path_traversal` | Any subject path is absolute or contains `..` |
+| `adapter_pilot_subject_file_missing` | Any subject file is missing on disk |
+| `adapter_pilot_subject_hash_mismatch` | Recomputed SHA-256 or size disagrees with the manifest |
+| `adapter_pilot_source_marked_authority` | Adapter declares `trust_boundary.source_is_trust_authority` other than exactly `false` |
+| `adapter_pilot_adapter_invalid` | Subprocess invocation of the unchanged v0.2.6 adapter validator on the adapter subject fails |
+| `source_export_invalid` | Source-export JSONL has structural, field, or enum errors |
+| `source_export_duplicate` | Duplicate `export_record_id` or duplicate `(trace_id, span_id)` |
+| `source_export_time_order_invalid` | Records not strictly ordered by `(span.start_time, export_record_id)` ascending |
+| `normalization_map_invalid` | Normalization map JSON has structural, field, or mapping-language errors |
+| `normalization_required_field_missing` | A required v0.3.2 target field cannot be populated from the source export under the mapping |
+| `normalized_trace_invalid` | Packaged normalized trace events JSONL fails to parse |
+| `normalized_trace_mismatch` | Verifier-side re-derived normalized bytes disagree with the packaged normalized bytes |
+| `nested_trace_binding_invalid` | Subprocess invocation of the unchanged v0.3.2 verifier on the nested manifest fails |
+| `nested_trace_binding_mismatch` | Nested manifest subjects [0]/[1]/[2] hashes disagree with outer subjects [0]/[3]/[4] |
+| `adapter_pilot_report_invalid` | Report has structural, field, or enum errors |
+| `adapter_pilot_report_binding_mismatch` | Report hashes / paths / source_format / target_document_type / ids disagree with the manifest or inputs |
+| `adapter_pilot_report_count_mismatch` | Recomputed `source_record_count` / `normalized_event_count` disagrees with the report |
+| `adapter_pilot_claim_missing` | A required claim id is missing from the report |
+| `adapter_pilot_claim_failed` | A required claim status is not `pass` |
+| `adapter_pilot_evidence_ref_invalid` | An `evidence_refs` entry is absolute, contains `..`, or points outside the allowed package-local prefix set |
+| `adapter_pilot_limitations_missing` | `scope_limitations` empty or blank in manifest or report |
+| `adapter_pilot_non_claims_missing` | `non_claims` empty or blank in manifest or report |
+| `adapter_pilot_overclaim` | Any string outside `scope_limitations` / `non_claims` contains a forbidden positive token |
+
+The six runner-only refusal codes (`adapter_validation_failed`, `source_export_validation_failed`, `normalization_map_validation_failed`, `binding_set_validation_failed`, `nested_trace_binding_generation_failed`, `adapter_pilot_self_validation_failed`) are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
 ## Security Notes
 
 - This is a demo signing system. Do not use generated keys for production.

@@ -1,0 +1,52 @@
+{
+  "document_type": "proofrail.silver.adapter_pilot_normalization_map",
+  "schema_version": "v0.1.0",
+  "proofrail_release": "v0.3.3",
+  "normalization_map_id": "proofrail-adapter-pilot-otel-to-trace-events-v0.3.3",
+  "source_format": "proofrail.simulated_otel_trace_export.v0.1",
+  "target_document_type": "proofrail.silver.trace_event",
+  "field_mappings": {
+    "document_type": "constant:proofrail.silver.trace_event",
+    "schema_version": "constant:v0.1.0",
+    "proofrail_release": "constant:v0.3.2",
+    "event_id": "span.attributes.proofrail.event_id",
+    "trace_id": "span.trace_id",
+    "span_id": "span.span_id",
+    "parent_span_id": "span.parent_span_id",
+    "event_time": "span.start_time",
+    "principal_id": "span.attributes.proofrail.principal_id",
+    "counterparty_id": "span.attributes.proofrail.counterparty_id",
+    "protected_action_id": "span.attributes.proofrail.protected_action_id",
+    "decision": "span.attributes.proofrail.decision",
+    "decision_reason": "span.attributes.proofrail.decision_reason",
+    "authority_ref": "span.attributes.proofrail.authority_ref",
+    "source_event_ref": "span.attributes.proofrail.source_event_ref",
+    "attributes.proofrail.scenario_id": "span.attributes.proofrail.scenario_id",
+    "attributes.proofrail.trace_source": "constant:simulated_observability_trace"
+  },
+  "required_target_fields": [
+    "document_type",
+    "schema_version",
+    "proofrail_release",
+    "event_id",
+    "trace_id",
+    "span_id",
+    "event_time",
+    "principal_id",
+    "protected_action_id",
+    "decision",
+    "decision_reason",
+    "source_event_ref",
+    "attributes"
+  ],
+  "scope_limitations": [
+    "This normalization map applies only to the deterministic v0.3.3 simulated source export fixture.",
+    "This normalization map is the only normalization mechanism used by the v0.3.3 adapter pilot; no other transformations are supported."
+  ],
+  "non_claims": [
+    "This normalization map is not OpenTelemetry conformance.",
+    "This normalization map is not a production adapter contract.",
+    "This normalization map does not make the source authoritative.",
+    "This normalization map does not prove runtime truth."
+  ]
+}
