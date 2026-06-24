@@ -1,0 +1,159 @@
+{
+  "document_type": "proofrail.silver.relying_party_policy_pack",
+  "schema_version": "0.1.0",
+  "policy_pack_id": "proofrail-silver-relying-party-policy-pack-with-warning-policy-demo-001",
+  "profile": "relying_party_policy_pack.preview",
+  "relying_party": {
+    "identity_id": "demo-rp-003",
+    "identity_label": "Demo Relying Party 003",
+    "contact": "demo-rp-003@example.invalid"
+  },
+  "policy_authority": {
+    "authority_id": "demo-policy-authority-003",
+    "authority_label": "Demo Policy Authority 003",
+    "approver_role": "policy_owner"
+  },
+  "policy": {
+    "version": "0.1.0",
+    "effective_period": {
+      "starts_at": "2026-07-01T00:00:00Z",
+      "ends_at": "2027-07-01T00:00:00Z"
+    }
+  },
+  "applicable_protected_actions": [
+    "tool_call.identity_provisioning"
+  ],
+  "applicable_environments": [
+    "demo_sandbox"
+  ],
+  "silver_handoff_requirements": {
+    "required_handoff_profiles": [
+      "silver.acceptance_handoff.v0.3.0"
+    ],
+    "minimum_handoff_posture": "not_reusable_without_governed_review",
+    "required_subject_roles": [
+      "composed_gateway_evidence_manifest",
+      "acceptance_package_manifest",
+      "drill_manifest",
+      "handoff_summary"
+    ]
+  },
+  "verifier_requirements": {
+    "minimum_posture": "silver.independent",
+    "required_verifier_attestation": true,
+    "required_verifier_attestor_ids": [
+      "demo-attestor-001",
+      "demo-attestor-002"
+    ]
+  },
+  "issuer_requirements": {
+    "trusted_issuer_ids": [
+      "demo-issuer-001",
+      "demo-issuer-002"
+    ],
+    "required_signature_algorithm": "ed25519",
+    "minimum_key_id_count": 1
+  },
+  "revocation_requirements": {
+    "mode": "required_with_warning_allowance",
+    "max_revocation_list_age_seconds": 172800
+  },
+  "freshness_requirements": {
+    "max_age_seconds": 259200,
+    "freshness_anchor": "handoff_summary.generated_at"
+  },
+  "challenge_handling": {
+    "posture": "record_and_require_review",
+    "within_window_required": true
+  },
+  "withdrawal_handling": {
+    "posture": "record_and_block_reuse",
+    "pause_local_reuse_on_withdrawal": true
+  },
+  "supersession_handling": {
+    "posture": "record_and_block_until_superseded",
+    "require_superseding_handoff_id": true
+  },
+  "acceptance_criteria": {
+    "required_silver_results": [
+      "verifier_pass",
+      "issuer_trusted",
+      "revocation_check_performed",
+      "freshness_window_ok",
+      "attestation_present"
+    ],
+    "required_handoff_subject_hash_match": true
+  },
+  "rejection_criteria": {
+    "blocking_silver_results": [
+      "verifier_fail",
+      "issuer_untrusted",
+      "revocation_check_failed_or_skipped",
+      "freshness_window_exceeded",
+      "attestation_missing"
+    ]
+  },
+  "exceptions": [],
+  "hard_stops": [
+    {
+      "hard_stop_id": "demo-hard-stop-001",
+      "description": "Issuer key revoked: reuse not permitted under any exception.",
+      "overridable_by_exception": false
+    },
+    {
+      "hard_stop_id": "demo-hard-stop-002",
+      "description": "Handoff posture downgraded relative to required minimum.",
+      "overridable_by_exception": false
+    },
+    {
+      "hard_stop_id": "demo-hard-stop-003",
+      "description": "Verifier attestation missing when required.",
+      "overridable_by_exception": false
+    }
+  ],
+  "warning_treatment": {
+    "unknown_warning_default": "block",
+    "warnings": [
+      {
+        "warning_id": "freshness_window_warning",
+        "treatment": "review_required"
+      },
+      {
+        "warning_id": "revocation_list_age_warning",
+        "treatment": "review_required"
+      },
+      {
+        "warning_id": "attestation_chain_warning",
+        "treatment": "block"
+      },
+      {
+        "warning_id": "non_blocking_advisory",
+        "treatment": "allow_with_logging"
+      }
+    ]
+  },
+  "related_silver_artifacts": [
+    {
+      "artifact_role": "silver_handoff_manifest",
+      "path": "references/silver-acceptance-handoff-manifest.json",
+      "description": "Example v0.3.0 handoff manifest the policy applies to (descriptor only, not bound)."
+    },
+    {
+      "artifact_role": "silver_trace_binding_manifest",
+      "path": "references/silver-trace-binding-manifest.json",
+      "description": "Example v0.3.2 trace binding manifest the policy applies to (descriptor only, not bound)."
+    }
+  ],
+  "scope_limitations": [
+    "This policy pack governs only the listed demo_sandbox environment.",
+    "Warning treatments are policy structure only; v0.3.5 does not execute treatments.",
+    "Hard stops are non-overridable by exception under this policy."
+  ],
+  "non_claims": [
+    "Not a certification of warnings handling.",
+    "Not a compliance attestation.",
+    "Not regulator approval.",
+    "Not auditor approval.",
+    "Does not implement Gold governed reliance; that boundary is v0.4.0."
+  ]
+}

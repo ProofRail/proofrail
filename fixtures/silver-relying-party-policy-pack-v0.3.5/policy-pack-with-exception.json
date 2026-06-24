@@ -1,0 +1,133 @@
+{
+  "document_type": "proofrail.silver.relying_party_policy_pack",
+  "schema_version": "0.1.0",
+  "policy_pack_id": "proofrail-silver-relying-party-policy-pack-with-exception-demo-001",
+  "profile": "relying_party_policy_pack.preview",
+  "relying_party": {
+    "identity_id": "demo-rp-002",
+    "identity_label": "Demo Relying Party 002",
+    "contact": "demo-rp-002@example.invalid"
+  },
+  "policy_authority": {
+    "authority_id": "demo-policy-authority-002",
+    "authority_label": "Demo Policy Authority 002",
+    "approver_role": "policy_owner"
+  },
+  "policy": {
+    "version": "0.1.0",
+    "effective_period": {
+      "starts_at": "2026-07-01T00:00:00Z",
+      "ends_at": "2027-07-01T00:00:00Z"
+    }
+  },
+  "applicable_protected_actions": [
+    "tool_call.payment_release"
+  ],
+  "applicable_environments": [
+    "demo_local"
+  ],
+  "silver_handoff_requirements": {
+    "required_handoff_profiles": [
+      "silver.acceptance_handoff.v0.3.0"
+    ],
+    "minimum_handoff_posture": "review_required_before_reuse",
+    "required_subject_roles": [
+      "composed_gateway_evidence_manifest",
+      "acceptance_package_manifest",
+      "drill_manifest",
+      "handoff_summary"
+    ]
+  },
+  "verifier_requirements": {
+    "minimum_posture": "silver.independent",
+    "required_verifier_attestation": true,
+    "required_verifier_attestor_ids": [
+      "demo-attestor-001"
+    ]
+  },
+  "issuer_requirements": {
+    "trusted_issuer_ids": [
+      "demo-issuer-001"
+    ],
+    "required_signature_algorithm": "ed25519",
+    "minimum_key_id_count": 1
+  },
+  "revocation_requirements": {
+    "mode": "required",
+    "max_revocation_list_age_seconds": 86400
+  },
+  "freshness_requirements": {
+    "max_age_seconds": 604800,
+    "freshness_anchor": "handoff_summary.generated_at"
+  },
+  "challenge_handling": {
+    "posture": "record_and_pause_reuse",
+    "within_window_required": true
+  },
+  "withdrawal_handling": {
+    "posture": "record_and_pause_reuse",
+    "pause_local_reuse_on_withdrawal": true
+  },
+  "supersession_handling": {
+    "posture": "record_and_require_superseding_handoff",
+    "require_superseding_handoff_id": true
+  },
+  "acceptance_criteria": {
+    "required_silver_results": [
+      "verifier_pass",
+      "issuer_trusted",
+      "revocation_check_performed",
+      "freshness_window_ok"
+    ],
+    "required_handoff_subject_hash_match": true
+  },
+  "rejection_criteria": {
+    "blocking_silver_results": [
+      "verifier_fail",
+      "issuer_untrusted",
+      "revocation_check_failed_or_skipped",
+      "freshness_window_exceeded",
+      "posture_downgrade"
+    ]
+  },
+  "exceptions": [
+    {
+      "exception_id": "demo-exception-002a",
+      "approver_id": "demo-policy-authority-002",
+      "scope": "limited_demo_reuse_only",
+      "reason": "Documented sandbox testing of policy structure under exception A.",
+      "expires_at": "2026-12-31T23:59:59Z"
+    },
+    {
+      "exception_id": "demo-exception-002b",
+      "approver_id": "demo-policy-authority-002",
+      "scope": "limited_demo_reuse_only_secondary_scope",
+      "reason": "Documented sandbox testing of policy structure under exception B.",
+      "expires_at": "2026-12-31T23:59:59Z"
+    }
+  ],
+  "hard_stops": [
+    {
+      "hard_stop_id": "demo-hard-stop-001",
+      "description": "Issuer key revoked: reuse not permitted under any exception.",
+      "overridable_by_exception": false
+    }
+  ],
+  "warning_treatment": {
+    "unknown_warning_default": "review_required",
+    "warnings": []
+  },
+  "related_silver_artifacts": [],
+  "scope_limitations": [
+    "This policy pack governs only the listed demo_local environment.",
+    "Exceptions do not override hard stops.",
+    "This policy pack does not execute the policy."
+  ],
+  "non_claims": [
+    "Not a certification.",
+    "Not a compliance attestation.",
+    "Not regulator approval.",
+    "Does not transfer trust.",
+    "Does not implement Gold governed reliance; that boundary is v0.4.0."
+  ]
+}

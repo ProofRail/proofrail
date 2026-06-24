@@ -1,0 +1,151 @@
+{
+  "document_type": "proofrail.silver.relying_party_policy_pack",
+  "schema_version": "0.1.0",
+  "policy_pack_id": "proofrail-silver-relying-party-policy-pack-demo-001",
+  "profile": "relying_party_policy_pack.preview",
+  "relying_party": {
+    "identity_id": "demo-rp-001",
+    "identity_label": "Demo Relying Party 001",
+    "contact": "demo-rp-001@example.invalid"
+  },
+  "policy_authority": {
+    "authority_id": "demo-policy-authority-001",
+    "authority_label": "Demo Policy Authority 001",
+    "approver_role": "policy_owner"
+  },
+  "policy": {
+    "version": "0.1.0",
+    "effective_period": {
+      "starts_at": "2026-06-30T00:00:00Z",
+      "ends_at": "2027-06-30T00:00:00Z"
+    }
+  },
+  "applicable_protected_actions": [
+    "tool_call.payment_release",
+    "tool_call.identity_provisioning"
+  ],
+  "applicable_environments": [
+    "demo_local",
+    "demo_sandbox"
+  ],
+  "silver_handoff_requirements": {
+    "required_handoff_profiles": [
+      "silver.acceptance_handoff.v0.3.0"
+    ],
+    "minimum_handoff_posture": "review_required_before_reuse",
+    "required_subject_roles": [
+      "composed_gateway_evidence_manifest",
+      "acceptance_package_manifest",
+      "drill_manifest",
+      "handoff_summary"
+    ]
+  },
+  "verifier_requirements": {
+    "minimum_posture": "silver.independent",
+    "required_verifier_attestation": true,
+    "required_verifier_attestor_ids": [
+      "demo-attestor-001"
+    ]
+  },
+  "issuer_requirements": {
+    "trusted_issuer_ids": [
+      "demo-issuer-001"
+    ],
+    "required_signature_algorithm": "ed25519",
+    "minimum_key_id_count": 1
+  },
+  "revocation_requirements": {
+    "mode": "required",
+    "max_revocation_list_age_seconds": 86400
+  },
+  "freshness_requirements": {
+    "max_age_seconds": 604800,
+    "freshness_anchor": "handoff_summary.generated_at"
+  },
+  "challenge_handling": {
+    "posture": "record_only",
+    "within_window_required": true
+  },
+  "withdrawal_handling": {
+    "posture": "record_only",
+    "pause_local_reuse_on_withdrawal": true
+  },
+  "supersession_handling": {
+    "posture": "record_only",
+    "require_superseding_handoff_id": true
+  },
+  "acceptance_criteria": {
+    "required_silver_results": [
+      "verifier_pass",
+      "issuer_trusted",
+      "revocation_check_performed"
+    ],
+    "required_handoff_subject_hash_match": true
+  },
+  "rejection_criteria": {
+    "blocking_silver_results": [
+      "verifier_fail",
+      "issuer_untrusted",
+      "revocation_check_failed_or_skipped",
+      "freshness_window_exceeded"
+    ]
+  },
+  "exceptions": [
+    {
+      "exception_id": "demo-exception-001",
+      "approver_id": "demo-policy-authority-001",
+      "scope": "limited_demo_reuse_only",
+      "reason": "Documented sandbox testing of policy structure.",
+      "expires_at": "2026-12-31T23:59:59Z"
+    }
+  ],
+  "hard_stops": [
+    {
+      "hard_stop_id": "demo-hard-stop-001",
+      "description": "Issuer key revoked: reuse not permitted under any exception.",
+      "overridable_by_exception": false
+    },
+    {
+      "hard_stop_id": "demo-hard-stop-002",
+      "description": "Handoff posture downgraded relative to required minimum.",
+      "overridable_by_exception": false
+    }
+  ],
+  "warning_treatment": {
+    "unknown_warning_default": "block",
+    "warnings": [
+      {
+        "warning_id": "freshness_window_warning",
+        "treatment": "review_required"
+      },
+      {
+        "warning_id": "revocation_list_age_warning",
+        "treatment": "review_required"
+      }
+    ]
+  },
+  "related_silver_artifacts": [
+    {
+      "artifact_role": "silver_handoff_manifest",
+      "path": "references/silver-acceptance-handoff-manifest.json",
+      "description": "Example v0.3.0 handoff manifest the policy applies to (descriptor only, not bound)."
+    }
+  ],
+  "scope_limitations": [
+    "This policy pack governs only the listed demo_local and demo_sandbox environments.",
+    "This policy pack does not authorize production reuse.",
+    "This policy pack only specifies the local policy structure; it does not execute the policy.",
+    "Revocation, freshness, and attestation requirements are policy structure only and are not enforced by v0.3.5."
+  ],
+  "non_claims": [
+    "Not a certification of any party, system, or evidence.",
+    "Not a compliance attestation.",
+    "Not a legal enforceability instrument.",
+    "Not production authorization.",
+    "Not regulator approval.",
+    "Not auditor approval.",
+    "Does not assert runtime truth.",
+    "Does not transfer trust between parties.",
+    "Does not implement Gold governed reliance; that boundary is v0.4.0."
+  ]
+}

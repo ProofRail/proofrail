@@ -1445,6 +1445,118 @@ JSON parse errors are caught and surfaced as the appropriate stable reason — n
 
 Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
 
+## Silver Relying-Party Policy Pack Runner (v0.3.5)
+
+Builds a deterministic, local Silver Relying-Party Policy Pack package from a single hand-authored input. Pure-stdlib. Atomic staging-then-replace; a refused or self-validation-failed run leaves no partial package on disk and no staging sibling.
+
+```bash
+python3 tools/silver/build_silver_relying_party_policy_pack_v0_1_0.py \
+  --policy-pack fixtures/silver-relying-party-policy-pack-v0.3.5/policy-pack.json \
+  --manifest-id proofrail-silver-relying-party-policy-pack-manifest-demo-001 \
+  --report-id proofrail-silver-relying-party-policy-pack-conformance-report-demo-001 \
+  --generated-at 2026-07-06T00:30:00Z \
+  --output-dir /tmp/proofrail-silver-relying-party-policy-pack-v0.3.5 \
+  --force \
+  --self-validate
+```
+
+What the runner does, in order:
+
+1. Phase A preflight on `--policy-pack` runs five ordered, mutually exclusive checks, each emitting one of the five runner-only refusal reasons (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`). Phase A never touches the output directory and never creates a staging sibling.
+2. Stages the package under `<output-dir>.staging.<pid>`.
+3. Byte-copies the input policy pack to `<staging>/silver-relying-party-policy-pack.json` (subject [0]).
+4. Re-derives the conformance report deterministically as canonical JSON bytes (`sort_keys=True`, `separators=(",",":"))` plus a trailing newline) — 24 entries, one per approved verifier check, each `status: pass` — and writes it to `<staging>/silver-relying-party-policy-pack-conformance-report.json` (subject [1]).
+5. Writes the 2-subject manifest at `<staging>/silver-relying-party-policy-pack-manifest.json`.
+6. With `--self-validate`, subprocess-invokes the v0.3.5 verifier on the staged manifest BEFORE the atomic move. The runner relays the verifier's OWN stable failure reason UNCHANGED and does NOT wrap it in a sixth runner-only code. On self-validation failure the staging directory is removed and `--output-dir` is left untouched.
+7. Atomic publish: only AFTER staging build and (optional) self-validation succeed does the runner remove an existing `--output-dir` (required `--force`) and `os.replace()` the staging directory into place.
+
+Runner-only refusal reasons (5):
+
+| Reason | Triggered when |
+|---|---|
+| `runner_input_path_missing` | `--policy-pack` argv is missing or empty |
+| `runner_input_path_forbidden` | `--policy-pack` is an absolute path or contains a `..` segment |
+| `runner_input_file_missing` | `--policy-pack` relative path does not exist on disk |
+| `runner_input_read_failed` | `--policy-pack` path is a directory or otherwise unreadable |
+| `runner_input_json_invalid` | `--policy-pack` file is not valid UTF-8 JSON |
+
+The runner never wraps a verifier failure in a sixth runner-only code. The regression test explicitly asserts that no `runner_self_validation_failed` (or any other sixth wrapper) is ever emitted.
+
+Exit codes: 0 (success), 1 (package refused, self-validation failed, or verifier relay), 2 (usage/input error).
+
+## Silver Relying-Party Policy Pack Verifier (v0.3.5)
+
+Validates a v0.3.5 Silver Relying-Party Policy Pack package. Pure-stdlib. Non-masking ordering: all 22 structural checks against the policy pack body run BEFORE the conformance-report byte-image re-derivation. The verifier owns every check; no subprocess invocations.
+
+```bash
+python3 tools/silver/verify_silver_relying_party_policy_pack_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-relying-party-policy-pack-v0.3.5/silver-relying-party-policy-pack-manifest.json
+```
+
+Ordered verifier checks (24 numbered steps mapping to 24 stable failure reasons; subject [1] conformance-report disagreement folds to `policy_pack_manifest_invalid`; no OR-accept):
+
+1. Parse manifest JSON and re-anchor subjects (`policy_pack_manifest_invalid`).
+2. Subject [0] (policy pack) top-level is a JSON object (`policy_pack_not_object`).
+3. Subject [0] `document_type` / `schema_version` shape (`policy_pack_schema_invalid`).
+4. Subject [0] `profile` equals `relying_party_policy_pack.preview` (`policy_pack_profile_unsupported`).
+5. Subject [0] `relying_party.identity_id` / `identity_label` (`policy_pack_identity_invalid`).
+6. Subject [0] `policy_authority.*` (`policy_pack_authority_invalid`).
+7. Subject [0] `policy.*` with `effective_period.starts_at < ends_at` (`policy_scope_invalid`).
+8. Subject [0] `applicable_protected_actions` non-empty (`protected_action_scope_invalid`).
+9. Subject [0] `silver_handoff_requirements.*` closed enums (`silver_handoff_requirement_invalid`).
+10. Subject [0] `verifier_requirements.*` closed enums (`verifier_requirement_invalid`).
+11. Subject [0] `issuer_requirements.*` ed25519-only (`issuer_requirement_invalid`).
+12. Subject [0] `revocation_requirements.*` closed enums (`revocation_requirement_invalid`).
+13. Subject [0] `freshness_requirements.*` non-negative integers (`freshness_requirement_invalid`).
+14. Subject [0] `challenge_handling.posture` closed enum (`challenge_requirement_invalid`).
+15. Subject [0] `withdrawal_handling.posture` closed enum (`withdrawal_requirement_invalid`).
+16. Subject [0] `supersession_handling.posture` closed enum (`supersession_requirement_invalid`).
+17. Subject [0] `acceptance_criteria.required_silver_results[]` closed enum (`acceptance_criteria_invalid`).
+18. Subject [0] `rejection_criteria.blocking_silver_results[]` closed enum (`rejection_criteria_invalid`).
+19. Subject [0] `exceptions[]` shape (`exception_policy_invalid`).
+20. Subject [0] `hard_stops[]` with `overridable_by_exception == false` literal (`hard_stop_policy_invalid`).
+21. Subject [0] `warning_treatment.*` closed enums (`warning_policy_invalid`).
+22. Subject [0] `related_silver_artifacts[]` relative-path shape (`reference_policy_invalid`).
+23. Subject [0] `scope_limitations` and `non_claims` non-empty (`non_claims_missing`).
+24. Subject [0] recursive prohibited-token scan outside `scope_limitations`, `non_claims`, and `relying_party.contact` (`prohibited_claim_present`).
+
+After the 22 structural checks, the verifier parses subject [1] and deterministically re-derives the expected canonical-JSON byte image from the verified subject [0]. Any byte-image disagreement folds to `policy_pack_manifest_invalid` (the bundled report does not describe a passing verification of this policy pack). This ordering is non-masking: subject [0] structural problems always surface as their own dedicated reasons, not as a downstream report disagreement.
+
+Stable verifier failure reasons (24 total):
+
+| Reason | Triggered when |
+|---|---|
+| `policy_pack_manifest_invalid` | Manifest unparseable / wrong document_type / wrong profile / wrong schema_version / wrong subject count / wrong subject roles / wrong subject paths / wrong subject sha256 / wrong subject size_bytes, OR subject [1] conformance report disagrees byte-for-byte with the re-derivation |
+| `policy_pack_not_object` | Subject [0] does not parse to a top-level JSON object |
+| `policy_pack_schema_invalid` | Subject [0] `document_type` is wrong, or `schema_version` is wrong |
+| `policy_pack_profile_unsupported` | Subject [0] `profile` is not `relying_party_policy_pack.preview` |
+| `policy_pack_identity_invalid` | Subject [0] `relying_party.identity_id` / `identity_label` missing or empty |
+| `policy_pack_authority_invalid` | Subject [0] `policy_authority.approver_role` / `approver_id` / `approved_at` missing or empty |
+| `policy_scope_invalid` | Subject [0] `policy.policy_id` / `policy_version` / `in_scope_purposes` / `effective_period.starts_at < ends_at` malformed |
+| `protected_action_scope_invalid` | Subject [0] `applicable_protected_actions` empty / not a list / contains a non-string or empty entry |
+| `silver_handoff_requirement_invalid` | Subject [0] `silver_handoff_requirements.minimum_handoff_posture` outside the closed posture set, or `required_chain_components` empty |
+| `verifier_requirement_invalid` | Subject [0] `verifier_requirements.minimum_posture` outside the closed set, or `requires_self_validate` not a boolean |
+| `issuer_requirement_invalid` | Subject [0] `issuer_requirements.required_signature_algorithm != ed25519`, or `trusted_issuers` empty / missing fields |
+| `revocation_requirement_invalid` | Subject [0] `revocation_requirements.mode` outside the closed set, or booleans malformed |
+| `freshness_requirement_invalid` | Subject [0] `freshness_requirements.max_age_seconds` or `tolerated_skew_seconds` not a non-negative integer |
+| `challenge_requirement_invalid` | Subject [0] `challenge_handling.posture` outside the closed challenge posture set |
+| `withdrawal_requirement_invalid` | Subject [0] `withdrawal_handling.posture` outside the closed withdrawal posture set |
+| `supersession_requirement_invalid` | Subject [0] `supersession_handling.posture` outside the closed supersession posture set |
+| `acceptance_criteria_invalid` | Subject [0] `acceptance_criteria.required_silver_results` is empty, or contains a value outside the closed acceptance-results enum |
+| `rejection_criteria_invalid` | Subject [0] `rejection_criteria.blocking_silver_results` is empty, or contains a value outside the closed rejection-results enum |
+| `exception_policy_invalid` | Subject [0] `exceptions[i]` is missing `exception_id` / `severity` / `approver_id` / `justification` / `effect_on_scope` |
+| `hard_stop_policy_invalid` | Subject [0] `hard_stops[i]` is missing `hard_stop_id` / `condition` / `on_match`, or `overridable_by_exception` is not the literal boolean false |
+| `warning_policy_invalid` | Subject [0] `warning_treatment.unknown_warning_default` outside the closed enum, or `warnings[i]` missing fields or with an out-of-enum `treatment` |
+| `reference_policy_invalid` | Subject [0] `related_silver_artifacts[i]` missing `kind` / `path`, or `path` is absolute or contains `..` |
+| `non_claims_missing` | Subject [0] `scope_limitations` or `non_claims` empty, missing, not a list, or contains a non-string / blank entry |
+| `prohibited_claim_present` | Any string value in subject [0] OUTSIDE `scope_limitations`, `non_claims`, and `relying_party.contact` contains a forbidden positive token |
+
+The five runner-only refusal codes (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`) are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
 ## Security Notes
 
 - This is a demo signing system. Do not use generated keys for production.

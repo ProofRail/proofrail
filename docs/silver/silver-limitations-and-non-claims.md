@@ -567,6 +567,35 @@ The v0.3.4 challenge / withdrawal primitives package is **not**:
 
 ---
 
+## v0.3.5 Silver Relying-Party Policy Pack
+
+Silver v0.3.5 introduces a deterministic local hand-authored evidence primitive — a relying-party policy pack — paired with a byte-for-byte re-derivable conformance report and a 2-subject manifest. v0.3.5 introduces no new signature scheme, trust authority, runtime substrate, or evaluation of any specific upstream Silver evidence.
+
+The v0.3.5 Relying-Party Policy Pack package is:
+
+- **Hand-authored policy text.** The policy pack is a single relying-party-authored declaration of acceptance posture under a closed enum vocabulary. v0.3.5 packages it; v0.3.5 does not evaluate it against any specific upstream evidence in this release.
+- **Structurally validated.** The verifier runs 24 ordered structural checks against the policy pack body covering identity, policy authority, scope, applicable protected actions, eight requirement / handling / criteria blocks under closed enums, exception / hard-stop / warning-treatment policy, related-artifact references, scope_limitations / non_claims presence, and a 23-token prohibited-claim guard.
+- **Deterministically derived.** The conformance report's canonical-JSON byte image depends only on the verified policy pack; the verifier byte-compares the bundled report against its own re-derivation and rejects any disagreement.
+- **Non-masking.** All 22 dedicated structural checks run BEFORE the conformance report is parsed; dedicated subject [0] failures are never masked behind a downstream report-disagreement reason. Conformance-report byte disagreement folds back to the verifier's `policy_pack_manifest_invalid` reason; the bundled report does not describe a passing verification of this policy pack.
+- **Self-validated before atomic move.** With `--self-validate`, the runner subprocess-invokes the v0.3.5 verifier against the staging directory **before** `os.replace()`. On failure it removes staging, leaves the destination untouched, and **relays the verifier's OWN failure reason UNCHANGED** — the runner never wraps a verifier failure in a sixth runner-only code. A refused run leaves no final directory and no staging sibling, so the Make target is safely repeatable.
+- **Stable refusal taxonomy.** The runner emits only the five Phase A refusal reasons (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`); the verifier emits only the 24 approved verifier-side reasons. There is no sixth wrapper code anywhere in the v0.3.5 taxonomy.
+
+The v0.3.5 Relying-Party Policy Pack package is **not**:
+
+- A regulator approval, auditor approval, or third-party endorsement of the policy pack or the relying party.
+- A certification or compliance attestation of the policy pack.
+- A Gold artifact, a Gold conformance claim, or an advance of the Gold boundary.
+- An evaluation of any specific upstream Silver evidence (handoff, verifier output, issuer, evidence package, attestation, drill, inspection, trace binding, adapter pilot, challenge, or withdrawal record) against the hand-authored requirements blocks. v0.3.5 packages policy declarations; v0.3.5 does not adjudicate them against runtime evidence in this release.
+- An adjudication of any specific challenge, withdrawal, supersession, or warning event against the hand-authored posture blocks.
+- A reliance instrument. v0.3.5 does not issue, transfer, or accept any reliance.
+- Legally binding on the relying party or any counterparty.
+- A signed Silver artifact. v0.3.5 ships local hash anchors only.
+- An extension of the substance of any earlier-release Silver evidence. v0.3.5 emits an additional Silver evidence artifact; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 / v0.3.3 / v0.3.4 semantics.
+
+> v0.3.5 packages a deterministic local hand-authored relying-party policy pack alongside a re-derivable structural-conformance report. It does not approve the policy, does not audit the policy, does not certify the policy, does not evaluate the policy against any specific upstream Silver evidence in this release, does not adjudicate any specific event against the policy's hand-authored posture blocks, does not issue or transfer reliance, is not legally binding, and does not extend the substance of any earlier-release Silver evidence.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

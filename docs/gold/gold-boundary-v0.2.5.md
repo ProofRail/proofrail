@@ -309,3 +309,35 @@ A Silver challenge / withdrawal primitives package is not a Gold certificate, re
 v0.3.4 records challenge / withdrawal primitives. It does not decide their merits.
 
 v0.3.4 names a challenge / withdrawal primitives Silver evidence package. It does not cross the Gold boundary.
+
+---
+
+## 16. Note on v0.3.5 Silver Relying-Party Policy Pack
+
+ProofRail v0.3.5 introduces a deterministic local hand-authored Silver evidence primitive — a relying-party policy pack — paired with a byte-for-byte re-derivable conformance report and a 2-subject SHA-256 manifest. The policy pack declares the relying party's Silver acceptance posture under a closed enum vocabulary covering minimum handoff posture, verifier posture, issuer signature algorithm, revocation mode, freshness windows, challenge / withdrawal / supersession postures, acceptance / rejection criteria, exception / hard-stop / warning-treatment policy, and related-artifact references. v0.3.5 introduces no new signature scheme, trust authority, runtime substrate, or evaluation of any specific upstream Silver evidence.
+
+The v0.3.5 Relying-Party Policy Pack package is **still Silver, not Gold**:
+
+- It is a deterministic local artifact. The runner runs five Phase A preflight checks against the `--policy-pack` argv (each emitting one of the five runner-only refusal reasons), byte-copies the policy pack into the staged package, deterministically re-derives the 24-entry conformance report as canonical JSON bytes that depend only on the verified policy pack, writes the 2-subject manifest, and runs self-validation against the staging directory **before** the atomic `os.replace()`. On self-validation failure the runner **relays the v0.3.5 verifier's own stable failure reason UNCHANGED** — it never wraps a verifier failure in a sixth runner-only code. A refused or self-validation-failed run leaves no final directory and no staging sibling.
+- It is structurally validated. The verifier runs 24 ordered structural checks covering manifest integrity, policy pack shape, profile, identity, policy authority, scope, applicable protected actions, eight requirement / handling / criteria blocks under closed enums, exception / hard-stop / warning-treatment policy, related-artifact references, scope_limitations / non_claims presence, and a 23-token prohibited-claim guard outside `scope_limitations`, `non_claims`, and `relying_party.contact`. Bundled conformance-report byte disagreement folds back to `policy_pack_manifest_invalid` (the bundled report does not describe a passing verification of this policy pack).
+- It is not an approval. The packaged conformance report records only that the policy pack satisfies the 24 ordered structural checks; v0.3.5 does not approve, endorse, or adopt the hand-authored policy text. It does not consult any regulator, auditor, third party, or counterparty.
+- It is not an audit. v0.3.5 does not perform a substantive review of the relying party's operating practice, control environment, evidence pipeline, or any specific upstream Silver evidence against the hand-authored requirements blocks.
+- It is not a certification. The policy pack carries no compliance attestation; the verifier's prohibited-claim guard rejects any compliance / certification / approval / audited tokens in the hand-authored body outside the documented scope_limitations / non_claims / relying_party.contact escapes.
+- It is not an evaluation of any specific upstream Silver evidence (handoff, verifier output, issuer, evidence package, attestation, drill, inspection, trace binding, adapter pilot, challenge, or withdrawal record) against the hand-authored requirements blocks. v0.3.5 packages declarative policy; v0.3.5 does not adjudicate that policy against runtime evidence in this release.
+- It is not an adjudication of any specific challenge, withdrawal, supersession, or warning event against the hand-authored posture blocks.
+- It is not a reliance instrument. v0.3.5 does not issue, transfer, or accept any reliance. It does not federate, chain, arbitrate, notify external parties, or transfer reliance.
+- It is not legally binding on the relying party or any counterparty.
+- It is not signed. v0.3.5 ships local hash anchors only.
+- It does not extend the substance of any earlier-release Silver evidence. v0.3.5 emits an additional Silver evidence artifact; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 / v0.3.3 / v0.3.4 semantics, and it does not bind any earlier-release Silver evidence package into the policy pack package.
+
+Gold-level handoff (as inventoried in §5 above) still requires the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity, retention, change-control, governed challenge adjudication, governed revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.3.5 does not add any of those, and explicitly does not introduce a relying-party policy pack as a Gold prerequisite or as a Gold satisfaction. A hand-authored relying-party policy declaration is not the same as a multi-stakeholder governed acceptance instrument.
+
+The release sentence holds:
+
+> v0.3.5 packages a deterministic local hand-authored relying-party policy pack alongside a re-derivable structural-conformance report. It does not approve the policy, does not audit the policy, does not certify the policy, does not evaluate the policy against any specific upstream Silver evidence in this release, does not adjudicate any specific event against the policy's hand-authored posture blocks, does not issue or transfer reliance, is not legally binding, and does not extend the substance of any earlier-release Silver evidence.
+
+A Silver Relying-Party Policy Pack package is not a Gold certificate, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, adjudicated event, legally revoked acceptance, compliance certification, or production authorization.
+
+v0.3.5 packages a hand-authored relying-party policy declaration. It does not approve, audit, certify, evaluate, adjudicate, issue, transfer, or accept reliance.
+
+v0.3.5 names a relying-party policy pack Silver evidence package. It does not cross the Gold boundary.

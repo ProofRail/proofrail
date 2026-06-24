@@ -347,6 +347,23 @@ run-silver-challenge-withdrawal-primitives-v0-3-4:
 verify-silver-challenge-withdrawal-primitives-v0-3-4:
 	bash tests/test_silver_challenge_withdrawal_primitives_v0_3_4.sh
 
+.PHONY: run-silver-relying-party-policy-pack-v0-3-5
+run-silver-relying-party-policy-pack-v0-3-5:
+	python3 tools/silver/build_silver_relying_party_policy_pack_v0_1_0.py \
+	  --policy-pack fixtures/silver-relying-party-policy-pack-v0.3.5/policy-pack.json \
+	  --manifest-id proofrail-silver-relying-party-policy-pack-manifest-demo-001 \
+	  --report-id proofrail-silver-relying-party-policy-pack-conformance-report-demo-001 \
+	  --generated-at 2026-07-06T00:30:00Z \
+	  --output-dir /tmp/proofrail-silver-relying-party-policy-pack-v0.3.5 \
+	  --force \
+	  --self-validate
+	python3 tools/silver/verify_silver_relying_party_policy_pack_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-relying-party-policy-pack-v0.3.5/silver-relying-party-policy-pack-manifest.json
+
+.PHONY: verify-silver-relying-party-policy-pack-v0-3-5
+verify-silver-relying-party-policy-pack-v0-3-5:
+	bash tests/test_silver_relying_party_policy_pack_v0_3_5.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -367,3 +384,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-trace-binding-v0-3-2
 	$(MAKE) verify-silver-adapter-pilot-v0-3-3
 	$(MAKE) verify-silver-challenge-withdrawal-primitives-v0-3-4
+	$(MAKE) verify-silver-relying-party-policy-pack-v0-3-5
