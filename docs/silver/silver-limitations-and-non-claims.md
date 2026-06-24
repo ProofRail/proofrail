@@ -628,6 +628,39 @@ The v0.3.6 Control Crosswalk + Protected Action Catalog package is **not**:
 
 ---
 
+## v0.3.7 Registry Lite Non-Claims
+
+Silver v0.3.7 introduces a deterministic local hand-authored evidence primitive — a registry-lite document declaring at least one entry for each of the six Silver entity roles (issuer, verifier, relying party, policy authority, revocation source, protected action authority) under a closed enum / status / scope / role-specific vocabulary — paired with a byte-for-byte re-derivable conformance report and a 2-subject manifest. v0.3.7 introduces no new signature scheme, trust authority, runtime substrate, certificate authority, identity-proofing record, federation registry, or evaluation of any specific upstream Silver evidence against the registry.
+
+The v0.3.7 Registry Lite package is:
+
+- **Hand-authored registry text.** The registry body is a single relying-party-authored declaration of at least one entry for each of the six closed entity roles under a closed enum / status / scope / role-specific vocabulary. v0.3.7 packages it; v0.3.7 does not evaluate any specific upstream Silver evidence against it in this release.
+- **Closed-vocabulary.** The registry surface is governed by closed enums for `registry_scope`, entity `role` (6 values), entity `status` (5 values), `key_references[].algorithm`, `key_references[].key_reference_type`, `key_bindings[].binding_purpose`, `verifier.verifier_posture`, `policy_authority.authority_boundary`, `revocation_source.source_type`, `revocation_source.status_mode`, `protected_action_authority.delegation_boundary`, `trust_relationships[].relationship_verb`, and `version_bindings[].upstream_id`. Private-key fields are explicitly forbidden; key reference paths are relative-only with no `..`.
+- **Structurally validated.** The verifier runs 24 ordered structural checks against the registry body and manifest covering manifest integrity, registry-body object shape, schema, profile, identity, authority, entity set / per-entry shape / identifier grammar / role / status / effective-period / key-references / key-bindings, six role-specific blocks, trust relationships, version bindings, non-claims presence, and a 36-token prohibited-claim guard.
+- **Deterministically derived.** The conformance report's canonical-JSON byte image depends only on the verified registry body; the verifier byte-compares the bundled report against its own re-derivation and rejects any disagreement.
+- **Non-masking.** The 23 dedicated structural checks run BEFORE the conformance report is parsed; dedicated subject [0] failures are never masked behind a downstream report-disagreement reason. Conformance-report byte disagreement folds back to the verifier's `registry_manifest_invalid` reason; no twenty-fifth public reason is introduced.
+- **Self-validated before atomic move.** With `--self-validate`, the runner subprocess-invokes the v0.3.7 verifier against the staging directory **before** `os.replace()`. On failure it removes staging, leaves the destination untouched, and **relays the verifier's OWN failure reason UNCHANGED** — the runner never wraps a verifier failure in a sixth runner-only code. A refused run leaves no final directory and no staging sibling, so the Make target is safely repeatable.
+- **Stable refusal taxonomy.** The runner emits only the five Phase A refusal reasons (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`); the verifier emits only the 24 approved verifier-side reasons. There is no sixth wrapper code anywhere in the v0.3.7 taxonomy.
+
+The v0.3.7 Registry Lite package is **not**:
+
+- Production PKI, a certificate authority, or a certification authority. The closed enum surface deliberately excludes PKI / CA primitives; the prohibited-claim guard rejects `production PKI`, `certificate authority`, and `certification authority` anywhere outside `scope_limitations` and `non_claims`.
+- A legal identity registry, a legally authoritative identity registry, or an identity-proofing record. The prohibited-claim guard rejects `legal identity`, `legally authoritative identity`, `identity proofing`, and `proofed identity`.
+- A federation registry, a trust federation, a production trust registry, or an authoritative trust registry. The prohibited-claim guard rejects `federated trust`, `trust federation`, `production trust registry`, and `authoritative trust registry`.
+- A regulator approval, auditor approval, or third-party endorsement of the registry, the entities listed in the registry, or the relying party.
+- A certification, compliance attestation, or audit-readiness assertion of the registry.
+- An evaluation of any specific upstream Silver evidence (composed-gateway evidence, trace-binding evidence, acceptance record, revocation-challenge drill, acceptance-handoff, handoff-inspection, control-crosswalk, attestation, or any other Silver artifact) against the registry. v0.3.7 packages registry declarations; v0.3.7 does not re-evaluate any specific upstream Silver evidence against the registry in this release.
+- An issuance, transfer, or acceptance of any reliance instrument against the registry. References between entities are structural pointers only.
+- An adjudication of any specific challenge, withdrawal, supersession, or warning event against the registry.
+- Legally enforceable on the relying party or any counterparty.
+- A Gold artifact, a Gold conformance claim, or an advance of the Gold boundary.
+- A signed Silver artifact. v0.3.7 ships local hash anchors only.
+- An extension of the substance of any earlier-release Silver evidence. v0.3.7 emits an additional Silver evidence artifact; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 / v0.3.3 / v0.3.4 / v0.3.5 / v0.3.6 semantics.
+
+> v0.3.7 packages a deterministic local hand-authored registry-lite document declaring at least one entry per each of the six Silver entity roles alongside a re-derivable structural-conformance report. It is not production PKI, not a certificate authority, not a legal identity registry, not an identity-proofing record, not a federation registry, not regulator / auditor / third-party approval, not a certification, not a Gold artifact, not an evaluation of any specific upstream Silver evidence against the registry, not an issued / transferred / accepted reliance instrument, not legally enforceable, and not an extension of the substance of any earlier-release Silver evidence.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

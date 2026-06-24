@@ -1,0 +1,157 @@
+{
+  "document_type": "proofrail.silver.registry_lite",
+  "schema_version": "v0.1.0",
+  "profile": "silver.registry_lite.v0.3.7",
+  "registry_id": "proofrail-silver-registry-lite-demo-001",
+  "generated_at": "2026-08-15T00:30:00Z",
+  "registry_scope": "demo",
+  "release_binding": "silver.registry_lite.v0.3.7",
+  "registry_authority": {
+    "identity_id": "proofrail.demo.registry_authority",
+    "display_name": "ProofRail demo registry authority",
+    "contact": "demo-registry-authority@example.invalid"
+  },
+  "entities": [
+    {
+      "entity_id": "proofrail.demo.issuer",
+      "display_label": "ProofRail demo issuer",
+      "role": "issuer",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "key_references": [
+        {
+          "key_id": "issuer-key-001",
+          "algorithm": "ed25519",
+          "public_key_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000001",
+          "key_reference_type": "local_fingerprint"
+        }
+      ],
+      "key_bindings": [
+        {
+          "binding_id": "issuer-binding-001",
+          "key_id": "issuer-key-001",
+          "binding_purpose": "issue_evidence"
+        }
+      ],
+      "issuer": {
+        "issuer_scope": "silver_evidence_only",
+        "signed_artifact_types": [
+          "silver_signed_bundle_assertion",
+          "silver_verifier_output_attestation"
+        ],
+        "supported_profiles": [
+          "silver.base",
+          "silver.base.demo"
+        ]
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.verifier",
+      "display_label": "ProofRail demo verifier",
+      "role": "verifier",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "verifier": {
+        "verifier_profiles": [
+          "silver.base",
+          "silver.independent"
+        ],
+        "verifier_posture": "independent"
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.relying_party",
+      "display_label": "ProofRail demo relying party",
+      "role": "relying_party",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "relying_party": {
+        "reliance_scope": "demo_only",
+        "local_policy_reference": "fixtures/silver-relying-party-policy-pack-v0.3.5/policy-pack.json"
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.policy_authority",
+      "display_label": "ProofRail demo policy authority",
+      "role": "policy_authority",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "policy_authority": {
+        "policy_scope": "relying_party_policy_only",
+        "authority_boundary": "local_demo"
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.revocation_source",
+      "display_label": "ProofRail demo revocation source",
+      "role": "revocation_source",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "revocation_source": {
+        "source_type": "local_list",
+        "status_mode": "pull",
+        "supported_subject_scope": "all_three"
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.protected_action_authority",
+      "display_label": "ProofRail demo protected action authority",
+      "role": "protected_action_authority",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "protected_action_authority": {
+        "protected_action_scope": "local_demo_actions",
+        "delegation_boundary": "scoped_delegation"
+      }
+    }
+  ],
+  "trust_relationships": [],
+  "version_bindings": [
+    {
+      "binding_id": "vb-001",
+      "upstream_id": "silver.composed.v0.2.7",
+      "upstream_version": "v0.2.7"
+    },
+    {
+      "binding_id": "vb-002",
+      "upstream_id": "silver.policy_pack.v0.3.5",
+      "upstream_version": "v0.3.5"
+    },
+    {
+      "binding_id": "vb-003",
+      "upstream_id": "silver.control_crosswalk.v0.3.6",
+      "upstream_version": "v0.3.6"
+    }
+  ],
+  "scope_limitations": [
+    "This registry-lite document is example data; it does not anchor a production reliance decision.",
+    "Entity IDs are illustrative; downstream relying parties define their own entity surface."
+  ],
+  "non_claims": [
+    "v0.3.7 is not a production PKI artifact, certificate authority record, or federation registry.",
+    "v0.3.7 does not perform identity proofing and does not assert a legal identity for any entity.",
+    "v0.3.7 does not claim regulator approval, auditor approval, or third-party endorsement.",
+    "v0.3.7 does not claim certification, compliance, audit-ready posture, or production authorization.",
+    "v0.3.7 does not claim runtime truth or transferred trust.",
+    "v0.3.7 does not constitute Gold governance, governed reliance, or advancement of the Gold boundary.",
+    "v0.3.7 does not re-evaluate any specific upstream Silver evidence against this registry."
+  ]
+}

@@ -36,6 +36,9 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver Control Crosswalk + Protected Action Catalog v0.1.0
 - Silver Control Crosswalk + Protected Action Catalog Manifest v0.1.0
 - Silver Control Crosswalk + Protected Action Catalog Conformance Report v0.1.0
+- Silver Registry Lite v0.1.0
+- Silver Registry Lite Manifest v0.1.0
+- Silver Registry Lite Conformance Report v0.1.0
 
 ## Demo Issuer Generator
 
@@ -1666,6 +1669,119 @@ Stable verifier failure reasons (24 total):
 | `version_binding_invalid` | Subject [0] a `version_bindings[i]` is missing `binding_id` / `upstream_version`, or `upstream_id` is outside the closed Silver upstream_id set |
 | `non_claims_missing` | Subject [0] `scope_limitations` or `non_claims` empty, missing, not a list, or contains a non-string / blank entry |
 | `prohibited_compliance_claim_present` | Any string value in subject [0] OUTSIDE `scope_limitations`, `non_claims`, and `control_limitations` contains a forbidden positive token |
+
+The five runner-only refusal codes (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`) are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
+## Silver Registry Lite Runner (v0.3.7)
+
+Builds a deterministic, local Silver Registry Lite package from a single hand-authored input. Pure-stdlib. Atomic staging-then-replace; a refused or self-validation-failed run leaves no partial package on disk and no staging sibling.
+
+```bash
+python3 tools/silver/build_silver_registry_lite_v0_1_0.py \
+  --input-registry fixtures/silver-registry-lite-v0.3.7/registry-lite.json \
+  --manifest-id proofrail-silver-registry-lite-manifest-demo-001 \
+  --report-id proofrail-silver-registry-lite-conformance-report-demo-001 \
+  --generated-at 2026-08-15T00:30:00Z \
+  --output-dir /tmp/proofrail-silver-registry-lite-v0.3.7 \
+  --force \
+  --self-validate
+```
+
+What the runner does, in order:
+
+1. Phase A preflight on `--input-registry` runs five ordered, mutually exclusive checks, each emitting one of the five runner-only refusal reasons (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`). Phase A never touches the output directory and never creates a staging sibling.
+2. Stages the package under `<output-dir>.staging.<pid>`.
+3. Byte-copies the input registry body to `<staging>/registry-lite.json` (subject [0], role `registry_lite`).
+4. Re-derives the conformance report deterministically as canonical JSON bytes (`sort_keys=True`, `separators=(",",":"))` plus a trailing newline) — 24 entries, one per approved verifier check, each `status: pass` — and writes it to `<staging>/silver-registry-lite-conformance-report.json` (subject [1], role `conformance_report`).
+5. Writes the 2-subject manifest at `<staging>/silver-registry-lite-manifest.json` with `proofrail_release: silver.registry_lite.v0.3.7`, `hash_algorithm: sha256`, and a `registry_id` cross-anchored to the registry body.
+6. With `--self-validate`, subprocess-invokes the v0.3.7 verifier on the staged manifest BEFORE the atomic move. The runner relays the verifier's OWN stable failure reason UNCHANGED and does NOT wrap it in a sixth runner-only code. On self-validation failure the staging directory is removed and `--output-dir` is left untouched.
+7. Atomic publish: only AFTER staging build and (optional) self-validation succeed does the runner remove an existing `--output-dir` (required `--force`) and `os.replace()` the staging directory into place.
+
+Runner-only refusal reasons (5):
+
+| Reason | Triggered when |
+|---|---|
+| `runner_input_path_missing` | `--input-registry` argv is missing or empty |
+| `runner_input_path_forbidden` | `--input-registry` is an absolute path or contains a `..` segment |
+| `runner_input_file_missing` | `--input-registry` relative path does not exist on disk |
+| `runner_input_read_failed` | `--input-registry` path is a directory or otherwise unreadable |
+| `runner_input_json_invalid` | `--input-registry` file is not valid UTF-8 JSON |
+
+The runner never wraps a verifier failure in a sixth runner-only code. The regression test explicitly asserts that no sixth wrapper code is ever emitted; on `--self-validate` failure the runner relays the verifier's own stable reason verbatim.
+
+Exit codes: 0 (success), 1 (package refused, self-validation failed, or verifier relay), 2 (usage/input error).
+
+## Silver Registry Lite Verifier (v0.3.7)
+
+Validates a v0.3.7 Silver Registry Lite package. Pure-stdlib. Non-masking ordering: all 24 ordered structural checks against the registry body run BEFORE the conformance-report byte-image re-derivation. The verifier owns every check; no subprocess invocations.
+
+```bash
+python3 tools/silver/verify_silver_registry_lite_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-registry-lite-v0.3.7/silver-registry-lite-manifest.json
+```
+
+Ordered verifier checks (24 structural checks plus 1 post-structural conformance-report re-derivation; subject [1] conformance-report disagreement and `manifest.registry_id` cross-anchor mismatch both fold to `registry_manifest_invalid`; no OR-accept):
+
+1. Parse manifest JSON, re-anchor subjects, and cross-anchor `manifest.registry_id` against the registry body (`registry_manifest_invalid`).
+2. Subject [0] (registry body) top-level is a JSON object (`registry_not_object`).
+3. Subject [0] `document_type` / `schema_version` shape (`registry_schema_invalid`).
+4. Subject [0] `profile` equals `silver.registry_lite.v0.3.7` (`registry_profile_unsupported`).
+5. Subject [0] `registry_id` grammar and `registry_scope` closed enum (`registry_identity_invalid`).
+6. Subject [0] `registry_authority.*` identity block (`registry_authority_invalid`).
+7. Subject [0] `entities` non-empty list of objects and `scope_limitations` non-empty (`registry_entity_set_invalid`).
+8. Each entity entry's required descriptor fields (`registry_entity_entry_invalid`).
+9. Each entity entry's `entity_id` grammar (`registry_entity_identifier_invalid`).
+10. Each entity entry's `role` in the closed 6-role set (`registry_role_invalid`).
+11. Each entity entry's `status` in the closed 5-status set (`registry_status_invalid`).
+12. Each entity entry's `effective_period.starts_at <= ends_at` (`registry_effective_period_invalid`).
+13. Each entity entry's `key_references[i]` shape (closed algorithm enum, closed key_reference_type enum, fingerprint grammar where required, relative paths only with no `..`) (`registry_key_reference_invalid`).
+14. Each entity entry's `key_bindings[i]` shape (key_id resolves locally, binding_purpose in closed enum) (`registry_key_binding_invalid`).
+15. Each issuer-roled entry's `issuer.*` block (closed enums) (`issuer_entry_invalid`).
+16. Each verifier-roled entry's `verifier.*` block (closed enums) (`verifier_entry_invalid`).
+17. Each relying-party-roled entry's `relying_party.*` block (`relying_party_entry_invalid`).
+18. Each policy-authority-roled entry's `policy_authority.*` block (`policy_authority_entry_invalid`).
+19. Each revocation-source-roled entry's `revocation_source.*` block (closed enums) (`revocation_source_entry_invalid`).
+20. Each protected-action-authority-roled entry's `protected_action_authority.*` block (closed enums) (`protected_action_authority_entry_invalid`).
+21. Each `trust_relationships[i]` shape (closed verb, from/to resolve in entities) (`trust_relationship_invalid`).
+22. Each `version_bindings[i]` shape (closed Silver upstream_id set, closed upstream_version set) (`version_binding_invalid`).
+23. Subject [0] `non_claims` non-empty list of non-empty strings (`non_claims_missing`).
+24. Subject [0] recursive prohibited-token scan outside `scope_limitations` and `non_claims` for the 36 forbidden positive tokens (`prohibited_registry_claim_present`).
+25. Subject [1] conformance-report parse and byte-identical re-derivation; any disagreement folds back to `registry_manifest_invalid` (no twenty-fifth public reason is introduced).
+
+After the 24 structural checks, the verifier parses subject [1] and deterministically re-derives the expected canonical-JSON byte image from the verified subject [0]. Any byte-image disagreement folds to `registry_manifest_invalid` (the bundled report does not describe a passing verification of this registry). This ordering is non-masking: subject [0] structural problems always surface as their own dedicated reasons, not as a downstream report disagreement.
+
+Stable verifier failure reasons (24 total):
+
+| Reason | Triggered when |
+|---|---|
+| `registry_manifest_invalid` | Manifest unparseable / wrong document_type / wrong proofrail_release / wrong hash_algorithm / wrong schema_version / wrong subject count / wrong subject roles / wrong subject paths / wrong subject sha256 / wrong subject size_bytes, OR `manifest.registry_id` disagrees with the registry body, OR subject [1] conformance report disagrees byte-for-byte with the re-derivation |
+| `registry_not_object` | Subject [0] does not parse to a top-level JSON object |
+| `registry_schema_invalid` | Subject [0] `document_type` is wrong, or `schema_version` is wrong |
+| `registry_profile_unsupported` | Subject [0] `profile` is not `silver.registry_lite.v0.3.7` |
+| `registry_identity_invalid` | Subject [0] `registry_id` missing, empty, or outside the dotted-identifier grammar, OR `registry_scope` outside the closed enum |
+| `registry_authority_invalid` | Subject [0] `registry_authority` missing `identity_id` / `display_name` / `contact`, or those fields are empty |
+| `registry_entity_set_invalid` | Subject [0] `entities` empty, missing, or not a list of objects, OR `scope_limitations` empty, missing, not a list, or contains a non-string / blank entry |
+| `registry_entity_entry_invalid` | Subject [0] an entity entry is missing one of `entity_id` / `display_label` / `role` / `status` / `effective_period` |
+| `registry_entity_identifier_invalid` | Subject [0] an entity entry's `entity_id` does not match the lowercase dotted identifier grammar |
+| `registry_role_invalid` | Subject [0] an entity entry's `role` is outside the closed 6-role set |
+| `registry_status_invalid` | Subject [0] an entity entry's `status` is outside the closed 5-status set |
+| `registry_effective_period_invalid` | Subject [0] an entity entry's `effective_period.starts_at > ends_at`, or either is not ISO-8601 UTC |
+| `registry_key_reference_invalid` | Subject [0] an entity entry's `key_references[i]` is missing required fields, has `algorithm` outside the closed enum, has `key_reference_type` outside the closed enum, or carries an absolute path or `..` segment |
+| `registry_key_binding_invalid` | Subject [0] an entity entry's `key_bindings[i]` has `key_id` that does not resolve locally, or `binding_purpose` outside the closed enum |
+| `issuer_entry_invalid` | Subject [0] an issuer-roled entry has a missing or malformed `issuer.*` block (closed enums for `issuer_scope` / `signed_artifact_types` / `supported_profiles`) |
+| `verifier_entry_invalid` | Subject [0] a verifier-roled entry has a missing or malformed `verifier.*` block (closed enums for `verifier_profiles` / `verifier_posture`) |
+| `relying_party_entry_invalid` | Subject [0] a relying-party-roled entry has a missing or malformed `relying_party.*` block (closed `reliance_scope`, relative `local_policy_reference`) |
+| `policy_authority_entry_invalid` | Subject [0] a policy-authority-roled entry has a missing or malformed `policy_authority.*` block (closed `policy_scope` / `authority_boundary`) |
+| `revocation_source_entry_invalid` | Subject [0] a revocation-source-roled entry has a missing or malformed `revocation_source.*` block (closed `source_type` / `status_mode` / `supported_subject_scope`) |
+| `protected_action_authority_entry_invalid` | Subject [0] a protected-action-authority-roled entry has a missing or malformed `protected_action_authority.*` block (closed `protected_action_scope` / `delegation_boundary`) |
+| `trust_relationship_invalid` | Subject [0] a `trust_relationships[i]` is missing `relationship_id` / `from_entity_id` / `to_entity_id`, or `relationship_verb` is outside the closed 6-verb set, or `from_entity_id` / `to_entity_id` does not resolve to an entity in `entities[]` |
+| `version_binding_invalid` | Subject [0] a `version_bindings[i]` is missing `binding_id`, or `upstream_id` is outside the closed Silver upstream_id set, or `upstream_version` is outside the closed upstream_version set |
+| `non_claims_missing` | Subject [0] `non_claims` empty, missing, not a list, or contains a non-string / blank entry |
+| `prohibited_registry_claim_present` | Any string value in subject [0] OUTSIDE `scope_limitations` and `non_claims` contains a forbidden positive token from the 36-token registry-claim set |
 
 The five runner-only refusal codes (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`) are **never** emitted by the verifier.
 

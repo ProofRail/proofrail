@@ -1,0 +1,150 @@
+{
+  "document_type": "proofrail.silver.registry_lite",
+  "schema_version": "v0.1.0",
+  "profile": "silver.registry_lite.v0.3.7",
+  "registry_id": "proofrail-silver-registry-lite-demo-003",
+  "generated_at": "2026-08-15T00:30:00Z",
+  "registry_scope": "demo",
+  "release_binding": "silver.registry_lite.v0.3.7",
+  "registry_authority": {
+    "identity_id": "proofrail.demo.registry_authority",
+    "display_name": "ProofRail demo registry authority",
+    "contact": "demo-registry-authority@example.invalid"
+  },
+  "entities": [
+    {
+      "entity_id": "proofrail.demo.issuer",
+      "display_label": "ProofRail demo issuer",
+      "role": "issuer",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "issuer": {
+        "issuer_scope": "silver_evidence_only",
+        "signed_artifact_types": [
+          "silver_signed_bundle_assertion",
+          "silver_revocation_list"
+        ],
+        "supported_profiles": [
+          "silver.base"
+        ]
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.verifier",
+      "display_label": "ProofRail demo verifier",
+      "role": "verifier",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "verifier": {
+        "verifier_profiles": [
+          "silver.base"
+        ],
+        "verifier_posture": "independent"
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.relying_party",
+      "display_label": "ProofRail demo relying party",
+      "role": "relying_party",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "relying_party": {
+        "reliance_scope": "demo_only",
+        "local_policy_reference": "fixtures/silver-relying-party-policy-pack-v0.3.5/policy-pack.json"
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.policy_authority",
+      "display_label": "ProofRail demo policy authority",
+      "role": "policy_authority",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "policy_authority": {
+        "policy_scope": "relying_party_policy_only",
+        "authority_boundary": "local_demo"
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.revocation_source",
+      "display_label": "ProofRail demo signed revocation source",
+      "role": "revocation_source",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "key_references": [
+        {
+          "key_id": "revocation-key-001",
+          "algorithm": "ed25519",
+          "public_key_fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000002",
+          "key_reference_type": "local_pem_path",
+          "local_reference_path": "fixtures/silver-registry-lite-v0.3.7/keys/revocation-key-001.pub.pem"
+        }
+      ],
+      "key_bindings": [
+        {
+          "binding_id": "revocation-binding-001",
+          "key_id": "revocation-key-001",
+          "binding_purpose": "sign_revocation"
+        }
+      ],
+      "revocation_source": {
+        "source_type": "signed_revocation_record",
+        "status_mode": "push",
+        "supported_subject_scope": "issuer_key_only"
+      }
+    },
+    {
+      "entity_id": "proofrail.demo.protected_action_authority",
+      "display_label": "ProofRail demo protected action authority",
+      "role": "protected_action_authority",
+      "status": "active",
+      "effective_period": {
+        "starts_at": "2026-01-01T00:00:00Z",
+        "ends_at": "2027-01-01T00:00:00Z"
+      },
+      "protected_action_authority": {
+        "protected_action_scope": "local_demo_actions",
+        "delegation_boundary": "scoped_delegation"
+      }
+    }
+  ],
+  "trust_relationships": [],
+  "version_bindings": [
+    {
+      "binding_id": "vb-001",
+      "upstream_id": "silver.drill.v0.2.9",
+      "upstream_version": "v0.2.9"
+    },
+    {
+      "binding_id": "vb-002",
+      "upstream_id": "silver.challenge_withdrawal.v0.3.4",
+      "upstream_version": "v0.3.4"
+    }
+  ],
+  "scope_limitations": [
+    "Key fingerprints and PEM paths are fixture placeholders; the keys themselves are not part of this package.",
+    "v0.3.7 records the revocation-source role binding; it does not exercise revocation."
+  ],
+  "non_claims": [
+    "v0.3.7 is not a production PKI artifact or certificate authority record.",
+    "v0.3.7 does not perform key proofing or assert a legal identity for any key holder.",
+    "v0.3.7 does not adjudicate any revocation event; it only records the role binding.",
+    "v0.3.7 does not claim regulator approval, auditor approval, or third-party endorsement.",
+    "v0.3.7 does not claim certification, compliance, or production authorization.",
+    "v0.3.7 does not constitute Gold governance or advancement of the Gold boundary."
+  ]
+}
