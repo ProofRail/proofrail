@@ -381,6 +381,23 @@ run-silver-control-crosswalk-protected-action-catalog-v0-3-6:
 verify-silver-control-crosswalk-protected-action-catalog-v0-3-6:
 	bash tests/test_silver_control_crosswalk_protected_action_catalog_v0_3_6.sh
 
+.PHONY: run-silver-registry-lite-v0-3-7
+run-silver-registry-lite-v0-3-7:
+	python3 tools/silver/build_silver_registry_lite_v0_1_0.py \
+	  --input-registry fixtures/silver-registry-lite-v0.3.7/registry-lite.json \
+	  --manifest-id proofrail-silver-registry-lite-manifest-demo-001 \
+	  --report-id proofrail-silver-registry-lite-conformance-report-demo-001 \
+	  --generated-at 2026-08-15T00:30:00Z \
+	  --output-dir /tmp/proofrail-silver-registry-lite-v0.3.7 \
+	  --force \
+	  --self-validate
+	python3 tools/silver/verify_silver_registry_lite_v0_1_0.py \
+	  --manifest /tmp/proofrail-silver-registry-lite-v0.3.7/silver-registry-lite-manifest.json
+
+.PHONY: verify-silver-registry-lite-v0-3-7
+verify-silver-registry-lite-v0-3-7:
+	bash tests/test_silver_registry_lite_v0_3_7.sh
+
 .PHONY: verify-silver-all
 verify-silver-all:
 	$(MAKE) verify-silver-demo-001
@@ -403,3 +420,4 @@ verify-silver-all:
 	$(MAKE) verify-silver-challenge-withdrawal-primitives-v0-3-4
 	$(MAKE) verify-silver-relying-party-policy-pack-v0-3-5
 	$(MAKE) verify-silver-control-crosswalk-protected-action-catalog-v0-3-6
+	$(MAKE) verify-silver-registry-lite-v0-3-7
