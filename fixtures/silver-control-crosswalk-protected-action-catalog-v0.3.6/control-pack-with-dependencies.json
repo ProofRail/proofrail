@@ -1,0 +1,99 @@
+{
+  "document_type": "proofrail.silver.control_crosswalk_protected_action_catalog",
+  "schema_version": "v0.1.0",
+  "profile": "silver.control_crosswalk.v0.3.6",
+  "control_pack_id": "proofrail-silver-control-crosswalk-protected-action-catalog-demo-002",
+  "package_owner": {
+    "identity_id": "proofrail/demo-package-owner",
+    "display_name": "ProofRail demo package owner",
+    "role": "package_owner"
+  },
+  "relying_party": {
+    "identity_id": "proofrail/demo-relying-party",
+    "display_name": "ProofRail demo relying party",
+    "role": "relying_party"
+  },
+  "catalog_authority": {
+    "identity_id": "proofrail/demo-catalog-authority",
+    "display_name": "ProofRail demo catalog authority",
+    "role": "catalog_authority"
+  },
+  "protected_action_catalog": [
+    {
+      "action_id": "payment.release",
+      "description": "Release of an outbound payment for settlement.",
+      "category": "financial",
+      "environment_scope": "production",
+      "actor_scope": "human",
+      "authority": {
+        "posture": "joint_principal",
+        "delegation_allowed": false,
+        "scoped_principals": ["finance.controller", "treasury.lead"]
+      },
+      "risk_boundary": {
+        "risk_class": "critical",
+        "blast_radius": "external_funds_transfer",
+        "rationale": "Funds leave the controlled boundary irreversibly."
+      }
+    }
+  ],
+  "control_crosswalk": [
+    {
+      "mapping_id": "map-001",
+      "action_id": "payment.release",
+      "artifact_type": "bronze_claim",
+      "artifact_path": "fixtures/bronze-claim/payment-release-claim.yaml",
+      "relationship": "declares",
+      "control_concept_id": "actuation.declared_set",
+      "control_objective": "Declare the closed set of protected actuators that this profile mediates.",
+      "claim": {
+        "verb": "may_inform",
+        "scope_text": "ProofRail evidence may inform whether a protected actuator declaration is present for payment.release."
+      }
+    }
+  ],
+  "control_limitations": [
+    {
+      "limitation_id": "lim-001",
+      "summary": "Catalog scope is example-only; downstream relying parties must define their own actions.",
+      "domain": "control_decision"
+    }
+  ],
+  "dependency_references": [
+    {
+      "dependency_id": "dep-001",
+      "reference_type": "upstream_silver_release",
+      "upstream_id": "silver.relying_party_policy_pack.v0.3.5",
+      "upstream_version": "v0.3.5",
+      "relationship_note": "v0.3.6 catalog presumes v0.3.5 policy-pack release."
+    },
+    {
+      "dependency_id": "dep-002",
+      "reference_type": "upstream_silver_profile",
+      "upstream_id": "silver.trace_binding_profile.v0.3.2",
+      "upstream_version": "v0.3.2",
+      "relationship_note": "v0.3.6 crosswalk presumes v0.3.2 trace-binding profile semantics."
+    },
+    {
+      "dependency_id": "dep-003",
+      "reference_type": "prior_artifact",
+      "upstream_id": "silver.composed_gateway_evidence.v0.2.7",
+      "upstream_version": "v0.2.7",
+      "relationship_note": "v0.3.6 crosswalk references v0.2.7 composed-gateway artifacts."
+    }
+  ],
+  "version_bindings": [
+    {
+      "binding_id": "bind-001",
+      "upstream_id": "silver.relying_party_policy_pack",
+      "upstream_version": "v0.3.5"
+    }
+  ],
+  "scope_limitations": [
+    "This package is example data; it does not anchor a production reliance decision."
+  ],
+  "non_claims": [
+    "v0.3.6 does not claim compliance, certification, audit approval, regulator approval, or production authorization.",
+    "v0.3.6 does not claim control design or operating effectiveness, legal enforceability, runtime truth, transferred trust, or governed reliance."
+  ]
+}

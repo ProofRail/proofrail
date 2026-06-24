@@ -33,6 +33,9 @@ This directory contains tooling for ProofRail Minimal Silver signed bundle asser
 - Silver-to-Gold Requirement Set v0.1.0
 - Silver Handoff Inspection Report v0.1.0
 - Silver Handoff Inspection Manifest v0.1.0
+- Silver Control Crosswalk + Protected Action Catalog v0.1.0
+- Silver Control Crosswalk + Protected Action Catalog Manifest v0.1.0
+- Silver Control Crosswalk + Protected Action Catalog Conformance Report v0.1.0
 
 ## Demo Issuer Generator
 
@@ -1550,6 +1553,119 @@ Stable verifier failure reasons (24 total):
 | `reference_policy_invalid` | Subject [0] `related_silver_artifacts[i]` missing `kind` / `path`, or `path` is absolute or contains `..` |
 | `non_claims_missing` | Subject [0] `scope_limitations` or `non_claims` empty, missing, not a list, or contains a non-string / blank entry |
 | `prohibited_claim_present` | Any string value in subject [0] OUTSIDE `scope_limitations`, `non_claims`, and `relying_party.contact` contains a forbidden positive token |
+
+The five runner-only refusal codes (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`) are **never** emitted by the verifier.
+
+JSON parse errors are caught and surfaced as the appropriate stable reason — no Python traceback leaks.
+
+Exit codes: 0 (valid), 1 (verification failure), 2 (usage/input error).
+
+## Silver Control Crosswalk + Protected Action Catalog Runner (v0.3.6)
+
+Builds a deterministic, local Silver Control Crosswalk + Protected Action Catalog package from a single hand-authored input. Pure-stdlib. Atomic staging-then-replace; a refused or self-validation-failed run leaves no partial package on disk and no staging sibling.
+
+```bash
+python3 tools/silver/build_silver_control_crosswalk_protected_action_catalog_v0_1_0.py \
+  --input-pack fixtures/silver-control-crosswalk-protected-action-catalog-v0.3.6/control-pack.json \
+  --manifest-id proofrail-silver-control-crosswalk-protected-action-catalog-manifest-demo-001 \
+  --report-id proofrail-silver-control-crosswalk-protected-action-catalog-conformance-report-demo-001 \
+  --generated-at 2026-07-20T00:30:00Z \
+  --output-dir /tmp/proofrail-silver-control-crosswalk-protected-action-catalog-v0.3.6 \
+  --force \
+  --self-validate
+```
+
+What the runner does, in order:
+
+1. Phase A preflight on `--input-pack` runs five ordered, mutually exclusive checks, each emitting one of the five runner-only refusal reasons (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`). Phase A never touches the output directory and never creates a staging sibling.
+2. Stages the package under `<output-dir>.staging.<pid>`.
+3. Byte-copies the input control pack to `<staging>/control-pack.json` (subject [0], role `control_pack`).
+4. Re-derives the conformance report deterministically as canonical JSON bytes (`sort_keys=True`, `separators=(",",":"))` plus a trailing newline) — 24 entries, one per approved verifier check, each `status: pass` — and writes it to `<staging>/silver-control-crosswalk-protected-action-catalog-conformance-report.json` (subject [1], role `conformance_report`).
+5. Writes the 2-subject manifest at `<staging>/silver-control-crosswalk-protected-action-catalog-manifest.json` with `proofrail_release: silver.control_crosswalk.v0.3.6`, `hash_algorithm: sha256`, and a `control_pack_id` cross-anchored to the control pack body.
+6. With `--self-validate`, subprocess-invokes the v0.3.6 verifier on the staged manifest BEFORE the atomic move. The runner relays the verifier's OWN stable failure reason UNCHANGED and does NOT wrap it in a sixth runner-only code. On self-validation failure the staging directory is removed and `--output-dir` is left untouched.
+7. Atomic publish: only AFTER staging build and (optional) self-validation succeed does the runner remove an existing `--output-dir` (required `--force`) and `os.replace()` the staging directory into place.
+
+Runner-only refusal reasons (5):
+
+| Reason | Triggered when |
+|---|---|
+| `runner_input_path_missing` | `--input-pack` argv is missing or empty |
+| `runner_input_path_forbidden` | `--input-pack` is an absolute path or contains a `..` segment |
+| `runner_input_file_missing` | `--input-pack` relative path does not exist on disk |
+| `runner_input_read_failed` | `--input-pack` path is a directory or otherwise unreadable |
+| `runner_input_json_invalid` | `--input-pack` file is not valid UTF-8 JSON |
+
+The runner never wraps a verifier failure in a sixth runner-only code. The regression test explicitly asserts that no `runner_self_validation_failed` (or any other sixth wrapper) is ever emitted.
+
+Exit codes: 0 (success), 1 (package refused, self-validation failed, or verifier relay), 2 (usage/input error).
+
+## Silver Control Crosswalk + Protected Action Catalog Verifier (v0.3.6)
+
+Validates a v0.3.6 Silver Control Crosswalk + Protected Action Catalog package. Pure-stdlib. Non-masking ordering: all 24 ordered structural checks against the control pack body run BEFORE the conformance-report byte-image re-derivation. The verifier owns every check; no subprocess invocations.
+
+```bash
+python3 tools/silver/verify_silver_control_crosswalk_protected_action_catalog_v0_1_0.py \
+  --manifest /tmp/proofrail-silver-control-crosswalk-protected-action-catalog-v0.3.6/silver-control-crosswalk-protected-action-catalog-manifest.json
+```
+
+Ordered verifier checks (25 numbered execution steps mapping to 24 stable failure reasons; subject [1] conformance-report disagreement and `manifest.control_pack_id` cross-anchor mismatch both fold to `control_pack_manifest_invalid`; no OR-accept):
+
+1. Parse manifest JSON, re-anchor subjects, and cross-anchor `manifest.control_pack_id` against the control pack body (`control_pack_manifest_invalid`).
+2. Subject [0] (control pack) top-level is a JSON object (`control_pack_not_object`).
+3. Subject [0] `document_type` / `schema_version` shape (`control_pack_schema_invalid`).
+4. Subject [0] `profile` equals `silver.control_crosswalk.v0.3.6` (`control_pack_profile_unsupported`).
+5. Subject [0] `package_owner` / `relying_party` / `catalog_authority` identity blocks (`control_pack_identity_invalid`).
+6. Subject [0] `protected_action_catalog` non-empty list (`protected_action_catalog_invalid`).
+7. Each catalog entry's required descriptor fields (`protected_action_entry_invalid`).
+8. Each catalog entry's `action_id` grammar (`protected_action_identifier_invalid`).
+9. Each catalog entry's `category` / `environment_scope` / `actor_scope` in closed enums (`protected_action_scope_invalid`).
+10. Each catalog entry's `authority` block (closed posture, delegation boolean, scoped principals) (`protected_action_authority_invalid`).
+11. Each catalog entry's `risk_boundary` block (closed risk class, blast radius, rationale) (`protected_action_risk_boundary_invalid`).
+12. Subject [0] `control_crosswalk` non-empty list (`control_crosswalk_invalid`).
+13. Each crosswalk entry's required descriptor fields (`crosswalk_entry_invalid`).
+14. Catalog/crosswalk consistency: every crosswalk `action_id` resolves to a catalog entry and vice versa (`catalog_crosswalk_consistency_invalid`).
+15. Each crosswalk entry's `artifact_type` in the closed 43-entry ProofRail artifact_type set; `artifact_path` relative and free of `..` (`proofrail_artifact_reference_invalid`).
+16. Each crosswalk entry's `relationship` in the closed evidence-relationship enum (`evidence_relationship_invalid`).
+17. Each crosswalk entry's `control_concept_id` grammar (`control_concept_reference_invalid`).
+18. Each crosswalk entry's `control_objective` non-empty (`control_objective_invalid`).
+19. Each crosswalk entry's `claim.verb` in the closed claim-verb set and `claim.scope_text` non-empty (`control_claim_invalid`).
+20. Each `control_limitations[i]` shape (closed domain enum) (`control_limitation_invalid`).
+21. Each `dependency_references[i]` shape (closed reference_type enum) (`dependency_reference_invalid`).
+22. Each `version_bindings[i]` shape (closed Silver upstream_id set) (`version_binding_invalid`).
+23. Subject [0] `scope_limitations` and `non_claims` non-empty lists of non-empty strings (`non_claims_missing`).
+24. Subject [0] recursive prohibited-token scan outside `scope_limitations`, `non_claims`, and `control_limitations` for the 32 forbidden positive tokens (`prohibited_compliance_claim_present`).
+25. Subject [1] conformance-report parse and byte-identical re-derivation; any disagreement folds back to `control_pack_manifest_invalid` (no twenty-fifth public reason is introduced).
+
+After the 24 structural checks, the verifier parses subject [1] and deterministically re-derives the expected canonical-JSON byte image from the verified subject [0]. Any byte-image disagreement folds to `control_pack_manifest_invalid` (the bundled report does not describe a passing verification of this control pack). This ordering is non-masking: subject [0] structural problems always surface as their own dedicated reasons, not as a downstream report disagreement.
+
+Stable verifier failure reasons (24 total):
+
+| Reason | Triggered when |
+|---|---|
+| `control_pack_manifest_invalid` | Manifest unparseable / wrong document_type / wrong proofrail_release / wrong hash_algorithm / wrong schema_version / wrong subject count / wrong subject roles / wrong subject paths / wrong subject sha256 / wrong subject size_bytes, OR `manifest.control_pack_id` disagrees with the control pack body, OR subject [1] conformance report disagrees byte-for-byte with the re-derivation |
+| `control_pack_not_object` | Subject [0] does not parse to a top-level JSON object |
+| `control_pack_schema_invalid` | Subject [0] `document_type` is wrong, or `schema_version` is wrong |
+| `control_pack_profile_unsupported` | Subject [0] `profile` is not `silver.control_crosswalk.v0.3.6` |
+| `control_pack_identity_invalid` | Subject [0] `package_owner` / `relying_party` / `catalog_authority` identity_id / display_name / role missing or empty |
+| `protected_action_catalog_invalid` | Subject [0] `protected_action_catalog` empty, missing, or not a list of objects |
+| `protected_action_entry_invalid` | Subject [0] a catalog entry is missing one of `action_id` / `description` / `category` / `environment_scope` / `actor_scope` / `authority` / `risk_boundary` |
+| `protected_action_identifier_invalid` | Subject [0] a catalog entry's `action_id` does not match the lowercase dotted identifier grammar |
+| `protected_action_scope_invalid` | Subject [0] a catalog entry's `category` / `environment_scope` / `actor_scope` is outside its closed enum |
+| `protected_action_authority_invalid` | Subject [0] a catalog entry's `authority.posture` is outside the closed posture set, or `delegation_allowed` is not a boolean, or `scoped_principals` is empty / contains a non-string |
+| `protected_action_risk_boundary_invalid` | Subject [0] a catalog entry's `risk_boundary.risk_class` is outside the closed risk-class set, or `blast_radius` / `rationale` empty |
+| `control_crosswalk_invalid` | Subject [0] `control_crosswalk` empty, missing, or not a list of objects |
+| `crosswalk_entry_invalid` | Subject [0] a crosswalk entry is missing one of `mapping_id` / `action_id` / `artifact_type` / `artifact_path` / `relationship` / `control_concept_id` / `control_objective` / `claim` |
+| `catalog_crosswalk_consistency_invalid` | Subject [0] a crosswalk `action_id` does not resolve to a catalog entry, or a catalog entry's `action_id` is unreferenced |
+| `proofrail_artifact_reference_invalid` | Subject [0] a crosswalk entry's `artifact_type` is outside the closed 43-entry ProofRail artifact_type set, or `artifact_path` is absolute or contains `..` |
+| `evidence_relationship_invalid` | Subject [0] a crosswalk entry's `relationship` is outside the closed evidence-relationship enum |
+| `control_concept_reference_invalid` | Subject [0] a crosswalk entry's `control_concept_id` does not match the lowercase dotted identifier grammar |
+| `control_objective_invalid` | Subject [0] a crosswalk entry's `control_objective` is empty or non-string |
+| `control_claim_invalid` | Subject [0] a crosswalk entry's `claim.verb` is outside the closed `may_inform` / `may_evidence` / `may_support` set, or `claim.scope_text` is empty |
+| `control_limitation_invalid` | Subject [0] a `control_limitations[i]` is missing `limitation_id` / `summary`, or `domain` is outside the closed control-limitation domain enum |
+| `dependency_reference_invalid` | Subject [0] a `dependency_references[i]` is missing `dependency_id` / `upstream_id` / `upstream_version`, or `reference_type` is outside the closed reference-type enum |
+| `version_binding_invalid` | Subject [0] a `version_bindings[i]` is missing `binding_id` / `upstream_version`, or `upstream_id` is outside the closed Silver upstream_id set |
+| `non_claims_missing` | Subject [0] `scope_limitations` or `non_claims` empty, missing, not a list, or contains a non-string / blank entry |
+| `prohibited_compliance_claim_present` | Any string value in subject [0] OUTSIDE `scope_limitations`, `non_claims`, and `control_limitations` contains a forbidden positive token |
 
 The five runner-only refusal codes (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`) are **never** emitted by the verifier.
 

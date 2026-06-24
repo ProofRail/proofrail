@@ -1,0 +1,102 @@
+{
+  "document_type": "proofrail.silver.control_crosswalk_protected_action_catalog",
+  "schema_version": "v0.1.0",
+  "profile": "silver.control_crosswalk.v0.3.6",
+  "control_pack_id": "proofrail-silver-control-crosswalk-protected-action-catalog-demo-003",
+  "package_owner": {
+    "identity_id": "proofrail/demo-package-owner",
+    "display_name": "ProofRail demo package owner",
+    "role": "package_owner"
+  },
+  "relying_party": {
+    "identity_id": "proofrail/demo-relying-party",
+    "display_name": "ProofRail demo relying party",
+    "role": "relying_party"
+  },
+  "catalog_authority": {
+    "identity_id": "proofrail/demo-catalog-authority",
+    "display_name": "ProofRail demo catalog authority",
+    "role": "catalog_authority"
+  },
+  "protected_action_catalog": [
+    {
+      "action_id": "data.export",
+      "description": "Export of a designated customer dataset to an external sink.",
+      "category": "data",
+      "environment_scope": "production",
+      "actor_scope": "agent",
+      "authority": {
+        "posture": "scoped_delegation",
+        "delegation_allowed": true,
+        "scoped_principals": ["data.steward"]
+      },
+      "risk_boundary": {
+        "risk_class": "high",
+        "blast_radius": "egress_of_sensitive_records",
+        "rationale": "Triggers external disclosure of regulated records."
+      }
+    }
+  ],
+  "control_crosswalk": [
+    {
+      "mapping_id": "map-001",
+      "action_id": "data.export",
+      "artifact_type": "silver_trace_binding_manifest",
+      "artifact_path": "fixtures/silver-trace-binding/silver-trace-binding-manifest.json",
+      "relationship": "binds_trace",
+      "control_concept_id": "actuation.observability",
+      "control_objective": "Show that protected-action attempts are bound to observable trace events.",
+      "claim": {
+        "verb": "may_evidence",
+        "scope_text": "Silver trace-binding may show trace coverage for data.export."
+      }
+    }
+  ],
+  "control_limitations": [
+    {
+      "limitation_id": "lim-001",
+      "summary": "v0.3.6 does not decide control adequacy; relying parties remain accountable for their own decisions.",
+      "domain": "control_decision"
+    },
+    {
+      "limitation_id": "lim-002",
+      "summary": "External framework references in this pack are example-only; they do not imply mapping sufficiency, certification, audit approval, or regulator acceptance, and are recorded here only to disclaim those connections.",
+      "domain": "framework_mapping"
+    },
+    {
+      "limitation_id": "lim-003",
+      "summary": "Pack contents are version-bound; later release lines may alter both catalog and crosswalk semantics.",
+      "domain": "version_binding"
+    },
+    {
+      "limitation_id": "lim-004",
+      "summary": "Catalog actor scopes are illustrative and do not capture every operational role downstream relying parties may need.",
+      "domain": "scope_coverage"
+    },
+    {
+      "limitation_id": "lim-005",
+      "summary": "Crosswalk relationships are evidence-shape descriptors; they do not declare control design effectiveness or operating effectiveness.",
+      "domain": "evidence_shape"
+    }
+  ],
+  "dependency_references": [],
+  "version_bindings": [
+    {
+      "binding_id": "bind-001",
+      "upstream_id": "silver.trace_binding_profile",
+      "upstream_version": "v0.3.2"
+    }
+  ],
+  "scope_limitations": [
+    "This package is example data; it does not anchor a production reliance decision.",
+    "Limitations block is exhaustive within the demo's scope and does not enumerate every external concern."
+  ],
+  "non_claims": [
+    "v0.3.6 does not claim compliance with any framework (SOC 2, ISO, NIST, PCI, HIPAA, or other).",
+    "v0.3.6 does not claim certification or audit readiness.",
+    "v0.3.6 does not claim regulator approval, auditor approval, or production authorization.",
+    "v0.3.6 does not claim control design or operating effectiveness.",
+    "v0.3.6 does not claim legal enforceability or transferred trust.",
+    "v0.3.6 does not claim runtime truth or governed reliance; Gold governance remains a later release boundary."
+  ]
+}

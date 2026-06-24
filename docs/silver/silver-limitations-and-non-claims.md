@@ -596,6 +596,38 @@ The v0.3.5 Relying-Party Policy Pack package is **not**:
 
 ---
 
+## v0.3.6 Control Crosswalk + Protected Action Catalog Non-Claims
+
+Silver v0.3.6 introduces a deterministic local hand-authored evidence primitive — a control pack declaring a closed-vocabulary protected action catalog and a closed crosswalk of those actions to ProofRail-internal evidence artifacts under conservative claim verbs — paired with a byte-for-byte re-derivable conformance report and a 2-subject manifest. v0.3.6 introduces no new signature scheme, trust authority, runtime substrate, or evaluation of any specific upstream Silver evidence.
+
+The v0.3.6 Control Crosswalk + Protected Action Catalog package is:
+
+- **Hand-authored control text.** The control pack is a single relying-party-authored declaration of a closed protected action catalog and a closed crosswalk to ProofRail-internal `artifact_type` values under conservative claim verbs (`may_inform`, `may_evidence`, `may_support`). v0.3.6 packages it; v0.3.6 does not evaluate it against any specific upstream evidence in this release.
+- **Closed-vocabulary.** Catalog `category`, `environment_scope`, `actor_scope`, `authority.posture`, `risk_boundary.risk_class`, crosswalk `artifact_type` (43-entry ProofRail set), `relationship`, `claim.verb`, `control_limitations[].domain`, `dependency_references[].reference_type`, and `version_bindings[].upstream_id` are governed by closed enum sets enforced inside the verifier.
+- **Structurally validated.** The verifier runs 24 ordered structural checks against the control pack body covering manifest integrity, document identity, declaring identity, policy authority, scope, the protected action catalog and per-entry shape, the crosswalk and per-entry artifact_type / relationship / claim verb / catalog references, risk boundary, control limitations, dependency references, version bindings, `scope_limitations` and `non_claims` presence, a 32-token prohibited-claim guard, and the manifest's cross-anchored `control_pack_id`.
+- **Conservatively framed.** The crosswalk claim verb set is closed and conservative: `may_inform`, `may_evidence`, `may_support`. The closed enum surface deliberately excludes verbs that would assert control design effectiveness, control operating effectiveness, or external framework mapping.
+- **Deterministically derived.** The conformance report's canonical-JSON byte image depends only on the verified control pack; the verifier byte-compares the bundled report against its own re-derivation and rejects any disagreement.
+- **Non-masking.** All 23 dedicated structural checks run BEFORE the conformance report is parsed; dedicated subject [0] failures are never masked behind a downstream report-disagreement reason. Conformance-report byte disagreement folds back to the verifier's `control_pack_manifest_invalid` reason; no twenty-fifth public reason is introduced.
+- **Self-validated before atomic move.** With `--self-validate`, the runner subprocess-invokes the v0.3.6 verifier against the staging directory **before** `os.replace()`. On failure it removes staging, leaves the destination untouched, and **relays the verifier's OWN failure reason UNCHANGED** — the runner never wraps a verifier failure in a sixth runner-only code. A refused run leaves no final directory and no staging sibling, so the Make target is safely repeatable.
+- **Stable refusal taxonomy.** The runner emits only the five Phase A refusal reasons (`runner_input_path_missing`, `runner_input_path_forbidden`, `runner_input_file_missing`, `runner_input_read_failed`, `runner_input_json_invalid`); the verifier emits only the 24 approved verifier-side reasons. There is no sixth wrapper code anywhere in the v0.3.6 taxonomy.
+
+The v0.3.6 Control Crosswalk + Protected Action Catalog package is **not**:
+
+- A regulator approval, auditor approval, or third-party endorsement of the catalog, the crosswalk, or the relying party.
+- A SOC 2, ISO 27001, NIST 800-53, PCI DSS, HIPAA, or any other external framework mapping. The closed enum surface deliberately excludes external framework names; the prohibited-claim guard rejects them anywhere outside `scope_limitations`, `non_claims`, and `relying_party.contact`.
+- A control design effectiveness opinion or a control operating effectiveness opinion. The closed claim verb set excludes effectiveness verbs; the prohibited-claim guard rejects effectiveness tokens.
+- A certification or compliance attestation of the control pack.
+- A Gold artifact, a Gold conformance claim, or an advance of the Gold boundary.
+- An evaluation of any specific upstream Silver evidence (composed-gateway evidence, trace-binding evidence, acceptance record, revocation-challenge drill, handoff, inspector, adapter pilot, attestation, verifier output, issuer, challenge, or withdrawal record) against the hand-authored catalog. v0.3.6 packages catalog declarations; v0.3.6 does not adjudicate them against runtime evidence in this release.
+- A reliance instrument. v0.3.6 does not issue, transfer, or accept any reliance against the catalog.
+- Legally enforceable on the relying party or any counterparty.
+- A signed Silver artifact. v0.3.6 ships local hash anchors only.
+- An extension of the substance of any earlier-release Silver evidence. v0.3.6 emits an additional Silver evidence artifact; it does not modify v0.2.7 / v0.2.8 / v0.2.9 / v0.3.0 / v0.3.1 / v0.3.2 / v0.3.3 / v0.3.4 / v0.3.5 semantics.
+
+> v0.3.6 packages a deterministic local hand-authored protected action catalog and crosswalk alongside a re-derivable structural-conformance report. It does not approve the catalog, does not audit the catalog, does not certify the catalog, does not map the catalog to any external framework, does not opine on control design or operating effectiveness, does not evaluate the catalog against any specific upstream Silver evidence in this release, does not issue or transfer reliance, is not legally enforceable, and does not extend the substance of any earlier-release Silver evidence.
+
+---
+
 ## Summary
 
 Silver v0.1.7 is significant because it makes ProofRail evidence portable, signed, revocable, reportable, and independently verifiable.

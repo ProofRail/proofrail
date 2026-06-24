@@ -1,0 +1,230 @@
+{
+  "document_type": "proofrail.silver.control_crosswalk_protected_action_catalog",
+  "schema_version": "v0.1.0",
+  "profile": "silver.control_crosswalk.v0.3.6",
+  "control_pack_id": "proofrail-silver-control-crosswalk-protected-action-catalog-demo-001",
+  "package_owner": {
+    "identity_id": "proofrail/demo-package-owner",
+    "display_name": "ProofRail demo package owner",
+    "role": "package_owner"
+  },
+  "relying_party": {
+    "identity_id": "proofrail/demo-relying-party",
+    "display_name": "ProofRail demo relying party",
+    "role": "relying_party"
+  },
+  "catalog_authority": {
+    "identity_id": "proofrail/demo-catalog-authority",
+    "display_name": "ProofRail demo catalog authority",
+    "role": "catalog_authority"
+  },
+  "protected_action_catalog": [
+    {
+      "action_id": "payment.release",
+      "description": "Release of an outbound payment for settlement.",
+      "category": "financial",
+      "environment_scope": "production",
+      "actor_scope": "human",
+      "authority": {
+        "posture": "joint_principal",
+        "delegation_allowed": false,
+        "scoped_principals": ["finance.controller", "treasury.lead"]
+      },
+      "risk_boundary": {
+        "risk_class": "critical",
+        "blast_radius": "external_funds_transfer",
+        "rationale": "Funds leave the controlled boundary irreversibly."
+      }
+    },
+    {
+      "action_id": "vendor.approve",
+      "description": "Approve a new vendor to the procurement allowlist.",
+      "category": "vendor",
+      "environment_scope": "production",
+      "actor_scope": "human",
+      "authority": {
+        "posture": "scoped_delegation",
+        "delegation_allowed": true,
+        "scoped_principals": ["procurement.manager"]
+      },
+      "risk_boundary": {
+        "risk_class": "high",
+        "blast_radius": "procurement_allowlist_grants",
+        "rationale": "Affects downstream invoice processing surface."
+      }
+    },
+    {
+      "action_id": "data.export",
+      "description": "Export of a designated customer dataset to an external sink.",
+      "category": "data",
+      "environment_scope": "production",
+      "actor_scope": "agent",
+      "authority": {
+        "posture": "scoped_delegation",
+        "delegation_allowed": true,
+        "scoped_principals": ["data.steward"]
+      },
+      "risk_boundary": {
+        "risk_class": "high",
+        "blast_radius": "egress_of_sensitive_records",
+        "rationale": "Triggers external disclosure of regulated records."
+      }
+    },
+    {
+      "action_id": "deploy.change",
+      "description": "Promote a release artifact into the production environment.",
+      "category": "deployment",
+      "environment_scope": "production",
+      "actor_scope": "mixed",
+      "authority": {
+        "posture": "scoped_delegation",
+        "delegation_allowed": true,
+        "scoped_principals": ["release.manager"]
+      },
+      "risk_boundary": {
+        "risk_class": "high",
+        "blast_radius": "production_serving_path",
+        "rationale": "Modifies the production user-facing surface."
+      }
+    },
+    {
+      "action_id": "admin.rotate_secret",
+      "description": "Rotation of a long-lived administrative secret.",
+      "category": "identity",
+      "environment_scope": "production",
+      "actor_scope": "system",
+      "authority": {
+        "posture": "principal_only",
+        "delegation_allowed": false,
+        "scoped_principals": ["security.admin"]
+      },
+      "risk_boundary": {
+        "risk_class": "critical",
+        "blast_radius": "loss_of_administrative_authentication",
+        "rationale": "Mis-rotation can lock out administrative recovery."
+      }
+    }
+  ],
+  "control_crosswalk": [
+    {
+      "mapping_id": "map-001",
+      "action_id": "payment.release",
+      "artifact_type": "bronze_claim",
+      "artifact_path": "fixtures/bronze-claim/payment-release-claim.yaml",
+      "relationship": "declares",
+      "control_concept_id": "actuation.declared_set",
+      "control_objective": "Declare the closed set of protected actuators that this profile mediates.",
+      "claim": {
+        "verb": "may_inform",
+        "scope_text": "ProofRail evidence may inform whether a protected actuator declaration is present for payment.release."
+      }
+    },
+    {
+      "mapping_id": "map-002",
+      "action_id": "vendor.approve",
+      "artifact_type": "silver_composed_gateway_evidence_manifest",
+      "artifact_path": "fixtures/silver-composed-gateway-evidence/composed-gateway-evidence-manifest.json",
+      "relationship": "mediates",
+      "control_concept_id": "actuation.mediation",
+      "control_objective": "Show that protected-action attempts traverse the declared gateway.",
+      "claim": {
+        "verb": "may_evidence",
+        "scope_text": "Composed-gateway evidence may show mediation of vendor.approve through the declared gateway."
+      }
+    },
+    {
+      "mapping_id": "map-003",
+      "action_id": "data.export",
+      "artifact_type": "silver_trace_binding_manifest",
+      "artifact_path": "fixtures/silver-trace-binding/silver-trace-binding-manifest.json",
+      "relationship": "binds_trace",
+      "control_concept_id": "actuation.observability",
+      "control_objective": "Show that protected-action attempts are bound to observable trace events.",
+      "claim": {
+        "verb": "may_evidence",
+        "scope_text": "Silver trace-binding may show trace coverage for data.export."
+      }
+    },
+    {
+      "mapping_id": "map-004",
+      "action_id": "deploy.change",
+      "artifact_type": "silver_relying_party_acceptance_record",
+      "artifact_path": "fixtures/silver-relying-party-acceptance/acceptance-record.json",
+      "relationship": "records_acceptance",
+      "control_concept_id": "actuation.acceptance_decision",
+      "control_objective": "Record a relying-party acceptance decision against composed gateway evidence.",
+      "claim": {
+        "verb": "may_support",
+        "scope_text": "A relying-party acceptance record may support a downstream review of deploy.change scope."
+      }
+    },
+    {
+      "mapping_id": "map-005",
+      "action_id": "admin.rotate_secret",
+      "artifact_type": "silver_revocation_challenge_drill_report",
+      "artifact_path": "fixtures/silver-revocation-challenge-drill/revocation-challenge-drill-report.json",
+      "relationship": "records_review",
+      "control_concept_id": "actuation.post_acceptance_review",
+      "control_objective": "Record post-acceptance review triggers and recommended local posture.",
+      "claim": {
+        "verb": "may_inform",
+        "scope_text": "Drill records may inform a later review of admin.rotate_secret governance scope."
+      }
+    }
+  ],
+  "control_limitations": [
+    {
+      "limitation_id": "lim-001",
+      "summary": "ProofRail v0.3.6 supplies machine-checkable evidence only; it does not decide control adequacy.",
+      "domain": "control_decision"
+    },
+    {
+      "limitation_id": "lim-002",
+      "summary": "External framework references are example-only and do not imply mapping sufficiency.",
+      "domain": "framework_mapping"
+    },
+    {
+      "limitation_id": "lim-003",
+      "summary": "Catalog and crosswalk are version-bound and are not a perpetual statement.",
+      "domain": "version_binding"
+    }
+  ],
+  "dependency_references": [
+    {
+      "dependency_id": "dep-001",
+      "reference_type": "upstream_silver_profile",
+      "upstream_id": "silver.relying_party_policy_pack.v0.3.5",
+      "upstream_version": "v0.3.5",
+      "relationship_note": "v0.3.6 catalog and crosswalk presume v0.3.5 policy-pack semantics."
+    }
+  ],
+  "version_bindings": [
+    {
+      "binding_id": "bind-001",
+      "upstream_id": "silver.composed_gateway_evidence",
+      "upstream_version": "v0.2.7"
+    },
+    {
+      "binding_id": "bind-002",
+      "upstream_id": "silver.trace_binding_profile",
+      "upstream_version": "v0.3.2"
+    },
+    {
+      "binding_id": "bind-003",
+      "upstream_id": "silver.relying_party_policy_pack",
+      "upstream_version": "v0.3.5"
+    }
+  ],
+  "scope_limitations": [
+    "This package is example data; it does not anchor a production reliance decision.",
+    "Action IDs are illustrative; downstream relying parties define their own protected action surface."
+  ],
+  "non_claims": [
+    "v0.3.6 does not claim compliance with any framework including SOC 2, ISO, NIST, PCI, or HIPAA.",
+    "v0.3.6 does not claim certification, audit readiness, or auditor approval.",
+    "v0.3.6 does not claim regulator approval or production authorization.",
+    "v0.3.6 does not claim control design effectiveness or operating effectiveness.",
+    "v0.3.6 does not claim legal enforceability or transferred trust.",
+    "v0.3.6 does not claim runtime truth or governed reliance; Gold governance remains a later release boundary."
+  ]
+}
