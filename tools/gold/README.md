@@ -154,3 +154,15 @@ vocabulary and validates structural shape, binding, and conformance
 report byte-equality only. It does not consult any live service,
 gateway, observability backend, policy engine, GRC platform, or
 external registry. It is not signed and ships local hash anchors only.
+
+## v0.4.1 Note
+
+v0.4.1 is a narrow Gold maintenance release (Gold Decision Report
+Hardening) that re-projects the unchanged v0.4.0 package body into a
+deterministic local decision report and binds it under a 3-subject
+manifest. v0.4.1 does not introduce a new Gold tier, is not signed,
+is not a certificate, and does not extend the substance of the v0.4.0
+body. The v0.4.1 release narrative
+(`docs/gold/gold-decision-report-hardening-v0.4.1.md`) holds the
+v0.4.1 reason surface, reachability orderings, runner architecture,
+and non-claims.

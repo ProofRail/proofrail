@@ -214,6 +214,17 @@ release, see `CLAUDE.md`.
 
 ---
 
+## Gold v0.4.1
+
+- **Demo:** `demos/gold-demo-002-decision-report-hardening/`. Runtime under `/tmp/proofrail-gold-decision-report-hardening-v0.4.1/`.
+- **Scope:** narrow Gold maintenance release — Gold Decision Report Hardening. Re-projects the unchanged v0.4.0 governed-reliance package body into a deterministic local Gold decision report, paired with the v0.4.0 conformance report and bound by a 3-subject manifest.
+- **Architecture:** v0.4.1 runner subprocesses the unchanged v0.4.0 runner to produce subjects [0] and [1] in a tempdir, then byte-copies them under the staging directory and derives the v0.4.1 decision report as subject [2]; v0.4.1 verifier subprocesses the co-located v0.4.0 verifier on a synthesized 2-subject v0.4.0 manifest and adds five v0.4.1-owned structural checks over the decision report; staging-then-replace; relays verifier failures unchanged on `--self-validate`.
+- **Test:** `test_gold_decision_report_hardening_v0_4_1.sh` (61 exercises). TG1 ships with a closed five-entry allowlist limited to exact `coverage_summary` data-field names and an environmental-wrapper deny-list constructed via string concatenation to prevent self-trip.
+- **Reference:** `docs/gold/gold-decision-report-hardening-v0.4.1.md` holds the full reason surface (24 inherited + 5 v0.4.1-owned), reachability orderings, identifier-grammar ownership split, subprocess-delegation architecture, TG1 allowlist discipline, and non-claims.
+- **Non-claims:** Unsigned; not a new Gold tier; not a certificate; not federated; not a transfer of reliance to any external party; does not claim regulator approval, auditor approval, legal acceptance, legal adjudication, legal enforceability, compliance certification, production authorization, production governance, production PKI, audit readiness, or control operating / design effectiveness; does not consult any live service; does not perform end-to-end re-verification of the upstream Silver evidence chain; does not extend the substance of the v0.4.0 body; not full Gold; not Platinum; does not represent runtime truth.
+
+---
+
 ## Next release
 
 - **v0.4.x onward:** not yet planned. Future Gold-tier releases will extend the Minimal Gold Governed Reliance Demo surface.

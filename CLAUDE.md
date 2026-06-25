@@ -94,3 +94,7 @@ See `docs/dev/silver-release-index.md`.
 ### Gold Governed Reliance Demo: `demos/gold-demo-001-governed-reliance/`
 
 See `docs/dev/silver-release-index.md` and `docs/gold/minimal-gold-governed-reliance-v0.4.0.md`.
+
+### Gold Decision Report Hardening Package: `demos/gold-demo-002-decision-report-hardening/`
+
+See `docs/gold/gold-decision-report-hardening-v0.4.1.md`.

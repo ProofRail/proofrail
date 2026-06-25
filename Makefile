@@ -439,6 +439,25 @@ run-gold-governed-reliance-v0-4-0:
 verify-gold-governed-reliance-v0-4-0:
 	bash tests/test_gold_governed_reliance_v0_4_0.sh
 
+.PHONY: run-gold-decision-report-hardening-v0-4-1
+run-gold-decision-report-hardening-v0-4-1:
+	python3 tools/gold/build_gold_decision_report_hardening_v0_1_0.py \
+	  --input-package fixtures/gold-governed-reliance-v0.4.0/governed-reliance-scenarios.json \
+	  --manifest-id proofrail-gold-decision-report-manifest-demo-001 \
+	  --conformance-report-id proofrail-gold-decision-report-conformance-demo-001 \
+	  --decision-report-id proofrail-gold-decision-report-demo-001 \
+	  --generated-at 2026-08-15T00:30:00Z \
+	  --output-dir /tmp/proofrail-gold-decision-report-hardening-v0.4.1 \
+	  --force \
+	  --self-validate
+	python3 tools/gold/verify_gold_decision_report_hardening_v0_1_0.py \
+	  --manifest /tmp/proofrail-gold-decision-report-hardening-v0.4.1/gold-decision-report-package-manifest.json
+
+.PHONY: verify-gold-decision-report-hardening-v0-4-1
+verify-gold-decision-report-hardening-v0-4-1:
+	bash tests/test_gold_decision_report_hardening_v0_4_1.sh
+
 .PHONY: verify-gold-all
 verify-gold-all:
 	$(MAKE) verify-gold-governed-reliance-v0-4-0
+	$(MAKE) verify-gold-decision-report-hardening-v0-4-1

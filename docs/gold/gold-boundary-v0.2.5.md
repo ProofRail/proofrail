@@ -434,3 +434,11 @@ A Minimal Gold Governed Reliance Demo package is not a Gold certificate, signed 
 v0.4.0 records hand-authored governed reliance decisions composed from Silver-shaped inputs. It does not approve, audit, certify, federate, proof identity, evaluate, adjudicate, issue, transfer, or accept reliance to any external party.
 
 v0.4.0 names the first Gold-tier release. It establishes the Minimal Gold boundary. It does not claim full Gold.
+
+## v0.4.1 Notes
+
+v0.4.1 is a narrow Gold maintenance release: Gold Decision Report Hardening. It re-projects the unchanged v0.4.0 governed-reliance package body into a deterministic local Gold decision report, paired with the v0.4.0 conformance report and bound by a 3-subject manifest cross-anchored to the v0.4.0 body and to the v0.4.0 conformance report.
+
+v0.4.1 does not introduce a new Gold tier. It does not add new Silver-shaped inputs. It does not extend the substance of the v0.4.0 body. It is not signed; v0.4.1 ships local hash anchors only. It is not a certificate, not federated, and not a transfer of reliance to any external party. It does not claim regulator approval, auditor approval, third-party endorsement, legal acceptance, legal adjudication, legal enforceability, compliance certification, production authorization, production governance, production PKI, audit readiness, or control operating / design effectiveness. It does not consult any live service, gateway, observability backend, policy engine, GRC platform, or external registry; it validates structural shape, cross-anchor binding, row-level projection, and coverage-summary re-derivation only. It does not perform end-to-end re-verification of the upstream Silver evidence chain; the v0.4.0 body's five Silver-shaped input blocks remain structural pointers under closed input-type and ref grammar only.
+
+The v0.4.0 boundary inventoried in §5 still holds. v0.4.1 hardens the v0.4.0 decision-report surface; it does not satisfy the multi-stakeholder commitments enumerated in §5 above. See `docs/gold/gold-decision-report-hardening-v0.4.1.md` for the full release narrative and the closed reason surface.
