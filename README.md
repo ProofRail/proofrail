@@ -10,9 +10,9 @@ ProofRail is not a gateway, SIEM, observability platform, GRC tool, policy engin
 
 ## Current Status
 
-Latest release: **v0.4.1 — Gold Decision Report Hardening**
+Latest release: **v0.4.2 — Gold Policy Evaluation Matrix**
 
-v0.4.1 is a narrow Gold maintenance release that hardens the v0.4.0 governed-reliance body into a deterministic local Gold decision report. The next planned release is **v0.4.2 — Gold Policy Evaluation Matrix**.
+v0.4.2 is a narrow Gold maintenance release that pairs the unchanged v0.4.0 governed-reliance body and v0.4.1 decision report with a deterministic local policy evaluation matrix and a byte-re-derivable policy evaluation report, bound by a 5-subject manifest.
 
 The Silver tier now provides the pre-Gold substrate needed to carry verified evidence toward governed reliance:
 
@@ -61,9 +61,9 @@ Silver began with signed verification of Bronze evidence and now includes the pr
 | v0.3.6 | Control Crosswalk + Protected Action Catalog. |
 | v0.3.7 | Registry Lite. |
 
-## Latest Release: v0.4.1 Gold Decision Report Hardening
+## Latest Release: v0.4.2 Gold Policy Evaluation Matrix
 
-v0.4.1 is a narrow Gold maintenance release. It re-projects the unchanged v0.4.0 governed-reliance package body into a deterministic local Gold decision report, paired with the v0.4.0 conformance report and bound by a 3-subject manifest. The underlying decision outcomes remain the closed v0.4.0 set:
+v0.4.2 is a narrow Gold maintenance release. It pairs the unchanged v0.4.0 governed-reliance package body and v0.4.1 decision report with a deterministic local policy evaluation matrix and a byte-re-derivable policy evaluation report, bound by a 5-subject manifest cross-anchored to the v0.4.0 body and to the v0.4.1 decision report. The underlying decision outcomes remain the closed v0.4.0 set:
 
 - accepted;
 - rejected;
@@ -71,17 +71,11 @@ v0.4.1 is a narrow Gold maintenance release. It re-projects the unchanged v0.4.0
 - withdrawn;
 - superseded.
 
-v0.4.1 does not introduce a new Gold tier, is not signed, is not a certificate, is not federated, is not a transfer of reliance to any external party, and does not extend the substance of the v0.4.0 body.
+v0.4.2 does not introduce a new Gold tier, is not signed, is not a certificate, is not federated, is not a transfer of reliance to any external party, does not consult any live policy engine, and does not extend the substance of the v0.4.0 body or the v0.4.1 decision report.
 
-The v0.4.1 release note is the best short summary:
+The v0.4.2 release note is the best short summary:
 
-- [ProofRail v0.4.1 release](https://github.com/ProofRail/proofrail/releases/tag/v0.4.1)
-
-## What Comes Next
-
-The next planned release is **v0.4.2 Gold Policy Evaluation Matrix**, a v0.4.x maintenance release that adds a deterministic local policy evaluation matrix and a byte-re-derivable policy evaluation report over the unchanged v0.4.0 governed-reliance body and v0.4.1 decision report.
-
-v0.4.2 is intentionally narrow. It should not become a live policy engine, certification system, federation, regulator workflow, or any surface beyond making local policy evaluation explicit, tabular, and independently re-derivable.
+- [ProofRail v0.4.2 release](https://github.com/ProofRail/proofrail/releases/tag/v0.4.2)
 
 ## Repository Map
 
@@ -125,8 +119,8 @@ python3 -m pytest tests/test_proofrail_claim.py
 Run the latest Gold target:
 
 ```bash
-make run-gold-decision-report-hardening-v0-4-1
-make verify-gold-decision-report-hardening-v0-4-1
+make run-gold-policy-evaluation-matrix-v0-4-2
+make verify-gold-policy-evaluation-matrix-v0-4-2
 ```
 
 Run the current Gold chain:
