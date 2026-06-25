@@ -10,9 +10,9 @@ ProofRail is not a gateway, SIEM, observability platform, GRC tool, policy engin
 
 ## Current Status
 
-Latest release: **v0.3.7 — Silver Registry Lite**
+Latest release: **v0.4.0 — Minimal Gold Governed Reliance Demo**
 
-v0.3.7 is the last planned Silver release for now. The next planned release is **v0.4.0 — Minimal Gold Governed Reliance Demo**.
+v0.4.0 is the first Gold-tier release. The next planned release is **v0.4.1 — Gold Decision Report Hardening**.
 
 The Silver tier now provides the pre-Gold substrate needed to carry verified evidence toward governed reliance:
 
@@ -37,7 +37,7 @@ ProofRail is an attempt to define that evidence/reliance layer one primitive at 
 | Iron-plus | Can a live control primitive mediate protected actions? | Reference proof of concept completed outside this public repo. |
 | Bronze | Can a deployment produce structured evidence that protected actions are controlled? | Public schemas, tools, and composed demo artifacts are present. |
 | Silver | Can a relying party verify that evidence package independently? | Current Silver line completed through v0.3.7. |
-| Minimal Gold | Can a Silver verification result become a governed reliance decision under explicit policy? | Planned next as v0.4.0. |
+| Minimal Gold | Can a Silver verification result become a governed reliance decision under explicit policy? | Completed at v0.4.0. |
 | Full Gold / Platinum | Can this scale to institutional assurance, federation, certification, and public-interest governance? | Concept-note territory only; no realized implementation claim yet. |
 
 ## What Silver Now Includes
@@ -61,28 +61,9 @@ Silver began with signed verification of Bronze evidence and now includes the pr
 | v0.3.6 | Control Crosswalk + Protected Action Catalog. |
 | v0.3.7 | Registry Lite. |
 
-## Latest Release: v0.3.7 Registry Lite
+## Latest Release: v0.4.0 Minimal Gold Governed Reliance Demo
 
-Registry Lite adds deterministic local registry fixtures for the entity roles needed to compose the Minimal Gold demo:
-
-- issuers;
-- verifiers;
-- relying parties;
-- policy authorities;
-- revocation sources;
-- protected-action authorities.
-
-Registry Lite gives the demo local identifiers and role bindings. It does not create production PKI, legal identity, federation, certification, regulator approval, auditor approval, production authorization, or Gold governed reliance.
-
-The v0.3.7 release note is the best short summary:
-
-- [ProofRail v0.3.7 release](https://github.com/ProofRail/proofrail/releases/tag/v0.3.7)
-
-## What Comes Next
-
-The next planned release is **v0.4.0 Minimal Gold Governed Reliance Demo**.
-
-Minimal Gold should show how a Silver verification result becomes one of several governed reliance outcomes under an explicit relying-party policy:
+v0.4.0 is the first Gold-tier release. It composes a deterministic local hand-authored record of 1..5 governed reliance decisions from Silver-shaped inputs (Silver verification result, Silver acceptance handoff, Silver relying-party policy pack, Silver registry lite, Silver control crosswalk) under one of the closed decision-status outcomes:
 
 - accepted;
 - rejected;
@@ -90,14 +71,19 @@ Minimal Gold should show how a Silver verification result becomes one of several
 - withdrawn;
 - superseded.
 
-The v0.4.0 demo should include:
+The package is structurally validated under 24 ordered checks and bound by a 2-subject manifest cross-anchored by `package_id` and `governed_reliance_demo_id`.
 
-- clean acceptance;
-- policy rejection despite Silver verification passing;
-- challenge filed;
-- withdrawal or supersession after challenge, revocation, or evidence defect.
+v0.4.0 is not a certificate, is not signed, is not federated, is not a transfer of reliance to any external party, and is not full Gold.
 
-Minimal Gold is intentionally narrow. It should not turn ProofRail into a broad governance platform, certification authority, compliance engine, or regulator substitute.
+The v0.4.0 release note is the best short summary:
+
+- [ProofRail v0.4.0 release](https://github.com/ProofRail/proofrail/releases/tag/v0.4.0)
+
+## What Comes Next
+
+The next planned release is **v0.4.1 Gold Decision Report Hardening**, a v0.4.x maintenance release narrowing and tightening the Gold decision report surface introduced by v0.4.0.
+
+v0.4.1 is intentionally narrow. It should not extend Gold into federation, certification, regulator workflow, multi-party governed reliance, or any other surface beyond hardening the existing v0.4.0 decision report.
 
 ## Repository Map
 
@@ -117,9 +103,9 @@ Minimal Gold is intentionally narrow. It should not turn ProofRail into a broad 
 
 If you are new to ProofRail:
 
-1. Read the [v0.3.7 release note](https://github.com/ProofRail/proofrail/releases/tag/v0.3.7).
+1. Read the [v0.4.0 release note](https://github.com/ProofRail/proofrail/releases/tag/v0.4.0).
 2. Review the [Silver release index](docs/dev/silver-release-index.md).
-3. Review [Registry Lite v0.3.7](docs/silver/silver-registry-lite-v0.3.7.md).
+3. Review [Minimal Gold Governed Reliance v0.4.0](docs/gold/minimal-gold-governed-reliance-v0.4.0.md).
 4. Review the [Gold boundary note](docs/gold/gold-boundary-v0.2.5.md).
 5. Review the [Silver tools README](tools/silver/README.md).
 6. For the original Bronze path, start with the [Bronze claim schema v0.1.2](schemas/bronze-claim-schema-v0.1.2.md) and the [Bronze claim tools README](tools/claims/README.md).
@@ -138,11 +124,17 @@ Run the core Bronze unit tests:
 python3 -m pytest tests/test_proofrail_claim.py
 ```
 
-Run the latest Silver target:
+Run the latest Gold target:
 
 ```bash
-make run-silver-registry-lite-v0-3-7
-make verify-silver-registry-lite-v0-3-7
+make run-gold-governed-reliance-v0-4-0
+make verify-gold-governed-reliance-v0-4-0
+```
+
+Run the current Gold chain:
+
+```bash
+make verify-gold-all
 ```
 
 Run the full Bronze + Silver chain:
@@ -151,7 +143,7 @@ Run the full Bronze + Silver chain:
 make verify-silver-all
 ```
 
-Note: the full chain may regenerate timestamped Bronze demo artifacts in a working tree. Maintainers should inspect `git status -sb` after running it.
+Note: the full Silver chain may regenerate timestamped Bronze demo artifacts in a working tree. Maintainers should inspect `git status -sb` after running it.
 
 ## Development And Maintainer Notes
 

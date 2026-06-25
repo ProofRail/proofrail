@@ -12,8 +12,8 @@ Spec + tooling repo, not a distributed package.
 
 ## Status
 
-- Latest committed release: Silver **v0.3.7** — Registry Lite.
-- Next planned release: **v0.4.0** — Minimal Gold.
+- Latest committed release: Gold **v0.4.0** — Minimal Gold Governed Reliance Demo.
+- Next planned release: **v0.4.1** — Gold Decision Report Hardening.
 
 ## Where to Find Things
 
@@ -21,7 +21,7 @@ Spec + tooling repo, not a distributed package.
 - `docs/dev/silver-command-index.md` — full command matrix (`make`
   targets, standalone tool invocations, regression-test paths).
 - `docs/dev/silver-release-index.md` — release-by-release architecture
-  (Bronze through Silver v0.3.7).
+  (Bronze through Gold v0.4.0).
 - `tools/silver/README.md` — per-tool reference.
 - `docs/silver/silver-*.md`, `docs/gold/gold-boundary-v0.2.5.md` —
   long-form release and Gold-boundary docs.
@@ -33,9 +33,10 @@ Spec + tooling repo, not a distributed package.
 ```bash
 pip install -r requirements.txt                       # deps
 python -m pytest tests/test_proofrail_claim.py        # Bronze unit tests
-make run-silver-registry-lite-v0-3-7                  # current runner
-make verify-silver-registry-lite-v0-3-7               # current verifier
-make verify-silver-all                                # full chain (regenerates Bronze runtime; do NOT run during docs-only work)
+make run-gold-governed-reliance-v0-4-0                # current runner
+make verify-gold-governed-reliance-v0-4-0             # current verifier
+make verify-gold-all                                  # current Gold chain
+make verify-silver-all                                # full Silver chain (regenerates Bronze runtime; do NOT run during docs-only work)
 git diff --check && git status -sb                    # hygiene
 ```
 
@@ -79,8 +80,8 @@ PyYAML and cryptography (Ed25519). No CI/CD or lint pipelines.
 
 ## Release Anchors
 
-Section markers required by the v0.3.6 and v0.3.7 TG1 drift-scan
-gates. Substance lives in `docs/dev/silver-release-index.md`.
+Section markers required by the v0.3.6, v0.3.7, and v0.4.0 TG1
+drift-scan gates. Substance lives in `docs/dev/silver-release-index.md`.
 
 ### Silver Control Crosswalk + Protected Action Catalog Package: `demos/silver-demo-013-control-crosswalk-protected-action-catalog/`
 
