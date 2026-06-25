@@ -403,3 +403,34 @@ A Silver Registry Lite package is not a Gold certificate, regulator approval, au
 v0.3.7 packages a hand-authored registry-lite document. It does not approve, audit, certify, federate, proof identity, evaluate, adjudicate, issue, transfer, or accept reliance.
 
 v0.3.7 names a registry-lite Silver evidence package. It does not cross the Gold boundary.
+
+## v0.4.0 Notes
+
+v0.4.0 introduces the first Gold-tier release: a *Minimal Gold Governed Reliance Demo package*. It is the first artifact in the ProofRail framework to live above the Silver boundary inventoried in §5, but it is explicitly the *minimal* expression of that boundary: it composes already-released Silver-shaped inputs (Silver verification result, Silver acceptance handoff, Silver relying-party policy pack, Silver registry lite, Silver control crosswalk) into a hand-authored set of 1..5 governed reliance decisions over closed scenario / status / subject / binding / action / scenario-state vocabularies.
+
+The v0.4.0 release does NOT claim, deliver, or operationalize the full multi-stakeholder commitments enumerated in §5. In particular:
+
+- It is not signed; v0.4.0 ships local hash anchors only. There is no Gold-tier PKI, no Gold-tier signature suite, and no Gold-tier issuer in this release.
+- It is not a certificate. The packaged conformance report records only that the package body satisfies the 24 ordered structural checks under a closed-vocabulary surface; v0.4.0 does not issue any reliance instrument against the recorded decisions.
+- It is not federated. v0.4.0 does not communicate the recorded decisions to any external party, system, gateway, registry, or counterparty.
+- It is not a transfer of reliance. The recorded decisions describe the local relying party's hand-authored decision state under the documented closed vocabularies; v0.4.0 does not transfer reliance, does not chain the decisions onto any further relying party, and does not bind any external party to the decisions.
+- It is not an approval. v0.4.0 does not consult any regulator, auditor, third party, or external counterparty. The recorded decisions are hand-authored under closed vocabularies; v0.4.0 does not approve, endorse, or adopt the decisions on behalf of any external party.
+- It is not an audit. v0.4.0 does not perform a substantive review of any listed Silver input, decision subject, policy binding, registry binding, or action scope.
+- It is not a certification. The package body carries no compliance attestation; the v0.4.0 verifier's prohibited Gold-claim guard rejects compliance, certification, audit-ready, control-effectiveness, regulator-approval, auditor-approval, legal-acceptance, legal-enforceability, federated-trust, transferred-trust, production-authorization, production-PKI, and Gold-certificate tokens in the hand-authored body outside the documented `scope_limitations` / `non_claims` escapes.
+- It is not an end-to-end re-verification of the upstream Silver evidence chain. The five `inputs.*` blocks are structural pointers under closed input-type and ref grammar; v0.4.0 does not re-run the v0.2.7 verifier, v0.2.8 validator, v0.2.9 verifier, v0.3.0 handoff verifier, v0.3.1 inspection verifier, v0.3.2 trace-binding verifier, v0.3.3 adapter-pilot verifier, v0.3.4 challenge / withdrawal verifier, v0.3.5 policy-pack verifier, v0.3.6 control-crosswalk verifier, or v0.3.7 registry-lite verifier against any external package in this release.
+- It is not legally enforceable on the relying party, the listed Silver-input artifacts, the listed protected actions, or any external party.
+- It is not production authorization, production governance, or production PKI. The closed `action_environment` enum admits only `demo` and `production_simulated`; the latter is explicitly named simulated to mark the boundary.
+- It is not full Gold and it is not Platinum. The release name is *Minimal* Gold Governed Reliance Demo to mark this boundary explicitly.
+- It does not represent runtime truth. v0.4.0 records hand-authored decision state under closed vocabularies; v0.4.0 does not consult any live service, gateway, observability backend, policy engine, GRC platform, or external registry.
+
+Gold-level handoff (as inventoried in §5 above) still requires the multi-stakeholder commitments enumerated there: governed acceptance criteria, named operating policies, independent verifier identity, retention, change-control, governed challenge adjudication, governed revocation and dispute handling, external audit, runtime substrate evidence, and a public acceptance ledger. v0.4.0 does not add any of those, and explicitly does not introduce the Minimal Gold Governed Reliance Demo as a Gold satisfaction. A hand-authored set of governed reliance decisions over Silver-shaped pointers is not the same as a multi-stakeholder governed reliance regime.
+
+The release sentence holds:
+
+> v0.4.0 packages a deterministic local hand-authored Minimal Gold Governed Reliance Demo body declaring 1..5 governed reliance decisions over closed scenario / status / subject / binding / action / scenario-state vocabularies, alongside a re-derivable 24-entry structural-conformance report cross-anchored by `package_id` and `governed_reliance_demo_id`. It is not a certificate; it is not signed; it is not federated; it is not a transfer of reliance to any external party; it is not regulator / auditor / third-party approval; it is not a certification; it is not full Gold or Platinum; it is not an evaluation of any specific upstream Silver evidence against the recorded decisions; it is not legally enforceable; and it does not extend the substance of any earlier-release Silver evidence.
+
+A Minimal Gold Governed Reliance Demo package is not a Gold certificate, signed Gold reliance instrument, regulator approval, auditor approval, legal acceptance, governed acceptance, transferred reliance, federated reliance, legally adjudicated event, compliance certification, external framework mapping, production PKI, certificate authority, certification authority, legal identity registry, identity-proofing record, federation registry, or production authorization.
+
+v0.4.0 records hand-authored governed reliance decisions composed from Silver-shaped inputs. It does not approve, audit, certify, federate, proof identity, evaluate, adjudicate, issue, transfer, or accept reliance to any external party.
+
+v0.4.0 names the first Gold-tier release. It establishes the Minimal Gold boundary. It does not claim full Gold.
