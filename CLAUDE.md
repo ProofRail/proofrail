@@ -12,8 +12,8 @@ Spec + tooling repo, not a distributed package.
 
 ## Status
 
-- Latest committed release: Gold **v0.4.0** — Minimal Gold Governed Reliance Demo.
-- Next planned release: **v0.4.1** — Gold Decision Report Hardening.
+- Latest committed release: Gold **v0.4.1** — Gold Decision Report Hardening.
+- Next planned release: **v0.4.2** — Gold Policy Evaluation Matrix.
 
 ## Where to Find Things
 
@@ -21,7 +21,7 @@ Spec + tooling repo, not a distributed package.
 - `docs/dev/silver-command-index.md` — full command matrix (`make`
   targets, standalone tool invocations, regression-test paths).
 - `docs/dev/silver-release-index.md` — release-by-release architecture
-  (Bronze through Gold v0.4.0).
+  (Bronze through Gold v0.4.1).
 - `tools/silver/README.md` — per-tool reference.
 - `docs/silver/silver-*.md`, `docs/gold/gold-boundary-v0.2.5.md` —
   long-form release and Gold-boundary docs.
@@ -33,8 +33,8 @@ Spec + tooling repo, not a distributed package.
 ```bash
 pip install -r requirements.txt                       # deps
 python -m pytest tests/test_proofrail_claim.py        # Bronze unit tests
-make run-gold-governed-reliance-v0-4-0                # current runner
-make verify-gold-governed-reliance-v0-4-0             # current verifier
+make run-gold-decision-report-hardening-v0-4-1        # current runner
+make verify-gold-decision-report-hardening-v0-4-1     # current verifier
 make verify-gold-all                                  # current Gold chain
 make verify-silver-all                                # full Silver chain (regenerates Bronze runtime; do NOT run during docs-only work)
 git diff --check && git status -sb                    # hygiene
@@ -98,3 +98,7 @@ See `docs/dev/silver-release-index.md` and `docs/gold/minimal-gold-governed-reli
 ### Gold Decision Report Hardening Package: `demos/gold-demo-002-decision-report-hardening/`
 
 See `docs/gold/gold-decision-report-hardening-v0.4.1.md`.
+
+### Gold Policy Evaluation Matrix Package: `demos/gold-demo-003-policy-evaluation-matrix/`
+
+See `docs/gold/gold-policy-evaluation-matrix-v0.4.2.md`.

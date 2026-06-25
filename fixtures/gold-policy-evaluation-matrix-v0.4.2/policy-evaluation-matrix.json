@@ -1,0 +1,96 @@
+{
+  "document_type": "proofrail.gold.policy_evaluation_matrix",
+  "schema_version": "v0.1.0",
+  "profile": "gold.policy_evaluation_matrix.v0.4.2",
+  "matrix_id": "proofrail-gold-policy-evaluation-matrix-demo-001",
+  "package_id": "proofrail-gold-governed-reliance-demo-001",
+  "governed_reliance_demo_id": "gold-governed-reliance-demo-001",
+  "decision_report_ref": "proofrail-gold-decision-report-demo-001",
+  "policy_pack_id": "policy-pack-demo-001",
+  "policy_pack_version": "v0.1.0",
+  "matrix_rows": [
+    {
+      "matrix_row_id": "mrow_01",
+      "policy_clause_ref": "accept-on-pass-001",
+      "expected_scenario_type": "clean_acceptance",
+      "expected_decision_status": "accepted",
+      "expected_policy_decision": "allow",
+      "expected_action_category": "financial_release",
+      "expected_action_environment": "demo",
+      "expected_decision_authority_role": "relying_party",
+      "required_subject_type": "silver_verification_result",
+      "evaluation_effect": "supports_decision",
+      "row_rationale_code": "silver_pass_policy_allow"
+    },
+    {
+      "matrix_row_id": "mrow_02",
+      "policy_clause_ref": "reject-out-of-environment-001",
+      "expected_scenario_type": "policy_rejection",
+      "expected_decision_status": "rejected",
+      "expected_policy_decision": "deny",
+      "expected_action_category": "data_export",
+      "expected_action_environment": "production_simulated",
+      "expected_decision_authority_role": "relying_party",
+      "required_subject_type": "silver_verification_result",
+      "evaluation_effect": "blocks_decision",
+      "row_rationale_code": "silver_pass_policy_deny"
+    },
+    {
+      "matrix_row_id": "mrow_03",
+      "policy_clause_ref": "challenge-pending-review-001",
+      "expected_scenario_type": "challenge_filed",
+      "expected_decision_status": "challenged",
+      "expected_policy_decision": "review",
+      "expected_action_category": "deployment_change",
+      "expected_action_environment": "demo",
+      "expected_decision_authority_role": "relying_party",
+      "required_subject_type": "silver_acceptance_handoff",
+      "evaluation_effect": "requires_review",
+      "row_rationale_code": "challenge_requires_review"
+    },
+    {
+      "matrix_row_id": "mrow_04",
+      "policy_clause_ref": "withdraw-on-revocation-001",
+      "expected_scenario_type": "withdrawal",
+      "expected_decision_status": "withdrawn",
+      "expected_policy_decision": "withhold",
+      "expected_action_category": "secret_rotation",
+      "expected_action_environment": "demo",
+      "expected_decision_authority_role": "relying_party",
+      "required_subject_type": "challenge_withdrawal_record",
+      "evaluation_effect": "withholds_reliance",
+      "row_rationale_code": "withdrawal_requires_withhold"
+    },
+    {
+      "matrix_row_id": "mrow_05",
+      "policy_clause_ref": "supersede-on-updated-evidence-001",
+      "expected_scenario_type": "supersession",
+      "expected_decision_status": "superseded",
+      "expected_policy_decision": "conditional",
+      "expected_action_category": "vendor_approval",
+      "expected_action_environment": "demo",
+      "expected_decision_authority_role": "relying_party",
+      "required_subject_type": "silver_verification_result",
+      "evaluation_effect": "supersedes_prior",
+      "row_rationale_code": "supersession_updates_basis"
+    }
+  ],
+  "scope_limitations": [
+    "v0.4.2 records hand-authored local policy expectations in a single matrix table over the unchanged v0.4.0 governed-reliance body and v0.4.1 decision report.",
+    "v0.4.2 does not consult any live policy engine, GRC platform, gateway, observability backend, or external authority.",
+    "v0.4.2 matrix rows are not signed and ship local hash anchors only.",
+    "v0.4.2 does not transfer reliance to any external party and does not authorize production action.",
+    "v0.4.2 is scoped to one demo relying party and one demo scenario set inherited from v0.4.0."
+  ],
+  "non_claims": [
+    "v0.4.2 is not full Gold and is not Platinum.",
+    "v0.4.2 does not claim legal enforceability, legal acceptance, or legal adjudication of the recorded local policy expectations.",
+    "v0.4.2 does not claim regulator approval, auditor approval, or any external authority for the recorded local policy expectations.",
+    "v0.4.2 does not claim certification, audit readiness, design effectiveness, or operating effectiveness of any control.",
+    "v0.4.2 does not claim production authorization, production governance, or production PKI.",
+    "v0.4.2 does not establish federation, transferred trust, or runtime truth.",
+    "v0.4.2 does not operate a live policy engine and does not claim policy-engine output.",
+    "v0.4.2 does not operate a GRC workflow and does not claim GRC operation.",
+    "v0.4.2 records the local policy expectations and their derived evaluation outcome but does not claim issuance, transfer, external acceptance, or enforceability of reliance."
+  ]
+}

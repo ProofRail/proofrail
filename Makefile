@@ -457,7 +457,28 @@ run-gold-decision-report-hardening-v0-4-1:
 verify-gold-decision-report-hardening-v0-4-1:
 	bash tests/test_gold_decision_report_hardening_v0_4_1.sh
 
+.PHONY: run-gold-policy-evaluation-matrix-v0-4-2
+run-gold-policy-evaluation-matrix-v0-4-2:
+	python3 tools/gold/build_gold_policy_evaluation_matrix_v0_1_0.py \
+	  --input-package fixtures/gold-governed-reliance-v0.4.0/governed-reliance-scenarios.json \
+	  --matrix-input fixtures/gold-policy-evaluation-matrix-v0.4.2/policy-evaluation-matrix.json \
+	  --manifest-id proofrail-gold-policy-evaluation-matrix-manifest-demo-001 \
+	  --conformance-report-id proofrail-gold-policy-evaluation-matrix-conformance-demo-001 \
+	  --decision-report-id proofrail-gold-decision-report-demo-001 \
+	  --policy-evaluation-report-id proofrail-gold-policy-evaluation-report-demo-001 \
+	  --generated-at 2026-09-15T00:30:00Z \
+	  --output-dir /tmp/proofrail-gold-policy-evaluation-matrix-v0.4.2 \
+	  --force \
+	  --self-validate
+	python3 tools/gold/verify_gold_policy_evaluation_matrix_v0_1_0.py \
+	  --manifest /tmp/proofrail-gold-policy-evaluation-matrix-v0.4.2/gold-policy-evaluation-matrix-package-manifest.json
+
+.PHONY: verify-gold-policy-evaluation-matrix-v0-4-2
+verify-gold-policy-evaluation-matrix-v0-4-2:
+	bash tests/test_gold_policy_evaluation_matrix_v0_4_2.sh
+
 .PHONY: verify-gold-all
 verify-gold-all:
 	$(MAKE) verify-gold-governed-reliance-v0-4-0
 	$(MAKE) verify-gold-decision-report-hardening-v0-4-1
+	$(MAKE) verify-gold-policy-evaluation-matrix-v0-4-2
