@@ -304,3 +304,15 @@ bash tests/test_silver_registry_lite_v0_3_7.sh
 python3 tools/silver/build_silver_registry_lite_v0_1_0.py --input-registry <registry-lite.json> --manifest-id <id> --report-id <id> --generated-at <ISO-8601> --output-dir <output-dir> [--force] [--self-validate]
 python3 tools/silver/verify_silver_registry_lite_v0_1_0.py --manifest <silver-registry-lite-manifest.json>
 ```
+
+## Gold v0.4.0 (Minimal Gold Governed Reliance Demo)
+
+```bash
+make run-gold-governed-reliance-v0-4-0
+make verify-gold-governed-reliance-v0-4-0
+make verify-gold-all
+bash tests/test_gold_governed_reliance_v0_4_0.sh
+
+python3 tools/gold/build_gold_governed_reliance_demo_v0_1_0.py --input-package <governed-reliance-scenarios.json> --manifest-id <id> --report-id <id> --generated-at <ISO-8601> --output-dir <output-dir> [--force] [--self-validate]
+python3 tools/gold/verify_gold_governed_reliance_demo_v0_1_0.py --manifest <gold-governed-reliance-package-manifest.json>
+```

@@ -421,3 +421,24 @@ verify-silver-all:
 	$(MAKE) verify-silver-relying-party-policy-pack-v0-3-5
 	$(MAKE) verify-silver-control-crosswalk-protected-action-catalog-v0-3-6
 	$(MAKE) verify-silver-registry-lite-v0-3-7
+
+.PHONY: run-gold-governed-reliance-v0-4-0
+run-gold-governed-reliance-v0-4-0:
+	python3 tools/gold/build_gold_governed_reliance_demo_v0_1_0.py \
+	  --input-package fixtures/gold-governed-reliance-v0.4.0/governed-reliance-scenarios.json \
+	  --manifest-id proofrail-gold-governed-reliance-manifest-demo-001 \
+	  --report-id proofrail-gold-governed-reliance-conformance-report-demo-001 \
+	  --generated-at 2026-09-15T00:30:00Z \
+	  --output-dir /tmp/proofrail-gold-governed-reliance-v0.4.0 \
+	  --force \
+	  --self-validate
+	python3 tools/gold/verify_gold_governed_reliance_demo_v0_1_0.py \
+	  --manifest /tmp/proofrail-gold-governed-reliance-v0.4.0/gold-governed-reliance-package-manifest.json
+
+.PHONY: verify-gold-governed-reliance-v0-4-0
+verify-gold-governed-reliance-v0-4-0:
+	bash tests/test_gold_governed_reliance_v0_4_0.sh
+
+.PHONY: verify-gold-all
+verify-gold-all:
+	$(MAKE) verify-gold-governed-reliance-v0-4-0

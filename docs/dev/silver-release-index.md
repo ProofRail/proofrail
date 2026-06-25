@@ -197,6 +197,23 @@ release, see `CLAUDE.md`.
 
 ---
 
+## Gold v0.4.0
+
+- **Demo:** `demos/gold-demo-001-governed-reliance/`. Runtime under `/tmp/proofrail-gold-governed-reliance-v0.4.0/`.
+- **Tools:** `build_gold_governed_reliance_demo_v0_1_0.py` (5 runner-only refusal codes; deterministic 24-entry conformance report; cross-anchored `package_id` and `governed_reliance_demo_id`); `verify_gold_governed_reliance_demo_v0_1_0.py` (24 stable reasons across 24 ordered structural checks plus post-structural conformance-report re-derivation; never emits runner-only codes).
+- **Test:** `test_gold_governed_reliance_v0_4_0.sh` (53 exercises: 4 PP + 5 SC + 24 case + 11 dup + 6 runner-only refusal exercises covering 5 distinct runner-only reasons (ro1, ro2, ro2b, ro3..ro5) + 1 rel + 1 TG + 1 SS). TG1 ships with EMPTY allowlist.
+- **Manifest:** 2 subjects (`governed-reliance-scenarios.json`, `silver-gold-governed-reliance-conformance-report.json`) cross-anchored by `package_id` and `governed_reliance_demo_id`.
+- **Inputs model — 5 closed Silver-shaped inputs:** `silver_verification`, `silver_handoff`, `policy_pack`, `registry_lite`, `control_crosswalk`. Each is a closed input-type + input-ref pointer; v0.4.0 does NOT re-verify upstream Silver evidence chains.
+- **Governed decision model — 5 closed scenarios:** `clean_acceptance`, `policy_rejection`, `challenge_filed`, `withdrawal`, `supersession`. 1..5 entries per body, unique `scenario_type`, natural-order placement. Each entry binds `decision_subject` (3 closed subject types), `policy_binding` (5 closed policy_decision values), `registry_binding` (3 closed authority roles), `action_scope` (5 closed action ids drawn from v0.3.6 catalog), `decision_status` under closed mapping, `scenario_specific_state` keyed on `scenario_type`, and `decision_trigger` under closed enum.
+- **Supersession reference kinds:** `internal_decision_id` (resolves inside the package's `governed_decisions[]`) or `external_decision_id` (prior decision outside this package; the verifier does not require resolution).
+- **Fixture variants (6):** `governed-reliance-scenarios.json` (canonical 5-scenario body, uses `internal_decision_id`), 5 single-scenario slices for `clean_acceptance` / `policy_rejection` / `challenge_filed` / `withdrawal` / `supersession` (the supersession slice uses `external_decision_id`).
+- **Overclaim guard:** closed prohibited Gold-claim vocabulary scanning every string value outside `scope_limitations` and `non_claims` for tokens including `signed gold reliance`, `gold reliance certificate`, `gold certificate`, `gold accepted`, `full gold`, `federated reliance`, `transferred reliance`, `regulator approval`, `auditor approval`, `audit ready`, `legally enforceable`, `production authorized`, `production pki`, `certificate authority`, `certification authority`, `control operating effective`, `runtime truth`.
+- **Bundled-report disagreement OR `package_id` / `governed_reliance_demo_id` cross-anchor mismatch:** funneled to `gold_manifest_invalid` (no 25th reason).
+- **Path traversal:** ro2 + ro2b both emit `runner_input_path_forbidden` (absolute + parent-traversal variants).
+- **Non-claims:** Unsigned; not a certificate; not federated; not a transfer of reliance to any external party; does not claim regulator approval, auditor approval, legal acceptance, legal adjudication, legal enforceability, compliance certification, production authorization, production governance, production PKI, audit readiness, or control operating / design effectiveness; does not consult any live service, gateway, observability backend, policy engine, GRC platform, or external registry; does not perform end-to-end re-verification of the upstream Silver evidence chain; not full Gold; not Platinum; does not represent runtime truth.
+
+---
+
 ## Next release
 
-- **v0.4.0 Minimal Gold:** planned. Will be tracked in `CLAUDE.md` once active.
+- **v0.4.x onward:** not yet planned. Future Gold-tier releases will extend the Minimal Gold Governed Reliance Demo surface.

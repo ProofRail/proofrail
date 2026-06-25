@@ -1,0 +1,212 @@
+{
+  "document_type": "proofrail.gold.governed_reliance_package",
+  "schema_version": "v0.1.0",
+  "profile": "gold.governed_reliance.v0.4.0",
+  "package_id": "proofrail-gold-governed-reliance-demo-001",
+  "governed_reliance_demo_id": "gold-governed-reliance-demo-001",
+  "relying_party": {
+    "identity_id": "relying_party.demo",
+    "display_name": "Demo Local Relying Party",
+    "contact": "demo-relying-party@example.invalid",
+    "registry_ref": "relying_party.demo"
+  },
+  "generated_at": "2026-09-15T00:30:00Z",
+  "inputs": {
+    "silver_verification": {
+      "input_type": "silver_verification_result",
+      "input_ref": "silver-verification-demo-001",
+      "expected_status": "pass"
+    },
+    "silver_handoff": {
+      "input_type": "silver_acceptance_handoff",
+      "input_ref": "silver-handoff-demo-001",
+      "expected_handoff_posture": "for_demo_scope"
+    },
+    "policy_pack": {
+      "input_type": "silver_relying_party_policy_pack",
+      "input_ref": "policy-pack-demo-001",
+      "policy_pack_id": "policy-pack-demo-001",
+      "policy_pack_version": "v0.1.0"
+    },
+    "registry_lite": {
+      "input_type": "silver_registry_lite",
+      "input_ref": "registry-lite-demo-001",
+      "registry_id": "registry-lite-demo-001"
+    },
+    "control_crosswalk": {
+      "input_type": "silver_control_crosswalk",
+      "input_ref": "control-pack-demo-001",
+      "control_pack_id": "control-pack-demo-001"
+    }
+  },
+  "governed_decisions": [
+    {
+      "decision_id": "decision-001-accepted",
+      "scenario_type": "clean_acceptance",
+      "decision_status": "accepted",
+      "decision_subject": {
+        "subject_type": "silver_verification_result",
+        "subject_ref": "silver-verification-demo-001"
+      },
+      "policy_binding": {
+        "policy_pack_id": "policy-pack-demo-001",
+        "policy_pack_version": "v0.1.0",
+        "policy_clause_refs": ["accept-on-pass-001"],
+        "policy_decision": "allow"
+      },
+      "registry_binding": {
+        "relying_party_id": "relying_party.demo",
+        "decision_authority_role": "relying_party"
+      },
+      "action_scope": {
+        "protected_action_id": "release_payment",
+        "action_category": "financial_release",
+        "action_environment": "demo"
+      },
+      "decision_trigger": "evidence_verified",
+      "scenario_specific_state": {
+        "acceptance_record_ref": "acceptance-record-demo-001"
+      },
+      "recorded_at": "2026-09-15T00:25:00Z"
+    },
+    {
+      "decision_id": "decision-002-rejected",
+      "scenario_type": "policy_rejection",
+      "decision_status": "rejected",
+      "decision_subject": {
+        "subject_type": "silver_verification_result",
+        "subject_ref": "silver-verification-demo-001"
+      },
+      "policy_binding": {
+        "policy_pack_id": "policy-pack-demo-001",
+        "policy_pack_version": "v0.1.0",
+        "policy_clause_refs": ["reject-out-of-environment-001"],
+        "policy_decision": "deny"
+      },
+      "registry_binding": {
+        "relying_party_id": "relying_party.demo",
+        "decision_authority_role": "relying_party"
+      },
+      "action_scope": {
+        "protected_action_id": "export_data",
+        "action_category": "data_export",
+        "action_environment": "production_simulated"
+      },
+      "decision_trigger": "policy_evaluated",
+      "scenario_specific_state": {
+        "rejection_reason": "evidence_outside_environment",
+        "silver_verification_passing": true
+      },
+      "recorded_at": "2026-09-15T00:26:00Z"
+    },
+    {
+      "decision_id": "decision-003-challenged",
+      "scenario_type": "challenge_filed",
+      "decision_status": "challenged",
+      "decision_subject": {
+        "subject_type": "silver_acceptance_handoff",
+        "subject_ref": "silver-handoff-demo-001"
+      },
+      "policy_binding": {
+        "policy_pack_id": "policy-pack-demo-001",
+        "policy_pack_version": "v0.1.0",
+        "policy_clause_refs": ["challenge-pending-review-001"],
+        "policy_decision": "review"
+      },
+      "registry_binding": {
+        "relying_party_id": "relying_party.demo",
+        "decision_authority_role": "relying_party"
+      },
+      "action_scope": {
+        "protected_action_id": "change_deployment",
+        "action_category": "deployment_change",
+        "action_environment": "demo"
+      },
+      "decision_trigger": "challenge_received",
+      "scenario_specific_state": {
+        "challenge_record_ref": "challenge-record-demo-001",
+        "challenge_state": "under_review"
+      },
+      "recorded_at": "2026-09-15T00:27:00Z"
+    },
+    {
+      "decision_id": "decision-004-withdrawn",
+      "scenario_type": "withdrawal",
+      "decision_status": "withdrawn",
+      "decision_subject": {
+        "subject_type": "challenge_withdrawal_record",
+        "subject_ref": "challenge-withdrawal-record-demo-001"
+      },
+      "policy_binding": {
+        "policy_pack_id": "policy-pack-demo-001",
+        "policy_pack_version": "v0.1.0",
+        "policy_clause_refs": ["withdraw-on-revocation-001"],
+        "policy_decision": "withhold"
+      },
+      "registry_binding": {
+        "relying_party_id": "relying_party.demo",
+        "decision_authority_role": "relying_party"
+      },
+      "action_scope": {
+        "protected_action_id": "rotate_secret",
+        "action_category": "secret_rotation",
+        "action_environment": "demo"
+      },
+      "decision_trigger": "revocation_observed",
+      "scenario_specific_state": {
+        "withdrawal_record_ref": "withdrawal-record-demo-001",
+        "withdrawal_trigger": "revocation_observed"
+      },
+      "recorded_at": "2026-09-15T00:28:00Z"
+    },
+    {
+      "decision_id": "decision-005-superseded",
+      "scenario_type": "supersession",
+      "decision_status": "superseded",
+      "decision_subject": {
+        "subject_type": "silver_verification_result",
+        "subject_ref": "silver-verification-demo-001"
+      },
+      "policy_binding": {
+        "policy_pack_id": "policy-pack-demo-001",
+        "policy_pack_version": "v0.1.0",
+        "policy_clause_refs": ["supersede-on-updated-evidence-001"],
+        "policy_decision": "conditional"
+      },
+      "registry_binding": {
+        "relying_party_id": "relying_party.demo",
+        "decision_authority_role": "relying_party"
+      },
+      "action_scope": {
+        "protected_action_id": "approve_vendor",
+        "action_category": "vendor_approval",
+        "action_environment": "demo"
+      },
+      "decision_trigger": "updated_evidence_received",
+      "scenario_specific_state": {
+        "prior_decision_ref_kind": "internal_decision_id",
+        "prior_decision_id": "decision-001-accepted",
+        "supersession_trigger": "updated_evidence",
+        "superseding_input_ref": "silver-verification-demo-002"
+      },
+      "recorded_at": "2026-09-15T00:29:00Z"
+    }
+  ],
+  "scope_limitations": [
+    "v0.4.0 records deterministic local governed reliance decisions composed from Silver-shaped inputs in a single hand-authored demo package.",
+    "v0.4.0 does not perform end-to-end re-verification of the upstream Silver evidence chain; it validates input shape and binding only.",
+    "v0.4.0 decision records are not signed and ship local hash anchors only.",
+    "v0.4.0 does not consult any live service, gateway, observability backend, policy engine, GRC platform, or external registry.",
+    "v0.4.0 is scoped to one demo relying party and one demo scenario set."
+  ],
+  "non_claims": [
+    "v0.4.0 is not full Gold and is not Platinum.",
+    "v0.4.0 does not claim legal enforceability, legal acceptance, or legal adjudication of the recorded local decisions.",
+    "v0.4.0 does not claim regulator approval, auditor approval, or any external authority for the recorded local decisions.",
+    "v0.4.0 does not claim certification, audit readiness, or operating effectiveness of any control.",
+    "v0.4.0 does not claim production authorization, production governance, or production PKI.",
+    "v0.4.0 does not establish federation, transferred trust, or runtime truth.",
+    "v0.4.0 records the local accepted decision state but does not claim legal issuance, transfer, external acceptance, or enforceability of reliance.",
+    "v0.4.0 does not evaluate the substantive merits of any upstream Silver evidence beyond shape and binding checks."
+  ]
+}

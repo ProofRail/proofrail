@@ -89,3 +89,7 @@ See `docs/dev/silver-release-index.md`.
 ### Silver Registry Lite Package: `demos/silver-demo-014-registry-lite/`
 
 See `docs/dev/silver-release-index.md`.
+
+### Gold Governed Reliance Demo: `demos/gold-demo-001-governed-reliance/`
+
+See `docs/dev/silver-release-index.md` and `docs/gold/minimal-gold-governed-reliance-v0.4.0.md`.
