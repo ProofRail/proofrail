@@ -19,8 +19,10 @@ Spec + tooling repo, not a distributed package.
 - `docs/dev/coding-assistant-guardrails.md` — durable process rules.
 - `docs/dev/silver-command-index.md` — full command matrix (`make`
   targets, standalone tool invocations, regression-test paths).
-- `docs/dev/silver-release-index.md` — release-by-release architecture
-  (Bronze through Gold v0.4.2).
+- `docs/dev/silver-release-index.md` — Bronze + Silver release-by-release
+  architecture (closed at Silver v0.3.7).
+- `docs/dev/gold-release-index.md` — Gold release-by-release architecture
+  (v0.4.0 onward).
 - `tools/silver/README.md` — per-tool reference.
 - `docs/silver/silver-*.md`, `docs/gold/gold-boundary-v0.2.5.md` —
   long-form release and Gold-boundary docs.
@@ -80,7 +82,9 @@ PyYAML and cryptography (Ed25519). No CI/CD or lint pipelines.
 ## Release Anchors
 
 Section markers required by the v0.3.6, v0.3.7, and v0.4.0 TG1
-drift-scan gates. Substance lives in `docs/dev/silver-release-index.md`.
+drift-scan gates. Silver substance lives in
+`docs/dev/silver-release-index.md`; Gold substance lives in
+`docs/dev/gold-release-index.md`.
 
 ### Silver Control Crosswalk + Protected Action Catalog Package: `demos/silver-demo-013-control-crosswalk-protected-action-catalog/`
 
@@ -92,7 +96,7 @@ See `docs/dev/silver-release-index.md`.
 
 ### Gold Governed Reliance Demo: `demos/gold-demo-001-governed-reliance/`
 
-See `docs/dev/silver-release-index.md` and `docs/gold/minimal-gold-governed-reliance-v0.4.0.md`.
+See `docs/dev/gold-release-index.md` and `docs/gold/minimal-gold-governed-reliance-v0.4.0.md`.
 
 ### Gold Decision Report Hardening Package: `demos/gold-demo-002-decision-report-hardening/`
 

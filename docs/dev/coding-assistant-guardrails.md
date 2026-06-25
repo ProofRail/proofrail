@@ -2,10 +2,11 @@
 
 This file collects the durable process rules that bind any AI coding
 assistant working in this repository. These rules are stable across
-Silver release lines. Release-specific architecture lives in
-`docs/dev/silver-release-index.md`; the day-to-day command matrix lives
-in `docs/dev/silver-command-index.md`. The compact operating index for
-the active release is `CLAUDE.md`.
+Silver and Gold release lines. Release-specific architecture lives in
+`docs/dev/silver-release-index.md` (Bronze + Silver) and
+`docs/dev/gold-release-index.md` (Gold); the day-to-day command matrix
+lives in `docs/dev/silver-command-index.md`. The compact operating
+index for the active release is `CLAUDE.md`.
 
 These rules are non-negotiable. They are written here so they can be
 referenced from `CLAUDE.md` without bloating the operating index.
@@ -47,7 +48,8 @@ referenced from `CLAUDE.md` without bloating the operating index.
 - Reasons are listed verbatim in the release's regression-test
   taxonomy gate (TG1) and in the release's section of `CLAUDE.md`
   (operating-index pointer) and `docs/dev/silver-release-index.md`
-  (full taxonomy).
+  (Bronze + Silver releases) or `docs/dev/gold-release-index.md`
+  (Gold releases) for the full taxonomy.
 - A release MUST NOT introduce a new public reason mid-implementation
   without an explicit plan amendment.
 

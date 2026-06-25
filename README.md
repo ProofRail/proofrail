@@ -96,7 +96,7 @@ The v0.4.2 release note is the best short summary:
 If you are new to ProofRail:
 
 1. Read the [v0.4.0 release note](https://github.com/ProofRail/proofrail/releases/tag/v0.4.0).
-2. Review the [Silver release index](docs/dev/silver-release-index.md).
+2. Review the [Gold release index](docs/dev/gold-release-index.md) and the [Bronze + Silver release index](docs/dev/silver-release-index.md).
 3. Review [Minimal Gold Governed Reliance v0.4.0](docs/gold/minimal-gold-governed-reliance-v0.4.0.md).
 4. Review the [Gold boundary note](docs/gold/gold-boundary-v0.2.5.md).
 5. Review the [Silver tools README](tools/silver/README.md).
@@ -145,7 +145,8 @@ Maintainer-facing guidance lives in:
 
 - [Coding assistant guardrails](docs/dev/coding-assistant-guardrails.md);
 - [Silver command index](docs/dev/silver-command-index.md);
-- [Silver release index](docs/dev/silver-release-index.md).
+- [Gold release index](docs/dev/gold-release-index.md);
+- [Bronze + Silver release index](docs/dev/silver-release-index.md).
 
 The main README should remain a front door. Do not turn it into a release-by-release implementation log or taxonomy dump. Detailed release mechanics belong in release docs, `docs/dev/`, and `tools/silver/README.md`.
 
@@ -181,7 +182,7 @@ See the [v0.3.7 release note](https://github.com/ProofRail/proofrail/releases/ta
 
 ## What ProofRail v0.4.0 Adds
 
-ProofRail v0.4.0 is the first Gold-tier release: the Minimal Gold Governed Reliance Demo. A v0.4.0 package is a deterministic local hand-authored record of 1..5 governed reliance decisions composed from Silver-shaped inputs (Silver verification result, Silver acceptance handoff, Silver relying-party policy pack, Silver registry lite, Silver control crosswalk), structurally validated under 24 ordered checks and bound by a 2-subject manifest cross-anchored by `package_id` and `governed_reliance_demo_id`. The v0.4.0 release is not a certificate, is not signed, is not federated, is not a transfer of reliance to any external party, and is not full Gold. See [`docs/gold/minimal-gold-governed-reliance-v0.4.0.md`](docs/gold/minimal-gold-governed-reliance-v0.4.0.md) and the [Silver release index](docs/dev/silver-release-index.md).
+ProofRail v0.4.0 is the first Gold-tier release: the Minimal Gold Governed Reliance Demo. A v0.4.0 package is a deterministic local hand-authored record of 1..5 governed reliance decisions composed from Silver-shaped inputs (Silver verification result, Silver acceptance handoff, Silver relying-party policy pack, Silver registry lite, Silver control crosswalk), structurally validated under 24 ordered checks and bound by a 2-subject manifest cross-anchored by `package_id` and `governed_reliance_demo_id`. The v0.4.0 release is not a certificate, is not signed, is not federated, is not a transfer of reliance to any external party, and is not full Gold. See [`docs/gold/minimal-gold-governed-reliance-v0.4.0.md`](docs/gold/minimal-gold-governed-reliance-v0.4.0.md) and the [Gold release index](docs/dev/gold-release-index.md).
 
 ## What ProofRail v0.4.1 Adds
 

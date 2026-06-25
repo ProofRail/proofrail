@@ -1,8 +1,13 @@
-# ProofRail — Silver Release Index
+# ProofRail — Bronze + Silver Release Index
 
-Per-release reference in compact form. One entry per Silver release.
+Per-release reference in compact form. One entry per Bronze / Silver release.
 Each entry covers: scope, key tools, schemas / docs, regression test,
 manifest shape, key non-claims.
+
+The Silver tier closed at **v0.3.7 (Registry Lite)**. Gold-tier releases
+(v0.4.0 onward) live in `docs/dev/gold-release-index.md`. A single
+`## Gold v0.4.0` heading is retained at the bottom of this file as a
+v0.4.0 TG1 anchor; the Gold substance has moved.
 
 For per-release command invocations, see `docs/dev/silver-command-index.md`.
 For durable process rules, see `docs/dev/coding-assistant-guardrails.md`.
@@ -181,7 +186,7 @@ release, see `CLAUDE.md`.
 - **Bundled-report disagreement OR `control_pack_id` mismatch:** funneled to `control_pack_manifest_invalid` (no 25th reason).
 - **Non-claims:** Does not approve/audit/certify; does not map to external frameworks; does not opine on control design/operating effectiveness; no upstream re-evaluation; no reliance transfer; not Gold readiness.
 
-## Silver v0.3.7 (registry lite) — current release
+## Silver v0.3.7 (registry lite)
 
 - **Demo:** `demos/silver-demo-014-registry-lite/`. Runtime under `/tmp/proofrail-silver-registry-lite-v0.3.7/`.
 - **Tools:** `build_silver_registry_lite_v0_1_0.py` (5 runner-only refusal codes; deterministic 24-entry conformance report); `verify_silver_registry_lite_v0_1_0.py` (24 stable reasons across 24 ordered structural checks plus post-structural conformance-report re-derivation; never emits runner-only codes).
@@ -199,32 +204,4 @@ release, see `CLAUDE.md`.
 
 ## Gold v0.4.0
 
-- **Demo:** `demos/gold-demo-001-governed-reliance/`. Runtime under `/tmp/proofrail-gold-governed-reliance-v0.4.0/`.
-- **Tools:** `build_gold_governed_reliance_demo_v0_1_0.py` (5 runner-only refusal codes; deterministic 24-entry conformance report; cross-anchored `package_id` and `governed_reliance_demo_id`); `verify_gold_governed_reliance_demo_v0_1_0.py` (24 stable reasons across 24 ordered structural checks plus post-structural conformance-report re-derivation; never emits runner-only codes).
-- **Test:** `test_gold_governed_reliance_v0_4_0.sh` (53 exercises: 4 PP + 5 SC + 24 case + 11 dup + 6 runner-only refusal exercises covering 5 distinct runner-only reasons (ro1, ro2, ro2b, ro3..ro5) + 1 rel + 1 TG + 1 SS). TG1 ships with EMPTY allowlist.
-- **Manifest:** 2 subjects (`governed-reliance-scenarios.json`, `silver-gold-governed-reliance-conformance-report.json`) cross-anchored by `package_id` and `governed_reliance_demo_id`.
-- **Inputs model — 5 closed Silver-shaped inputs:** `silver_verification`, `silver_handoff`, `policy_pack`, `registry_lite`, `control_crosswalk`. Each is a closed input-type + input-ref pointer; v0.4.0 does NOT re-verify upstream Silver evidence chains.
-- **Governed decision model — 5 closed scenarios:** `clean_acceptance`, `policy_rejection`, `challenge_filed`, `withdrawal`, `supersession`. 1..5 entries per body, unique `scenario_type`, natural-order placement. Each entry binds `decision_subject` (3 closed subject types), `policy_binding` (5 closed policy_decision values), `registry_binding` (3 closed authority roles), `action_scope` (5 closed action ids drawn from v0.3.6 catalog), `decision_status` under closed mapping, `scenario_specific_state` keyed on `scenario_type`, and `decision_trigger` under closed enum.
-- **Supersession reference kinds:** `internal_decision_id` (resolves inside the package's `governed_decisions[]`) or `external_decision_id` (prior decision outside this package; the verifier does not require resolution).
-- **Fixture variants (6):** `governed-reliance-scenarios.json` (canonical 5-scenario body, uses `internal_decision_id`), 5 single-scenario slices for `clean_acceptance` / `policy_rejection` / `challenge_filed` / `withdrawal` / `supersession` (the supersession slice uses `external_decision_id`).
-- **Overclaim guard:** closed prohibited Gold-claim vocabulary scanning every string value outside `scope_limitations` and `non_claims` for tokens including `signed gold reliance`, `gold reliance certificate`, `gold certificate`, `gold accepted`, `full gold`, `federated reliance`, `transferred reliance`, `regulator approval`, `auditor approval`, `audit ready`, `legally enforceable`, `production authorized`, `production pki`, `certificate authority`, `certification authority`, `control operating effective`, `runtime truth`.
-- **Bundled-report disagreement OR `package_id` / `governed_reliance_demo_id` cross-anchor mismatch:** funneled to `gold_manifest_invalid` (no 25th reason).
-- **Path traversal:** ro2 + ro2b both emit `runner_input_path_forbidden` (absolute + parent-traversal variants).
-- **Non-claims:** Unsigned; not a certificate; not federated; not a transfer of reliance to any external party; does not claim regulator approval, auditor approval, legal acceptance, legal adjudication, legal enforceability, compliance certification, production authorization, production governance, production PKI, audit readiness, or control operating / design effectiveness; does not consult any live service, gateway, observability backend, policy engine, GRC platform, or external registry; does not perform end-to-end re-verification of the upstream Silver evidence chain; not full Gold; not Platinum; does not represent runtime truth.
-
----
-
-## Gold v0.4.1
-
-- **Demo:** `demos/gold-demo-002-decision-report-hardening/`. Runtime under `/tmp/proofrail-gold-decision-report-hardening-v0.4.1/`.
-- **Scope:** narrow Gold maintenance release — Gold Decision Report Hardening. Re-projects the unchanged v0.4.0 governed-reliance package body into a deterministic local Gold decision report, paired with the v0.4.0 conformance report and bound by a 3-subject manifest.
-- **Architecture:** v0.4.1 runner subprocesses the unchanged v0.4.0 runner to produce subjects [0] and [1] in a tempdir, then byte-copies them under the staging directory and derives the v0.4.1 decision report as subject [2]; v0.4.1 verifier subprocesses the co-located v0.4.0 verifier on a synthesized 2-subject v0.4.0 manifest and adds five v0.4.1-owned structural checks over the decision report; staging-then-replace; relays verifier failures unchanged on `--self-validate`.
-- **Test:** `test_gold_decision_report_hardening_v0_4_1.sh` (61 exercises). TG1 ships with a closed five-entry allowlist limited to exact `coverage_summary` data-field names and an environmental-wrapper deny-list constructed via string concatenation to prevent self-trip.
-- **Reference:** `docs/gold/gold-decision-report-hardening-v0.4.1.md` holds the full reason surface (24 inherited + 5 v0.4.1-owned), reachability orderings, identifier-grammar ownership split, subprocess-delegation architecture, TG1 allowlist discipline, and non-claims.
-- **Non-claims:** Unsigned; not a new Gold tier; not a certificate; not federated; not a transfer of reliance to any external party; does not claim regulator approval, auditor approval, legal acceptance, legal adjudication, legal enforceability, compliance certification, production authorization, production governance, production PKI, audit readiness, or control operating / design effectiveness; does not consult any live service; does not perform end-to-end re-verification of the upstream Silver evidence chain; does not extend the substance of the v0.4.0 body; not full Gold; not Platinum; does not represent runtime truth.
-
----
-
-## Next release
-
-- **v0.4.x onward:** not yet planned. Future Gold-tier releases will extend the Minimal Gold Governed Reliance Demo surface.
+Gold v0.4.0 substance has moved to [`docs/dev/gold-release-index.md`](gold-release-index.md). This heading is retained as a v0.4.0 TG1 anchor only.

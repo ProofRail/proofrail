@@ -6,8 +6,10 @@ Commands section. The compact operating index (`CLAUDE.md`) only
 references the essentials; everything else is here.
 
 For release-by-release architecture / scope / non-claims, see
-`docs/dev/silver-release-index.md`. For per-release release notes, see
-`docs/silver/silver-<release-slug>-v0.x.y.md` and `docs/gold/gold-boundary-v0.2.5.md`.
+`docs/dev/silver-release-index.md` (Bronze + Silver) and
+`docs/dev/gold-release-index.md` (Gold). For per-release release notes,
+see `docs/silver/silver-<release-slug>-v0.x.y.md` and
+`docs/gold/gold-<release-slug>-v0.4.x.md`.
 
 ## Setup + cross-version essentials
 
