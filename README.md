@@ -10,9 +10,9 @@ ProofRail is not a gateway, SIEM, observability platform, GRC tool, policy engin
 
 ## Current Status
 
-Latest release: **v0.4.2 — Gold Policy Evaluation Matrix**
+Latest release: **v0.4.3 — Gold Challenge Lifecycle Lite**
 
-v0.4.2 is a narrow Gold maintenance release that pairs the unchanged v0.4.0 governed-reliance body and v0.4.1 decision report with a deterministic local policy evaluation matrix and a byte-re-derivable policy evaluation report, bound by a 5-subject manifest.
+v0.4.3 is a narrow incremental Gold release that pairs the unchanged v0.4.0 governed-reliance body, v0.4.1 decision report, and v0.4.2 policy-evaluation pair with a deterministic local runtime challenge-lifecycle records body and a byte-re-derivable lifecycle report, bound by a 7-subject manifest.
 
 The Silver tier now provides the pre-Gold substrate needed to carry verified evidence toward governed reliance:
 
@@ -61,9 +61,9 @@ Silver began with signed verification of Bronze evidence and now includes the pr
 | v0.3.6 | Control Crosswalk + Protected Action Catalog. |
 | v0.3.7 | Registry Lite. |
 
-## Latest Release: v0.4.2 Gold Policy Evaluation Matrix
+## Latest Release: v0.4.3 Gold Challenge Lifecycle Lite
 
-v0.4.2 is a narrow Gold maintenance release. It pairs the unchanged v0.4.0 governed-reliance package body and v0.4.1 decision report with a deterministic local policy evaluation matrix and a byte-re-derivable policy evaluation report, bound by a 5-subject manifest cross-anchored to the v0.4.0 body and to the v0.4.1 decision report. The underlying decision outcomes remain the closed v0.4.0 set:
+v0.4.3 is a narrow incremental Gold release. It pairs the unchanged v0.4.0 governed-reliance package body, v0.4.1 decision report, and v0.4.2 policy evaluation matrix and policy evaluation report with a deterministic local runtime challenge-lifecycle records body and a byte-re-derivable lifecycle report, bound by a 7-subject manifest cross-anchored to the v0.4.0 body, the v0.4.1 decision report, and the v0.4.2 policy-evaluation pair. The underlying decision outcomes remain the closed v0.4.0 set:
 
 - accepted;
 - rejected;
@@ -71,11 +71,11 @@ v0.4.2 is a narrow Gold maintenance release. It pairs the unchanged v0.4.0 gover
 - withdrawn;
 - superseded.
 
-v0.4.2 does not introduce a new Gold tier, is not signed, is not a certificate, is not federated, is not a transfer of reliance to any external party, does not consult any live policy engine, and does not extend the substance of the v0.4.0 body or the v0.4.1 decision report.
+v0.4.3 does not introduce a new Gold tier, is not signed, is not a certificate, is not federated, is not a transfer of reliance to any external party, does not consult any live policy engine or live lifecycle adjudication authority, and does not extend the substance of the v0.4.0 body, the v0.4.1 decision report, or the v0.4.2 policy-evaluation pair.
 
-The v0.4.2 release note is the best short summary:
+The v0.4.3 release note is the best short summary:
 
-- [ProofRail v0.4.2 release](https://github.com/ProofRail/proofrail/releases/tag/v0.4.2)
+- [ProofRail v0.4.3 release](https://github.com/ProofRail/proofrail/releases/tag/v0.4.3)
 
 ## Repository Map
 
@@ -119,8 +119,8 @@ python3 -m pytest tests/test_proofrail_claim.py
 Run the latest Gold target:
 
 ```bash
-make run-gold-policy-evaluation-matrix-v0-4-2
-make verify-gold-policy-evaluation-matrix-v0-4-2
+make run-gold-challenge-lifecycle-lite-v0-4-3
+make verify-gold-challenge-lifecycle-lite-v0-4-3
 ```
 
 Run the current Gold chain:
@@ -190,8 +190,8 @@ ProofRail v0.4.1 is a narrow Gold maintenance release: Gold Decision Report Hard
 
 ## What ProofRail v0.4.2 Adds
 
-ProofRail v0.4.2 is a narrow Gold maintenance release (planned next): Gold Policy Evaluation Matrix. v0.4.2 pairs the unchanged v0.4.0 governed-reliance package body and the unchanged v0.4.1 decision report with a hand-authored local policy evaluation matrix (one matrix row per recognized scenario, in natural order) and a byte-re-derivable policy evaluation report, bound by a 5-subject manifest. v0.4.2 does not introduce a new Gold tier, is not signed, is not a certificate, is not federated, is not a transfer of reliance to any external party, does not consult any live policy engine, and does not extend the substance of the v0.4.0 body or the v0.4.1 decision report. See [`docs/gold/gold-policy-evaluation-matrix-v0.4.2.md`](docs/gold/gold-policy-evaluation-matrix-v0.4.2.md).
+ProofRail v0.4.2 is a narrow Gold maintenance release: Gold Policy Evaluation Matrix. v0.4.2 pairs the unchanged v0.4.0 governed-reliance package body and the unchanged v0.4.1 decision report with a hand-authored local policy evaluation matrix (one matrix row per recognized scenario, in natural order) and a byte-re-derivable policy evaluation report, bound by a 5-subject manifest. v0.4.2 does not introduce a new Gold tier, is not signed, is not a certificate, is not federated, is not a transfer of reliance to any external party, does not consult any live policy engine, and does not extend the substance of the v0.4.0 body or the v0.4.1 decision report. See [`docs/gold/gold-policy-evaluation-matrix-v0.4.2.md`](docs/gold/gold-policy-evaluation-matrix-v0.4.2.md).
 
 ## What ProofRail v0.4.3 Adds
 
-ProofRail v0.4.3 is a narrow Gold maintenance release (in development; the latest committed release remains v0.4.2): Gold Challenge Lifecycle Lite. v0.4.3 pairs the unchanged v0.4.0 governed-reliance package body, the unchanged v0.4.1 decision report, and the unchanged v0.4.2 policy evaluation matrix and policy evaluation report with a hand-authored deterministic local runtime challenge-lifecycle records body (one lifecycle record per governed decision row in natural order, with a closed-vocabulary event chain) and a deterministic local lifecycle report (row-per-record projection plus a closed-vocabulary coverage summary keyed on the six lifecycle status values), bound by a 7-subject manifest. v0.4.3 does not introduce a new Gold tier, is not signed, is not a certificate, is not federated, is not a transfer of reliance to any external party, does not consult any live policy engine or live lifecycle adjudication authority, and does not extend the substance of the v0.4.0 body, the v0.4.1 decision report, or the v0.4.2 policy-evaluation pair. See [`docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md`](docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md).
+ProofRail v0.4.3 is a narrow incremental Gold release: Gold Challenge Lifecycle Lite. v0.4.3 pairs the unchanged v0.4.0 governed-reliance package body, the unchanged v0.4.1 decision report, and the unchanged v0.4.2 policy evaluation matrix and policy evaluation report with a hand-authored deterministic local runtime challenge-lifecycle records body (one lifecycle record per governed decision row in natural order, with a closed-vocabulary event chain) and a deterministic local lifecycle report (row-per-record projection plus a closed-vocabulary coverage summary keyed on the six lifecycle status values), bound by a 7-subject manifest. v0.4.3 does not introduce a new Gold tier, is not signed, is not a certificate, is not federated, is not a transfer of reliance to any external party, does not consult any live policy engine or live lifecycle adjudication authority, and does not extend the substance of the v0.4.0 body, the v0.4.1 decision report, or the v0.4.2 policy-evaluation pair. See [`docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md`](docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md).

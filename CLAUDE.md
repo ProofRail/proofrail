@@ -12,7 +12,7 @@ Spec + tooling repo, not a distributed package.
 
 ## Status
 
-- Latest committed release: Gold **v0.4.2** — Gold Policy Evaluation Matrix.
+- Latest committed release: Gold **v0.4.3** — Gold Challenge Lifecycle Lite.
 
 ## Where to Find Things
 
@@ -34,8 +34,8 @@ Spec + tooling repo, not a distributed package.
 ```bash
 pip install -r requirements.txt                       # deps
 python -m pytest tests/test_proofrail_claim.py        # Bronze unit tests
-make run-gold-policy-evaluation-matrix-v0-4-2         # current runner
-make verify-gold-policy-evaluation-matrix-v0-4-2      # current verifier
+make run-gold-challenge-lifecycle-lite-v0-4-3         # current runner
+make verify-gold-challenge-lifecycle-lite-v0-4-3      # current verifier
 make verify-gold-all                                  # current Gold chain
 make verify-silver-all                                # full Silver chain (regenerates Bronze runtime; do NOT run during docs-only work)
 git diff --check && git status -sb                    # hygiene
@@ -108,4 +108,4 @@ See `docs/gold/gold-policy-evaluation-matrix-v0.4.2.md`.
 
 ### Gold Challenge Lifecycle Lite Package: `demos/gold-demo-004-challenge-lifecycle-lite/`
 
-See `docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md` (v0.4.3 in development; latest committed release remains v0.4.2).
+See `docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md`.
