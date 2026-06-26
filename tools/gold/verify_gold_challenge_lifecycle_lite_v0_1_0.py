@@ -849,6 +849,29 @@ def _check_records_body(
                 f"does not equal final event_status={final_status!r}",
             ), None
 
+    # R41 gold_challenge_lifecycle_records_binding_invalid (post-event):
+    # per-record lifecycle_fingerprint equality. Recompute SHA-256 of the
+    # canonical JSON serialization of the record with the lifecycle_fingerprint
+    # field removed and compare to the declared lifecycle_fingerprint. This
+    # check is intentionally placed after the R43 transition block as a
+    # deliberate non-masking post-event R41 check: invalid event shapes,
+    # event grammar, and transition orderings must be reachable under R42
+    # and R43 before a fingerprint mismatch can fire. The numeric ordering
+    # of emitted reasons is not literal here; R41 is reached after R43 by
+    # design and the records-shape R40 hex-shape check above only constrains
+    # the declared bytes' format, not their byte-equality to the canonical
+    # re-derivation. The recomputation is byte-identical to the runner's
+    # per-record fingerprint derivation.
+    for idx, record in enumerate(records_body["lifecycle_records"]):
+        record_for_fp = {k: v for k, v in record.items() if k != "lifecycle_fingerprint"}
+        expected_fp = _sha256_hex(_canonical_json_bytes(record_for_fp))
+        if record["lifecycle_fingerprint"] != expected_fp:
+            return _emit_fail(
+                R41,
+                f"lifecycle_records[{idx}].lifecycle_fingerprint mismatch: "
+                f"declared={record['lifecycle_fingerprint']!r}, re-derived={expected_fp!r}",
+            ), None
+
     return 0, records_body
 
 
@@ -1096,6 +1119,29 @@ def _check_lifecycle_report(
         return _emit_fail(
             R48,
             "coverage_summary mismatch: re-derived summary does not match published summary",
+        )
+
+    # R47 gold_challenge_lifecycle_projection_invalid (post-summary):
+    # top-level report_fingerprint equality. Recompute SHA-256 of the
+    # canonical JSON serialization of the report with the report_fingerprint
+    # field removed and compare to the declared report_fingerprint. This
+    # check is intentionally placed after the R48 coverage-summary
+    # re-derivation as a deliberate non-masking post-summary R47 check:
+    # row-level projection mismatches and coverage-summary mismatches must
+    # be reachable under the row-rederive R47 path and R48 before a
+    # fingerprint mismatch can fire over the whole report body. The
+    # numeric ordering of emitted reasons is not literal here; R47 is
+    # reached after R48 by design and the R45 hex-shape check above only
+    # constrains the declared bytes' format, not their byte-equality to
+    # the canonical re-derivation. The recomputation is byte-identical to
+    # the runner's report_fingerprint derivation.
+    report_for_fp = {k: v for k, v in report.items() if k != "report_fingerprint"}
+    expected_report_fp = _sha256_hex(_canonical_json_bytes(report_for_fp))
+    if report["report_fingerprint"] != expected_report_fp:
+        return _emit_fail(
+            R47,
+            f"report_fingerprint mismatch: "
+            f"declared={report['report_fingerprint']!r}, re-derived={expected_report_fp!r}",
         )
 
     return 0

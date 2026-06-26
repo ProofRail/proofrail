@@ -13,8 +13,8 @@
 # the v0.4.2 verifier in turn delegates 29 to v0.4.1 which delegates
 # 24 to v0.4.0.
 #
-# Numbered exercises (Phase 2 = 8; Phase 3 = 8 + 48 + 4 + 23 + 5 + 6
-# + 1 + 1 + 1 + 1 = 98 total):
+# Numbered exercises (Phase 2 = 8; Phase 3 = 6 + 48 + 5 + 23 + 6 + 6
+# + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 101 total):
 #
 #   Positive-path (6):
 #     PP1   Pristine v0.4.3 build with --self-validate
@@ -40,13 +40,17 @@
 #     case47  gold_challenge_lifecycle_projection_invalid        (R47)
 #     case48  gold_challenge_lifecycle_summary_invalid           (R48)
 #
-#   Runtime-scalar canonical cases (4; runner-injected scalars at
+#   Runtime-scalar canonical cases (5; runner-injected scalars at
 #   subject [5]):
 #     rt1    drop records.policy_evaluation_report_sha256 -> R40
 #     rt1b   drop records.generated_at                    -> R40
 #     rt2    valid-hex records.policy_evaluation_report_sha256
 #            != subjects[4].sha256                        -> R41
 #     rt3    drop lifecycle_records[0].lifecycle_fingerprint -> R40
+#     rt4    lifecycle_records[0].lifecycle_fingerprint mutated to a
+#            distinct-but-shape-valid bare-hex            -> R41
+#            (deliberate non-masking post-event R41 check; reached
+#             AFTER the R43 transition block by design)
 #
 #   Duplicate gold_manifest_invalid cases (23; all route to R01):
 #     dup01..dup07   subject[0..6] path absolute
@@ -63,7 +67,7 @@
 #     dup23          challenge_lifecycle_report_id ==
 #                    challenge_lifecycle_record_set_id (6-ID collision)
 #
-#   Supplementals (5; R42x1, R43x3, R46x1):
+#   Supplementals (6; R42x1, R43x3, R46x1, R47x1):
 #     sup01  R42 withdrawn current_status without withdrawal_record_ref
 #     sup02  R43 first event is not `filed`
 #            (distinct from case43: targets lc-003 with under_review
@@ -74,6 +78,11 @@
 #            policy_evaluation_report_id at the lifecycle report
 #            body level (manifest unchanged; subject[6] sha256
 #            recomputed so body integrity check is reached)
+#     sup06  R47 report_fingerprint mutated to a distinct-but-shape-
+#            valid bare-hex on subject [6]; subject[6] sha256
+#            recomputed so report-body checks are reached
+#            (deliberate non-masking post-summary R47 check; reached
+#             AFTER the R48 coverage-summary re-derivation by design)
 #
 #   Runner-only refusal cases (6 exercises, 5 distinct reasons):
 #     ro1   runner_input_path_missing
@@ -1091,6 +1100,30 @@ edit_records "$T" 'del r["lifecycle_records"][0]["lifecycle_fingerprint"]'
 rehash_subject "$T" 5
 expect_verifier_fail "rt3:records_lifecycle_fingerprint_drop" "$T" "gold_challenge_lifecycle_records_schema_invalid"
 
+# --- rt4: lifecycle_records[0].lifecycle_fingerprint mutated to a
+# distinct-but-shape-valid bare-hex SHA-256 -> R41 (post-event). --------------
+# The replacement is built by flipping the first hex digit of the
+# original declared fingerprint and asserting distinctness BEFORE the
+# verifier is invoked. The replacement remains a bare lowercase hex
+# SHA-256, so R40 (shape) passes. Pre-event R41 binding fields
+# (package_id, governed_reliance_demo_id, lifecycle_record_set_id,
+# policy_evaluation_report_ref, policy_evaluation_report_sha256,
+# 6-ID collision class, target_decision_id / target_decision_row_id
+# rebinding) are unchanged so the pre-event R41 block passes. R42
+# (event grammar) and R43 (transitions) are unchanged. The post-R43
+# R41 fingerprint recompute fires on the per-record mismatch. This
+# case exists specifically to exercise the deliberate non-masking
+# post-event R41 placement: R41 is reached AFTER R43 by design.
+T="$WORK/rt4"; fresh_copy "$PRISTINE" "$T"
+edit_records "$T" '
+orig = r["lifecycle_records"][0]["lifecycle_fingerprint"]
+new = ("0" if orig[0] != "0" else "f") + orig[1:]
+assert new != orig, "rt4: replacement lifecycle_fingerprint identical to original"
+r["lifecycle_records"][0]["lifecycle_fingerprint"] = new
+'
+rehash_subject "$T" 5
+expect_verifier_fail "rt4:records_lifecycle_fingerprint_mismatch" "$T" "gold_challenge_lifecycle_records_binding_invalid"
+
 # ===========================================================================
 # Duplicate gold_manifest_invalid cases (23; all route to that reason).
 # ===========================================================================
@@ -1297,6 +1330,32 @@ T="$WORK/s05"; fresh_copy "$PRISTINE" "$T"
 edit_lifecycle_report "$T" 'l["challenge_lifecycle_report_id"] = l["policy_evaluation_report_id"]'
 rehash_subject "$T" 6
 expect_verifier_fail "sup05:report_challenge_lifecycle_report_id_collides_with_policy_eval_report_id" "$T" "gold_challenge_lifecycle_report_binding_invalid"
+
+# --- sup06: R47 report_fingerprint mutated to a distinct-but-shape-
+# valid bare-hex SHA-256 on subject [6] -> R47 (post-summary). ---------------
+# The replacement is built by flipping the first hex digit of the
+# original declared report_fingerprint and asserting distinctness
+# BEFORE the verifier is invoked. The replacement remains a bare
+# lowercase hex SHA-256, so R45 (schema/shape, including the hex-
+# shape loop over the four hash fields) passes. R46 (report-body
+# binding) is unaffected because the mutated field is not a binding
+# field. R47 (row-projection) passes because lifecycle_rows[] is
+# untouched. R48 (coverage_summary) passes because coverage_summary
+# is untouched. The post-R48 R47 report_fingerprint recompute fires
+# on the top-level mismatch. This case exists specifically to
+# exercise the deliberate non-masking post-summary R47 placement:
+# R47 is reached AFTER R48 by design. The subject [6] sha256 is
+# recomputed via rehash_subject "$T" 6 so the lifecycle-report body
+# integrity check is reached at all.
+T="$WORK/s06"; fresh_copy "$PRISTINE" "$T"
+edit_lifecycle_report "$T" '
+orig = l["report_fingerprint"]
+new = ("0" if orig[0] != "0" else "f") + orig[1:]
+assert new != orig, "sup06: replacement report_fingerprint identical to original"
+l["report_fingerprint"] = new
+'
+rehash_subject "$T" 6
+expect_verifier_fail "sup06:report_report_fingerprint_mismatch" "$T" "gold_challenge_lifecycle_projection_invalid"
 
 # ===========================================================================
 # Runner-only refusal cases (6 exercises, 5 distinct reasons). The
@@ -1992,7 +2051,7 @@ echo "  SS:scoped_sha256_snapshot: ok (BEFORE == AFTER)"
 # Done.
 # ---------------------------------------------------------------------------
 echo "PASS: tests/test_gold_challenge_lifecycle_lite_v0_4_3.sh (Phase 3 full)"
-echo "  99 / 99 Phase 3 exercises:"
+echo "  101 / 101 Phase 3 exercises:"
 echo "    - 6 positive-path (PP1..PP6)"
 echo "        PP1 pristine v0.4.3 build with --self-validate"
 echo "        PP2 pristine independent v0.4.3 verifier pass"
@@ -2008,9 +2067,12 @@ echo "        case01..case24 inherited v0.4.0 R01..R24 (relayed)"
 echo "        case25..case29 inherited v0.4.1 R25..R29 (relayed)"
 echo "        case30..case38 inherited v0.4.2 R30..R38 (relayed)"
 echo "        case39..case48 v0.4.3-owned R39..R48"
-echo "    -  4 runtime-scalar mutation variants (rt1, rt1b, rt2, rt3)"
+echo "    -  5 runtime-scalar mutation variants (rt1, rt1b, rt2, rt3, rt4)"
+echo "        rt4 R41 lifecycle_records[0].lifecycle_fingerprint mutated"
+echo "            (deliberate non-masking post-event R41 placement;"
+echo "             reached AFTER R43 by design)"
 echo "    - 23 duplicates / subject-table / collision (dup01..dup23)"
-echo "    -  5 supplementals (sup01..sup05: R42 x 1, R43 x 3, R46 x 1)"
+echo "    -  6 supplementals (sup01..sup06: R42 x 1, R43 x 3, R46 x 1, R47 x 1)"
 echo "        sup01 R42 withdrawn without withdrawal_record_ref"
 echo "        sup02 R43 first event is not filed (distinct from case43)"
 echo "        sup03 R43 event after a terminal event"
@@ -2018,6 +2080,9 @@ echo "        sup04 R43 current_status disagrees with final event"
 echo "        sup05 R46 challenge_lifecycle_report_id collides with"
 echo "              policy_evaluation_report_id at the lifecycle report"
 echo "              body level"
+echo "        sup06 R47 report_fingerprint mutated on subject [6]"
+echo "              (deliberate non-masking post-summary R47 placement;"
+echo "               reached AFTER R48 by design)"
 echo "    -  6 runner-only exercises across 5 approved reasons"
 echo "        (ro1, ro2, ro2b, ro3, ro4, ro5)"
 echo "    -  1 runner-relay-of-verifier (rel01: inherited reason verbatim)"

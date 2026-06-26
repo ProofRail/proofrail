@@ -29,7 +29,7 @@ Expected output: a single `PASS:` line on stdout and exit code 0. The verifier s
 make verify-gold-challenge-lifecycle-lite-v0-4-3
 ```
 
-The test exercises 99 ordered cases:
+v0.4.3 shipped with 99 ordered cases:
 
 - 6 positive-path
 - 48 canonical verifier reasons (24 inherited from v0.4.0 + 5 inherited from v0.4.1 + 9 inherited from v0.4.2 + 10 v0.4.3-owned)
@@ -45,7 +45,9 @@ The test exercises 99 ordered cases:
 - 1 TG1 taxonomy gate
 - 1 scoped sha256 snapshot
 
-The taxonomy gate enforces a closed allowlist limited to the inherited v0.4.1 `coverage_summary` data-field names and the small fixed set of v0.4.3 `coverage_summary` data-field names. The scoped snapshot proves that the test does not mutate v0.4.3-owned source files. The no-residue assertion proves that the test writes no artifacts under inherited-tier fixture directories and leaves no residue under the test-owned scratch path.
+The v0.4.3.1 corrective harness raises the regression to 101 ordered cases by appending two cases that exercise the deliberate non-monotonic fingerprint sub-checks added by the v0.4.3.1 verifier correction: rt4 (a fifth runtime-scalar mutation variant) flips the first hex digit of `lifecycle_records[0].lifecycle_fingerprint` and expects R41; sup06 (a sixth supplemental) flips the first hex digit of the top-level `report_fingerprint` and expects R47. Both cases assert that the replacement value differs from the original before invoking the verifier. The 99/99 reachability surface from the v0.4.3 release is preserved verbatim.
+
+The taxonomy gate enforces a closed allowlist limited to the five inherited v0.4.1 decision-report `coverage_summary` enum-presence data-field names (`decision_statuses_present`, `policy_decisions_present`, `protected_actions_present`, `registry_roles_present`, `scenario_types_present`). No v0.4.3-introduced data-field name appears in the allowlist; the v0.4.3 coverage-summary names (`lifecycle_record_count`, `lifecycle_event_count`, `open_lifecycle_count`, `terminal_lifecycle_count`, `status_value_count`) do not satisfy the gate's reason-shaped suffix filter and therefore require no entry. The scoped snapshot proves that the test does not mutate v0.4.3-owned source files. The no-residue assertion proves that the test writes no artifacts under inherited-tier fixture directories and leaves no residue under the test-owned scratch path.
 
 ## Step 4 — Inspect the published package
 
@@ -60,11 +62,11 @@ Eight files appear:
 - `gold-governed-reliance-decision-report.json` (v0.4.1 decision report, byte-copy)
 - `gold-policy-evaluation-matrix.json` (v0.4.2 runtime matrix, byte-copy)
 - `gold-policy-evaluation-report.json` (v0.4.2 evaluation report, byte-copy)
-- `gold-challenge-lifecycle-records.json` (v0.4.3 runtime records body, derived from the template plus the three injected runtime scalars)
+- `challenge-lifecycle-records.json` (v0.4.3 runtime records body, derived from the template plus the three injected runtime scalars)
 - `gold-challenge-lifecycle-report.json` (v0.4.3 lifecycle report, derived from the records body and the evaluation report)
 - `gold-challenge-lifecycle-package-manifest.json` (7-subject manifest)
 
-The manifest cross-anchors `package_id` and `governed_reliance_demo_id` to the v0.4.0 body. The runtime records body cross-anchors `policy_evaluation_report_sha256` to subject [4]. The lifecycle report cross-anchors `source_records_sha256` and `source_policy_evaluation_report_sha256` to subjects [5] and [4] respectively.
+The manifest cross-anchors `package_id` and `governed_reliance_demo_id` to the v0.4.0 body. The runtime records body cross-anchors `policy_evaluation_report_sha256` to subject [4]. The lifecycle report cross-anchors `source_records_sha256`, `source_policy_evaluation_report_sha256`, and `source_decision_report_sha256` to subjects [5], [4], and [2] respectively.
 
 ## Reference
 

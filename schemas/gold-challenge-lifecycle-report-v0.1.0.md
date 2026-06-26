@@ -121,9 +121,16 @@ taxonomy is:
   row count, row order, per-row scalar mismatches (row_id,
   lifecycle_id, target_decision_id, target_decision_row_id,
   current_status, is_terminal, event_count, first_event_id,
-  final_event_id, final_event_timestamp), wrong effect projection,
-  wrong target binding at the row level, or wrong per-row
-  `lifecycle_fingerprint` re-inclusion.
+  final_event_id, final_event_timestamp), wrong target binding at
+  the row level, or wrong per-row `lifecycle_fingerprint`
+  re-inclusion. The lifecycle row schema has no `effect` field; the
+  per-row projection does not carry a per-row lifecycle_effect, so
+  effect-projection mismatches are not in scope for this reason.
+  Top-level `report_fingerprint` mismatch (canonical-JSON re-derivation
+  over the report body excluding the fingerprint field) also routes
+  to this reason; that sub-check is deliberately non-monotonic
+  relative to the R48 coverage-summary re-derivation (see
+  Reachability ordering).
 - `gold_challenge_lifecycle_summary_invalid` — coverage_summary
   rollup disagreement with an independent re-derivation over
   `lifecycle_rows[]`: incorrect `lifecycle_record_count`,
@@ -132,9 +139,22 @@ taxonomy is:
   mismatches (key set otherwise well-formed; values disagree with
   the row population).
 
-Reachability ordering for the lifecycle report body: not-object
-first, schema-shape second, binding third, projection-derivation
-fourth (R47), coverage-summary derivation last (R48).
+Reachability ordering for the lifecycle report body is **not strictly
+monotonic** in the public-token integer suffix. The natural-order
+checks fire as: not-object (R44) first, schema-shape (R45) second,
+binding (R46) third, row-level projection-derivation (R47) fourth,
+coverage-summary derivation (R48) fifth. After R48 passes, the
+verifier re-derives the top-level `report_fingerprint` (canonical
+JSON of the report excluding the fingerprint field, SHA-256, bare
+lowercase hex) and compares it against the declared value; a
+mismatch surfaces under R47 (`gold_challenge_lifecycle_projection_invalid`).
+The post-R48 R47 sub-check is a deliberate non-masking placement so
+that row-level projection mismatches (R47) and coverage-summary
+mismatches (R48) remain reachable on unmodified-fingerprint inputs;
+the R47 public-token integer suffix is therefore not a strict
+emission order. The R45 hex-shape check above only constrains the
+declared `report_fingerprint` bytes' format, not their byte-equality
+to the canonical re-derivation.
 
 ## Non-Claims
 

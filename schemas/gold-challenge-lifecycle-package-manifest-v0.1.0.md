@@ -115,13 +115,18 @@ own grammar):
 - `package_id`
 - `governed_reliance_demo_id`
 
-Collisions among the six collision-class IDs are surfaced as the
-appropriate v0.4.3-introduced collision reason at the records,
-report, or manifest level. Collision of `challenge_lifecycle_report_id`
-with `policy_evaluation_report_id` is surfaced via the v0.4.3 report
-binding reason; collision of any other pair surfaces via the
-corresponding records-binding, report-binding, or manifest-level
-reason per the verifier reachability table in `tools/gold/README.md`.
+All pairwise collisions among the six collision-class IDs are
+surfaced at the manifest-integrity layer under
+`gold_manifest_invalid` (R01). The v0.4.3-owned
+`*_records_binding_invalid` (R41) and `*_report_binding_invalid`
+(R46) reasons are reserved for body-level cross-anchor mismatches
+(e.g., records-body or lifecycle-report fields not matching the
+manifest's IDs or SHA-256 anchors); they are not used for
+manifest-level pairwise-distinctness violations. The conformance,
+decision, and policy-evaluation report IDs share the same routing
+discipline: pairwise collisions among them under the v0.4.3
+collision class surface under `gold_manifest_invalid` rather than
+under the per-tier body-binding reasons.
 
 ## Cross-Anchor Rules
 
@@ -163,9 +168,24 @@ reason per the verifier reachability table in `tools/gold/README.md`.
 - The lifecycle report's `source_decision_report_sha256` must equal
   `subjects[2].sha256`.
 
-A failure of any of these cross-anchor rules surfaces as
-`gold_manifest_invalid` (cross-anchor folding rule; not a new public
-reason).
+Cross-anchor rules are partitioned by the reason layer that owns
+them. Manifest-level rules (subjects[0].sha256 ↔ decision report's
+`source_package_sha256`; subjects[2].sha256 ↔ matrix's
+`decision_report_sha256`; manifest-level ID grammar and pairwise
+distinctness; manifest-level cross-anchor of `package_id` and
+`governed_reliance_demo_id`) surface under `gold_manifest_invalid`.
+Body-level cross-anchor rules surface under the per-tier
+body-binding reason that owns the affected document: the v0.4.2
+policy-evaluation-report's `source_decision_report_sha256` and
+`source_matrix_sha256` are inherited v0.4.2 surface; the v0.4.3
+records-body's runtime `policy_evaluation_report_sha256` mismatch
+surfaces under `gold_challenge_lifecycle_records_binding_invalid`
+(R41); the v0.4.3 lifecycle-report's `source_records_sha256`,
+`source_policy_evaluation_report_sha256`, and
+`source_decision_report_sha256` mismatches surface under
+`gold_challenge_lifecycle_report_binding_invalid` (R46). No new
+public reason is introduced by v0.4.3 solely for cross-anchor
+folding; existing per-tier reasons own their layer.
 
 ## Path Constraints
 

@@ -147,8 +147,9 @@ taxonomy is:
   shape / required-field / grammar defects: wrong `document_type`,
   wrong `schema_version`, `profile` outside the closed supported set,
   missing or non-list `lifecycle_records`, empty `lifecycle_records`,
-  per-record shape defects, blank or missing limitations/non-claims
-  sections where required, malformed top-level identifier grammars.
+  per-record shape defects, malformed top-level identifier grammars.
+  The records body has no top-level `scope_limitations` or `non_claims`
+  fields; absence of those names is not a schema-shape defect.
 - `gold_challenge_lifecycle_records_binding_invalid` — failures of
   `target_decision_id ↔ decision_id`, `target_decision_row_id ↔
   row_id`, `policy_evaluation_report_ref`, or
@@ -173,9 +174,22 @@ taxonomy is:
   final event. Includes monotonicity violations of
   `event_timestamp` within a record.
 
-Reachability ordering for the records body: not-object first,
-schema-shape second, binding third, per-event validity (R42) fourth,
-sequence/graph validity (R43) last.
+Reachability ordering for the records body is **not strictly
+monotonic** in the public-token integer suffix. The natural-order
+checks fire as: not-object (R39) first, schema-shape (R40) second,
+records-body cross-anchors (R41) third, per-event validity (R42)
+fourth, sequence/graph validity (R43) fifth. After R43 passes, the
+verifier re-derives each record's `lifecycle_fingerprint` (canonical
+JSON of the record excluding the fingerprint field, SHA-256, bare
+lowercase hex) and compares it against the declared value; a
+mismatch surfaces under R41 (`gold_challenge_lifecycle_records_binding_invalid`).
+The post-R43 R41 sub-check is a deliberate non-masking placement so
+that earlier event-grammar (R42) and transition (R43) violations
+remain reachable on unmodified-fingerprint inputs; the R41
+public-token integer suffix is therefore not a strict emission
+order. The records-shape R40 hex-shape check above only constrains
+the declared fingerprint bytes' format, not their byte-equality to
+the canonical re-derivation.
 
 ## Deterministic Serialization
 

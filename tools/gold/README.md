@@ -169,7 +169,7 @@ and non-claims.
 
 ## v0.4.3 Note
 
-v0.4.3 is a narrow Gold maintenance release (Gold Challenge Lifecycle
+v0.4.3 is a narrow incremental Gold release (Gold Challenge Lifecycle
 Lite) that pairs the unchanged v0.4.0 package body, v0.4.1 decision
 report, and v0.4.2 policy-evaluation pair with a hand-authored
 deterministic local runtime challenge-lifecycle records body and a
