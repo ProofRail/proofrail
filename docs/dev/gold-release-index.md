@@ -83,6 +83,18 @@ release, see `CLAUDE.md`.
 
 ---
 
+## Gold v0.4.3.1
+
+- **Scope:** narrow corrective patch over v0.4.3. Corrects verifier under-enforcement of two fingerprint sub-checks declared in the v0.4.3 narrative and schemas but not re-derived by the v0.4.3 shipped verifier.
+- **Correction:** the v0.4.3.1 verifier now recomputes the per-record `lifecycle_fingerprint` (records body) and the top-level `report_fingerprint` (lifecycle report) over canonical JSON of the surrounding body excluding the fingerprint field itself. Mismatch on the records-body sub-check folds into existing `gold_challenge_lifecycle_records_binding_invalid` (R41) as a deliberate non-monotonic post-R43 sub-check; mismatch on the report sub-check folds into existing `gold_challenge_lifecycle_projection_invalid` (R47) as a deliberate non-monotonic post-R48 sub-check.
+- **Closed surfaces unchanged:** verifier surface remains R01..R48 (24 inherited from v0.4.0, 5 from v0.4.1, 9 from v0.4.2, 10 v0.4.3-owned); no 49th reason; no 25th v0.4.0 reason; no sixth v0.4.1 reason; no tenth v0.4.2 reason; no eleventh v0.4.3 reason; no new wrapper reason for verifier-relay on `--self-validate`. Runner-only refusals remain the five inherited from v0.4.0. Closed lifecycle vocabularies, the 7-subject manifest shape, the subprocess delegation chain, and the TG1 allowlist discipline are untouched.
+- **Test:** `tests/test_gold_challenge_lifecycle_lite_v0_4_3.sh` now reports 101/101 (the v0.4.3 99/99 reachability surface is preserved verbatim, plus `rt4` (R41 records-body `lifecycle_fingerprint` re-derivation) and `sup06` (R47 lifecycle-report `report_fingerprint` re-derivation)).
+- **Tag preservation:** the v0.4.3 annotated tag is preserved unchanged. v0.4.3.1 is a forward-only corrective patch on `main`.
+- **Reference:** `docs/releases/2026-06-26-proofrail-v0.4.3.1-release-note.md`.
+- **Non-claims:** identical to v0.4.3. v0.4.3.1 corrects a verifier under-enforcement only and does not change the Gold boundary, the closed reason surface, or any v0.4.3 non-claim.
+
+---
+
 ## Next release
 
 - **v0.4.x onward:** not yet planned. Future Gold-tier releases will extend the Minimal Gold Governed Reliance Demo surface.

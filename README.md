@@ -10,9 +10,9 @@ ProofRail is not a gateway, SIEM, observability platform, GRC tool, policy engin
 
 ## Current Status
 
-Latest release: **v0.4.3 — Gold Challenge Lifecycle Lite**
+Latest release: **v0.4.3.1 — Correct Gold Challenge Lifecycle Fingerprint Verification (corrective patch over v0.4.3)**
 
-v0.4.3 is a narrow incremental Gold release that pairs the unchanged v0.4.0 governed-reliance body, v0.4.1 decision report, and v0.4.2 policy-evaluation pair with a deterministic local runtime challenge-lifecycle records body and a byte-re-derivable lifecycle report, bound by a 7-subject manifest.
+v0.4.3.1 is a narrow corrective patch over v0.4.3 — Gold Challenge Lifecycle Lite. It corrects verifier under-enforcement of the per-record `lifecycle_fingerprint` and the top-level `report_fingerprint` re-derivations under existing R41 and R47, without changing the closed R01..R48 verifier surface, the five runner-only refusals, the closed lifecycle vocabularies, or the v0.4.3 boundary. v0.4.3 itself remains a narrow incremental Gold release that pairs the unchanged v0.4.0 governed-reliance body, v0.4.1 decision report, and v0.4.2 policy-evaluation pair with a deterministic local runtime challenge-lifecycle records body and a byte-re-derivable lifecycle report, bound by a 7-subject manifest.
 
 The Silver tier now provides the pre-Gold substrate needed to carry verified evidence toward governed reliance:
 
