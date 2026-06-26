@@ -318,3 +318,14 @@ bash tests/test_gold_governed_reliance_v0_4_0.sh
 python3 tools/gold/build_gold_governed_reliance_demo_v0_1_0.py --input-package <governed-reliance-scenarios.json> --manifest-id <id> --report-id <id> --generated-at <ISO-8601> --output-dir <output-dir> [--force] [--self-validate]
 python3 tools/gold/verify_gold_governed_reliance_demo_v0_1_0.py --manifest <gold-governed-reliance-package-manifest.json>
 ```
+
+## Gold v0.4.3 (Gold Challenge Lifecycle Lite)
+
+```bash
+make run-gold-challenge-lifecycle-lite-v0-4-3
+make verify-gold-challenge-lifecycle-lite-v0-4-3
+bash tests/test_gold_challenge_lifecycle_lite_v0_4_3.sh
+
+python3 tools/gold/build_gold_challenge_lifecycle_lite_v0_1_0.py --input-package <governed-reliance-scenarios.json> --matrix-input <policy-evaluation-matrix.json> --lifecycle-input <challenge-lifecycle-records.json> --manifest-id <id> --conformance-report-id <id> --decision-report-id <id> --policy-evaluation-report-id <id> --challenge-lifecycle-report-id <id> --generated-at <ISO-8601> --output-dir <output-dir> [--force] [--self-validate]
+python3 tools/gold/verify_gold_challenge_lifecycle_lite_v0_1_0.py --manifest <gold-challenge-lifecycle-package-manifest.json>
+```

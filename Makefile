@@ -477,8 +477,31 @@ run-gold-policy-evaluation-matrix-v0-4-2:
 verify-gold-policy-evaluation-matrix-v0-4-2:
 	bash tests/test_gold_policy_evaluation_matrix_v0_4_2.sh
 
+.PHONY: run-gold-challenge-lifecycle-lite-v0-4-3
+run-gold-challenge-lifecycle-lite-v0-4-3:
+	python3 tools/gold/build_gold_challenge_lifecycle_lite_v0_1_0.py \
+	  --input-package fixtures/gold-governed-reliance-v0.4.0/governed-reliance-scenarios.json \
+	  --matrix-input fixtures/gold-policy-evaluation-matrix-v0.4.2/policy-evaluation-matrix.json \
+	  --lifecycle-input fixtures/gold-challenge-lifecycle-lite-v0.4.3/challenge-lifecycle-records.json \
+	  --manifest-id proofrail-gold-challenge-lifecycle-lite-manifest-demo-001 \
+	  --conformance-report-id proofrail-gold-challenge-lifecycle-lite-conformance-demo-001 \
+	  --decision-report-id proofrail-gold-decision-report-demo-001 \
+	  --policy-evaluation-report-id proofrail-gold-policy-evaluation-report-demo-001 \
+	  --challenge-lifecycle-report-id proofrail-gold-challenge-lifecycle-report-demo-001 \
+	  --generated-at 2026-10-01T00:30:00Z \
+	  --output-dir /tmp/proofrail-gold-challenge-lifecycle-lite-v0.4.3 \
+	  --force \
+	  --self-validate
+	python3 tools/gold/verify_gold_challenge_lifecycle_lite_v0_1_0.py \
+	  --manifest /tmp/proofrail-gold-challenge-lifecycle-lite-v0.4.3/gold-challenge-lifecycle-package-manifest.json
+
+.PHONY: verify-gold-challenge-lifecycle-lite-v0-4-3
+verify-gold-challenge-lifecycle-lite-v0-4-3:
+	bash tests/test_gold_challenge_lifecycle_lite_v0_4_3.sh
+
 .PHONY: verify-gold-all
 verify-gold-all:
 	$(MAKE) verify-gold-governed-reliance-v0-4-0
 	$(MAKE) verify-gold-decision-report-hardening-v0-4-1
 	$(MAKE) verify-gold-policy-evaluation-matrix-v0-4-2
+	$(MAKE) verify-gold-challenge-lifecycle-lite-v0-4-3

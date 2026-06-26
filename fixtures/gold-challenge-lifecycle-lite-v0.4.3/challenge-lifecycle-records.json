@@ -1,0 +1,158 @@
+{
+  "document_type": "proofrail.gold.challenge_lifecycle_records",
+  "schema_version": "v0.1.0",
+  "profile": "gold.challenge_lifecycle_lite.v0.4.3",
+  "lifecycle_record_set_id": "gold-challenge-lifecycle-record-set-demo-001",
+  "package_id": "proofrail-gold-governed-reliance-demo-001",
+  "governed_reliance_demo_id": "gold-governed-reliance-demo-001",
+  "policy_evaluation_report_ref": "proofrail-gold-policy-evaluation-report-demo-001",
+  "lifecycle_records": [
+    {
+      "lifecycle_id": "lc-001",
+      "target_decision_id": "decision-001-accepted",
+      "target_decision_row_id": "row_01",
+      "current_status": "filed",
+      "events": [
+        {
+          "event_id": "lc-001-ev-001",
+          "event_status": "filed",
+          "event_basis": "challenge_record",
+          "actor_role": "relying_party",
+          "lifecycle_effect": "challenge_open",
+          "event_timestamp": "2026-09-16T00:00:00Z",
+          "event_basis_ref": "challenge-record-lc-001-001"
+        }
+      ]
+    },
+    {
+      "lifecycle_id": "lc-002",
+      "target_decision_id": "decision-002-rejected",
+      "target_decision_row_id": "row_02",
+      "current_status": "acknowledged",
+      "events": [
+        {
+          "event_id": "lc-002-ev-001",
+          "event_status": "filed",
+          "event_basis": "challenge_record",
+          "actor_role": "relying_party",
+          "lifecycle_effect": "challenge_open",
+          "event_timestamp": "2026-09-16T00:10:00Z",
+          "event_basis_ref": "challenge-record-lc-002-001"
+        },
+        {
+          "event_id": "lc-002-ev-002",
+          "event_status": "acknowledged",
+          "event_basis": "acknowledgement_record",
+          "actor_role": "policy_authority",
+          "event_timestamp": "2026-09-16T00:20:00Z",
+          "event_basis_ref": "acknowledgement-record-lc-002-001"
+        }
+      ]
+    },
+    {
+      "lifecycle_id": "lc-003",
+      "target_decision_id": "decision-003-challenged",
+      "target_decision_row_id": "row_03",
+      "current_status": "resolved_locally",
+      "local_resolution_ref": "local-resolution-record-lc-003-001",
+      "events": [
+        {
+          "event_id": "lc-003-ev-001",
+          "event_status": "filed",
+          "event_basis": "challenge_record",
+          "actor_role": "relying_party",
+          "lifecycle_effect": "challenge_open",
+          "event_timestamp": "2026-09-16T00:30:00Z",
+          "event_basis_ref": "challenge-record-demo-001"
+        },
+        {
+          "event_id": "lc-003-ev-002",
+          "event_status": "acknowledged",
+          "event_basis": "acknowledgement_record",
+          "actor_role": "policy_authority",
+          "event_timestamp": "2026-09-16T00:40:00Z",
+          "event_basis_ref": "acknowledgement-record-lc-003-001"
+        },
+        {
+          "event_id": "lc-003-ev-003",
+          "event_status": "under_review",
+          "event_basis": "review_update",
+          "actor_role": "reviewer",
+          "event_timestamp": "2026-09-16T00:50:00Z",
+          "event_basis_ref": "review-update-lc-003-001"
+        },
+        {
+          "event_id": "lc-003-ev-004",
+          "event_status": "resolved_locally",
+          "event_basis": "local_resolution_record",
+          "actor_role": "system_recorder",
+          "lifecycle_effect": "local_resolution_recorded",
+          "event_timestamp": "2026-09-16T01:00:00Z",
+          "event_basis_ref": "local-resolution-record-lc-003-001"
+        }
+      ]
+    },
+    {
+      "lifecycle_id": "lc-004",
+      "target_decision_id": "decision-004-withdrawn",
+      "target_decision_row_id": "row_04",
+      "current_status": "withdrawn",
+      "withdrawal_record_ref": "withdrawal-record-demo-001",
+      "events": [
+        {
+          "event_id": "lc-004-ev-001",
+          "event_status": "filed",
+          "event_basis": "challenge_record",
+          "actor_role": "relying_party",
+          "lifecycle_effect": "challenge_open",
+          "event_timestamp": "2026-09-16T01:10:00Z",
+          "event_basis_ref": "challenge-record-lc-004-001"
+        },
+        {
+          "event_id": "lc-004-ev-002",
+          "event_status": "acknowledged",
+          "event_basis": "acknowledgement_record",
+          "actor_role": "policy_authority",
+          "event_timestamp": "2026-09-16T01:20:00Z",
+          "event_basis_ref": "acknowledgement-record-lc-004-001"
+        },
+        {
+          "event_id": "lc-004-ev-003",
+          "event_status": "withdrawn",
+          "event_basis": "withdrawal_record",
+          "actor_role": "system_recorder",
+          "lifecycle_effect": "challenge_withdrawn",
+          "event_timestamp": "2026-09-16T01:30:00Z",
+          "event_basis_ref": "withdrawal-record-demo-001"
+        }
+      ]
+    },
+    {
+      "lifecycle_id": "lc-005",
+      "target_decision_id": "decision-005-superseded",
+      "target_decision_row_id": "row_05",
+      "current_status": "superseded",
+      "superseding_decision_id": "decision-001-accepted",
+      "events": [
+        {
+          "event_id": "lc-005-ev-001",
+          "event_status": "filed",
+          "event_basis": "challenge_record",
+          "actor_role": "relying_party",
+          "lifecycle_effect": "challenge_open",
+          "event_timestamp": "2026-09-16T01:40:00Z",
+          "event_basis_ref": "challenge-record-lc-005-001"
+        },
+        {
+          "event_id": "lc-005-ev-002",
+          "event_status": "superseded",
+          "event_basis": "supersession_record",
+          "actor_role": "system_recorder",
+          "lifecycle_effect": "challenge_superseded",
+          "event_timestamp": "2026-09-16T01:50:00Z",
+          "event_basis_ref": "supersession-record-lc-005-001"
+        }
+      ]
+    }
+  ]
+}

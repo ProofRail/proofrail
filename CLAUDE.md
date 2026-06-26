@@ -105,3 +105,7 @@ See `docs/gold/gold-decision-report-hardening-v0.4.1.md`.
 ### Gold Policy Evaluation Matrix Package: `demos/gold-demo-003-policy-evaluation-matrix/`
 
 See `docs/gold/gold-policy-evaluation-matrix-v0.4.2.md`.
+
+### Gold Challenge Lifecycle Lite Package: `demos/gold-demo-004-challenge-lifecycle-lite/`
+
+See `docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md` (v0.4.3 in development; latest committed release remains v0.4.2).

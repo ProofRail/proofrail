@@ -166,3 +166,20 @@ body. The v0.4.1 release narrative
 (`docs/gold/gold-decision-report-hardening-v0.4.1.md`) holds the
 v0.4.1 reason surface, reachability orderings, runner architecture,
 and non-claims.
+
+## v0.4.3 Note
+
+v0.4.3 is a narrow Gold maintenance release (Gold Challenge Lifecycle
+Lite) that pairs the unchanged v0.4.0 package body, v0.4.1 decision
+report, and v0.4.2 policy-evaluation pair with a hand-authored
+deterministic local runtime challenge-lifecycle records body and a
+deterministic local lifecycle report, bound under a 7-subject manifest.
+v0.4.3 does not introduce a new Gold tier, is not signed, is not a
+certificate, is not federated, does not transfer reliance, does not
+consult any live policy engine or live lifecycle adjudication
+authority, and does not extend the substance of the v0.4.0 body,
+the v0.4.1 decision report, or the v0.4.2 policy-evaluation pair.
+The v0.4.3 release narrative
+(`docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md`) holds the
+v0.4.3 reason surface, reachability orderings, runner and verifier
+architecture, closed lifecycle vocabularies, and non-claims.
