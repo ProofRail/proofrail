@@ -522,6 +522,33 @@ run-gold-reliance-package-index-v0-4-4:
 verify-gold-reliance-package-index-v0-4-4:
 	bash tests/test_gold_reliance_package_index_v0_4_4.sh
 
+.PHONY: run-gold-multi-case-reliance-v0-4-5
+run-gold-multi-case-reliance-v0-4-5:
+	python3 tools/gold/build_gold_multi_case_reliance_v0_1_0.py \
+	  --input-package fixtures/gold-governed-reliance-v0.4.0/governed-reliance-scenarios.json \
+	  --matrix-input fixtures/gold-policy-evaluation-matrix-v0.4.2/policy-evaluation-matrix.json \
+	  --lifecycle-input fixtures/gold-challenge-lifecycle-lite-v0.4.3/challenge-lifecycle-records.json \
+	  --manifest-id proofrail-gold-multi-case-reliance-manifest-demo-001 \
+	  --gold-multi-case-reliance-index-id proofrail-gold-multi-case-reliance-index-demo-001 \
+	  --package-id proofrail-gold-multi-case-reliance-demo-001 \
+	  --governed-reliance-demo-id gold-multi-case-reliance-demo-001 \
+	  --v044-manifest-id proofrail-gold-reliance-package-index-manifest-demo-001 \
+	  --v044-conformance-report-id proofrail-gold-reliance-package-index-conformance-demo-001 \
+	  --v044-decision-report-id proofrail-gold-decision-report-demo-001 \
+	  --v044-policy-evaluation-report-id proofrail-gold-policy-evaluation-report-demo-001 \
+	  --v044-challenge-lifecycle-report-id proofrail-gold-challenge-lifecycle-report-demo-001 \
+	  --v044-gold-reliance-package-index-id proofrail-gold-reliance-package-index-demo-001 \
+	  --generated-at 2026-12-01T00:45:00Z \
+	  --output-dir /tmp/proofrail-v045-multi-case-reliance-demo \
+	  --force \
+	  --self-validate
+	python3 tools/gold/verify_gold_multi_case_reliance_v0_1_0.py \
+	  --manifest /tmp/proofrail-v045-multi-case-reliance-demo/gold-multi-case-reliance-package-manifest.json
+
+.PHONY: verify-gold-multi-case-reliance-v0-4-5
+verify-gold-multi-case-reliance-v0-4-5:
+	bash tests/test_gold_multi_case_reliance_v0_4_5.sh
+
 .PHONY: verify-gold-all
 verify-gold-all:
 	$(MAKE) verify-gold-governed-reliance-v0-4-0
