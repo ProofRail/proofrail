@@ -115,9 +115,8 @@ release, see `CLAUDE.md`.
 
 ---
 
-## Gold v0.4.5 (in development)
+## Gold v0.4.5
 
-- **Status:** in development; not yet a committed release. README.md and CLAUDE.md still identify v0.4.4 as the latest committed Gold release.
 - **Demo:** `demos/gold-demo-006-multi-case-reliance/`. Runtime under `/tmp/proofrail-v045-multi-case-reliance-demo/`.
 - **Scope:** narrow incremental Gold release — Gold Multi-Case Reliance Demo. Wraps ONE unchanged v0.4.4 Gold Reliance Package Index child closure (which itself wraps the unchanged v0.4.0 Governed Reliance Demo, v0.4.1 Decision Report Hardening, v0.4.2 Policy Evaluation Matrix, and v0.4.3 Challenge Lifecycle Lite under the corrected v0.4.3.1 baseline) under a single 2-subject wrapping manifest and a single byte-stable v0.4.5-authored multi-case projection index body. Does not introduce a new Gold tier, is not signed, is not federated, is not a registry, is not a federation handle, does not transfer reliance, and does not extend the substance of the v0.4.4 surface or of any inherited release.
 - **Architecture:** v0.4.5 runner subprocess-invokes the co-located v0.4.4 runner EXACTLY ONCE (without `--self-validate`) into `child-packages/v0.4.4/` under the v0.4.5 staging tree, where the v0.4.4 runner writes its complete child closure (which itself materializes the nested v0.4.0..v0.4.3 closures via its own subprocess delegation). The v0.4.5 runner then projects the five v0.4.0 governed-reliance scenarios as fixed-order case entries (in natural v0.4.0 order: `clean_acceptance`, `policy_rejection`, `challenge_filed`, `withdrawal`, `supersession`), derives the v0.4.5 index body deterministically (closed-key `coverage_summary` with `case_count = 5` and three anchor-consistency booleans; top-level `multi_case_index_fingerprint` over canonical JSON of the body excluding the fingerprint field), builds the 2-subject v0.4.5 wrapping manifest, runs the v0.4.5 verifier under `--self-validate`, and atomically `os.replace()`s the staging directory into the destination. v0.4.5 input copies are bundled to a disposable scratch directory (`/tmp/proofrail-v045-bundle-<pid>/`) BEFORE forwarding to the v0.4.4 runner; tracked repo paths are never forwarded. The v0.4.5 verifier validates the v0.4.5 wrapping manifest and the v0.4.5-owned index body under seven v0.4.5-owned structural checks in a locked order, then subprocess-invokes the v0.4.4 verifier on the materialized v0.4.4 wrapping-manifest path under `child-packages/v0.4.4/...`. The inherited 54-reason surface (R01..R48 from v0.4.0..v0.4.3 plus R49..R54 from v0.4.4) is relayed verbatim through the v0.4.5 verifier with no v0.4.5 wrapper. Environmental failures of the v0.4.5 → v0.4.4 subprocess invocation surface under a non-reason-shaped `INFRA:` diagnostic with exit code 3.
@@ -139,4 +138,4 @@ release, see `CLAUDE.md`.
 
 ## Next release
 
-- **v0.4.x onward:** v0.4.5 is in development per the entry above. Further Gold-tier releases beyond v0.4.5 are not yet planned.
+- **v0.4.x onward:** Further Gold-tier releases beyond v0.4.5 are not yet planned.

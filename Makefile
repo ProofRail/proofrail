@@ -556,3 +556,4 @@ verify-gold-all:
 	$(MAKE) verify-gold-policy-evaluation-matrix-v0-4-2
 	$(MAKE) verify-gold-challenge-lifecycle-lite-v0-4-3
 	$(MAKE) verify-gold-reliance-package-index-v0-4-4
+	$(MAKE) verify-gold-multi-case-reliance-v0-4-5
