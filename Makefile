@@ -499,9 +499,33 @@ run-gold-challenge-lifecycle-lite-v0-4-3:
 verify-gold-challenge-lifecycle-lite-v0-4-3:
 	bash tests/test_gold_challenge_lifecycle_lite_v0_4_3.sh
 
+.PHONY: run-gold-reliance-package-index-v0-4-4
+run-gold-reliance-package-index-v0-4-4:
+	python3 tools/gold/build_gold_reliance_package_index_v0_1_0.py \
+	  --input-package fixtures/gold-governed-reliance-v0.4.0/governed-reliance-scenarios.json \
+	  --matrix-input fixtures/gold-policy-evaluation-matrix-v0.4.2/policy-evaluation-matrix.json \
+	  --lifecycle-input fixtures/gold-challenge-lifecycle-lite-v0.4.3/challenge-lifecycle-records.json \
+	  --manifest-id proofrail-gold-reliance-package-index-manifest-demo-001 \
+	  --conformance-report-id proofrail-gold-reliance-package-index-conformance-demo-001 \
+	  --decision-report-id proofrail-gold-decision-report-demo-001 \
+	  --policy-evaluation-report-id proofrail-gold-policy-evaluation-report-demo-001 \
+	  --challenge-lifecycle-report-id proofrail-gold-challenge-lifecycle-report-demo-001 \
+	  --gold-reliance-package-index-id proofrail-gold-reliance-package-index-demo-001 \
+	  --generated-at 2026-12-01T00:30:00Z \
+	  --output-dir /tmp/proofrail-v044-reliance-package-index-demo \
+	  --force \
+	  --self-validate
+	python3 tools/gold/verify_gold_reliance_package_index_v0_1_0.py \
+	  --manifest /tmp/proofrail-v044-reliance-package-index-demo/gold-reliance-package-index-manifest.json
+
+.PHONY: verify-gold-reliance-package-index-v0-4-4
+verify-gold-reliance-package-index-v0-4-4:
+	bash tests/test_gold_reliance_package_index_v0_4_4.sh
+
 .PHONY: verify-gold-all
 verify-gold-all:
 	$(MAKE) verify-gold-governed-reliance-v0-4-0
 	$(MAKE) verify-gold-decision-report-hardening-v0-4-1
 	$(MAKE) verify-gold-policy-evaluation-matrix-v0-4-2
 	$(MAKE) verify-gold-challenge-lifecycle-lite-v0-4-3
+	$(MAKE) verify-gold-reliance-package-index-v0-4-4

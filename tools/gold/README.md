@@ -14,6 +14,8 @@ reliance to any external party, and NOT full Gold.
 - Gold Governed Reliance Package v0.1.0
 - Gold Governed Reliance Package Manifest v0.1.0
 - Gold Governed Reliance Conformance Report v0.1.0
+- Gold Reliance Package Index v0.1.0
+- Gold Reliance Package Index Manifest v0.1.0
 
 ## Gold Governed Reliance Demo Runner (v0.4.0)
 
@@ -183,3 +185,131 @@ The v0.4.3 release narrative
 (`docs/gold/gold-challenge-lifecycle-lite-v0.4.3.md`) holds the
 v0.4.3 reason surface, reachability orderings, runner and verifier
 architecture, closed lifecycle vocabularies, and non-claims.
+
+## Gold Reliance Package Index Runner (v0.4.4)
+
+Builds a deterministic, hash-anchored local v0.4.4 Gold Reliance
+Package Index by subprocess-invoking each of the four co-located
+inherited runners (v0.4.0, v0.4.1, v0.4.2, v0.4.3) into its own
+`child-packages/v0.4.X/` subdirectory under the v0.4.4 staging tree,
+where each inherited runner writes its complete child closure (its
+wrapping manifest plus every subject file the manifest references).
+The v0.4.4 runner consumes exactly the inherited v0.4.3 input file
+chain (`--input-package`, `--matrix-input`, `--lifecycle-input`) and
+adds no new input template. The v0.4.3 child closure is built under
+the corrected v0.4.3.1 baseline. Subjects [0]..[3] of the v0.4.4
+wrapping manifest are the byte-stable child wrapping manifests
+materialized under each `child-packages/v0.4.X/` subdirectory;
+subject [4] is the v0.4.4-owned index body at the package root,
+derived deterministically by re-projecting the inherited surface IDs
+into a closed 7-ID identifier table.
+
+```bash
+python3 tools/gold/build_gold_reliance_package_index_v0_1_0.py \
+  --input-package fixtures/gold-governed-reliance-v0.4.0/governed-reliance-scenarios.json \
+  --matrix-input fixtures/gold-policy-evaluation-matrix-v0.4.2/policy-evaluation-matrix.json \
+  --lifecycle-input fixtures/gold-challenge-lifecycle-lite-v0.4.3/challenge-lifecycle-records.json \
+  --manifest-id proofrail-gold-reliance-package-index-manifest-demo-001 \
+  --conformance-report-id proofrail-gold-reliance-package-index-conformance-demo-001 \
+  --decision-report-id proofrail-gold-decision-report-demo-001 \
+  --policy-evaluation-report-id proofrail-gold-policy-evaluation-report-demo-001 \
+  --challenge-lifecycle-report-id proofrail-gold-challenge-lifecycle-report-demo-001 \
+  --gold-reliance-package-index-id proofrail-gold-reliance-package-index-demo-001 \
+  --generated-at 2026-12-01T00:30:00Z \
+  --output-dir /tmp/proofrail-v044-reliance-package-index-demo \
+  --force \
+  --self-validate
+```
+
+The runner stages output under a sibling directory
+`<output-dir>.staging.<pid>` and atomically publishes via
+`os.replace()`. With `--self-validate` the runner invokes the v0.4.4
+verifier against the staged package BEFORE the atomic move; on
+self-validation failure the staging directory is removed and the
+destination is left untouched. The runner relays the verifier's
+failure UNCHANGED with no sixth runner-only wrapper code.
+
+### Runner-only refusal reasons (5)
+
+The runner emits exactly the same five preflight refusal codes as
+v0.4.0..v0.4.3, applied to every input-path argument BEFORE any output
+directory touch:
+
+- `runner_input_path_missing`   — flag empty or unset
+- `runner_input_path_forbidden` — absolute path or contains `..`
+- `runner_input_file_missing`   — path does not exist on disk
+- `runner_input_read_failed`    — open/read fails or path is a directory
+- `runner_input_json_invalid`   — path does not parse as JSON
+
+The runner never wraps a verifier failure under a sixth runner-only
+refusal code. With `--self-validate`, a verifier failure is relayed
+verbatim from the verifier's own stdout/stderr.
+
+## Gold Reliance Package Index Verifier (v0.4.4)
+
+Verifies a v0.4.4 Gold Reliance Package Index by re-running the
+closed 54-reason surface (48 inherited reasons R01..R48 + 6 v0.4.4-owned
+reasons R49..R54) against a single `--manifest` flag.
+
+```bash
+python3 tools/gold/verify_gold_reliance_package_index_v0_1_0.py \
+  --manifest /tmp/proofrail-v044-reliance-package-index-demo/gold-reliance-package-index-manifest.json
+```
+
+### Phase ordering
+
+- **Phase 1** — manifest integrity, subject path/hash distinctness,
+  cross-anchor consistency at the 5-subject index manifest layer; all
+  collisions and binding mismatches at this layer fold into R01
+  (`gold_manifest_invalid`).
+- **Phase 2** — cross-anchor re-derivation of inherited surface IDs
+  against the v0.4.4 index body (`package_id` and
+  `governed_reliance_demo_id` to subject [0]; `conformance_report_id`
+  to subject [1]; `decision_report_id` to subject [2]; v0.4.2 and
+  v0.4.3 surface IDs to their respective inherited subjects via the
+  Phase 4 subprocess relay). Failures at this layer also fold into R01.
+- **Phase 3** — v0.4.4-owned index body re-derivation under six
+  structural checks in the closed fixed order R49 → R50 → R52 → R53
+  → R51 → R54: (1) body-is-JSON-object, (2) top-level / per-entry /
+  coverage-summary shape, (3) per-entry value validity, (4)
+  coverage-summary arithmetic, (5) index-body cross-anchor binding,
+  (6) canonical-JSON index-fingerprint re-derivation. The six
+  v0.4.4-owned reason names are enumerated in
+  `docs/gold/gold-reliance-package-index-v0.4.4.md`.
+- **Phase 4** — sequential subprocess invocation of each of the four
+  co-located inherited verifiers (v0.4.0, v0.4.1, v0.4.2, v0.4.3) on
+  the corresponding child wrapping-manifest path under
+  `child-packages/v0.4.X/`. Each inherited verifier resolves its
+  referenced subject files relative to the child manifest's directory
+  using its own existing path-resolution rules. Any inherited reason
+  R02..R48 surfaces UNCHANGED with no v0.4.4 wrapper. Environmental
+  failures (missing, unlaunchable, or non-FAIL-non-zero-exit inherited
+  verifier) surface under a non-reason-shaped `INFRA:` diagnostic on
+  stderr with exit code 3.
+
+### 7-ID pairwise-distinctness collision class
+
+`conformance_report_id`, `decision_report_id`, `matrix_id`,
+`policy_evaluation_report_id`, `challenge_lifecycle_record_set_id`,
+`challenge_lifecycle_report_id`, `gold_reliance_package_index_id`.
+All 21 pairwise collisions across this class surface at the
+manifest-integrity layer under R01 (`gold_manifest_invalid`); they do
+NOT fold into the v0.4.4-owned R51 binding-invalid reason, which is
+reserved for index-body cross-anchor mismatches.
+
+## v0.4.4 Note
+
+v0.4.4 is a narrow incremental Gold release (Gold Reliance Package
+Index) that wraps the unchanged v0.4.3 surface under a deterministic
+local 5-subject index manifest, projecting the closed 7-ID identifier
+table and re-deriving an index fingerprint over canonical JSON. v0.4.4
+does not introduce a new Gold tier, is not signed, is not a
+certificate, is not federated, does not transfer reliance, does not
+consult any live service, and does not extend the substance of the
+v0.4.0 body, the v0.4.1 decision report, the v0.4.2 policy-evaluation
+pair, or the v0.4.3 lifecycle pair. The v0.4.4 release narrative
+(`docs/gold/gold-reliance-package-index-v0.4.4.md`) holds the v0.4.4
+reason surface, reachability orderings, runner and verifier
+architecture, the 7-ID collision class, the TG1 allowlist discipline,
+the INFRA diagnostic boundary, the test scratch path policy, and the
+non-claims.
