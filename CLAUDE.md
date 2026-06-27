@@ -12,7 +12,7 @@ Spec + tooling repo, not a distributed package.
 
 ## Status
 
-- Latest committed release: Gold **v0.4.3.1** — Correct Gold Challenge Lifecycle Fingerprint Verification (corrective patch over v0.4.3).
+- Latest committed release: Gold **v0.4.4** — Gold Reliance Package Index.
 
 ## Where to Find Things
 

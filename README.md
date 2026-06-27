@@ -10,9 +10,9 @@ ProofRail is not a gateway, SIEM, observability platform, GRC tool, policy engin
 
 ## Current Status
 
-Latest release: **v0.4.3.1 — Correct Gold Challenge Lifecycle Fingerprint Verification (corrective patch over v0.4.3)**
+Latest release: **v0.4.4 — Gold Reliance Package Index**
 
-v0.4.3.1 is a narrow corrective patch over v0.4.3 — Gold Challenge Lifecycle Lite. It corrects verifier under-enforcement of the per-record `lifecycle_fingerprint` and the top-level `report_fingerprint` re-derivations under existing R41 and R47, without changing the closed R01..R48 verifier surface, the five runner-only refusals, the closed lifecycle vocabularies, or the v0.4.3 boundary. v0.4.3 itself remains a narrow incremental Gold release that pairs the unchanged v0.4.0 governed-reliance body, v0.4.1 decision report, and v0.4.2 policy-evaluation pair with a deterministic local runtime challenge-lifecycle records body and a byte-re-derivable lifecycle report, bound by a 7-subject manifest.
+v0.4.4 is a narrow incremental Gold release that wraps the unchanged v0.4.0 Governed Reliance Demo, v0.4.1 Decision Report Hardening, v0.4.2 Policy Evaluation Matrix, and v0.4.3 Challenge Lifecycle Lite (verified under the corrected v0.4.3.1 baseline) under a single 5-subject index manifest plus a single byte-stable v0.4.4-owned index body. It preserves the inherited R01..R48 verifier reasons, adds 6 v0.4.4-owned reasons R49..R54, preserves the five runner-only refusal names verbatim, ships a 103-exercise regression harness, and regression-locks macOS `/tmp` → `/private/tmp` `--force` idempotency in the runner's output-dir overwrite guard via the new `idem01` case. v0.4.4 is not a registry, certificate, federation layer, full Gold, Platinum, live policy engine, or transfer of reliance. The v0.4.3 and v0.4.3.1 annotated tags are preserved unchanged.
 
 The Silver tier now provides the pre-Gold substrate needed to carry verified evidence toward governed reliance:
 
