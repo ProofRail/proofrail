@@ -12,7 +12,7 @@ Spec + tooling repo, not a distributed package.
 
 ## Status
 
-- Latest committed release: Gold **v0.4.5** — Gold Multi-Case Reliance Demo.
+- Latest committed release: Gold **v0.4.6** — Gold Local Minimal Profile.
 
 ## Where to Find Things
 

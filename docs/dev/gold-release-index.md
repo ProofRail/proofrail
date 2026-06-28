@@ -136,7 +136,7 @@ release, see `CLAUDE.md`.
 
 ---
 
-## Gold v0.4.6 (in development)
+## Gold v0.4.6
 
 - **Demo:** `demos/gold-demo-007-local-minimal-profile/`. No runtime materialization under `/tmp/` — v0.4.6 is **validator-only**; the conformance scan is the artifact. No `run-gold-local-minimal-profile-v0-4-6` Makefile target.
 - **Scope:** narrow incremental Gold release — Gold Local Minimal Profile. Adds a single profile descriptor (`profile_name = gold.local.minimal`, `profile_version = v0.1.0`) plus a single validator-only tool that performs a closed five-check structural conformance scan of the existing v0.4.0..v0.4.5 Gold artifact surface in this repository (15 schemas, 12 build/verify tools, 6 regression harnesses, 7 long-form docs, 6 demo READMEs, 7 inherited Makefile targets). Does not introduce a new Gold tier, is not signed, is not federated, is not a registry, is not a federation handle, does not transfer reliance, does not publish any portable evidence package, does not publish any JSON conformance certificate, and does not extend the substance of any inherited release.
