@@ -549,6 +549,10 @@ run-gold-multi-case-reliance-v0-4-5:
 verify-gold-multi-case-reliance-v0-4-5:
 	bash tests/test_gold_multi_case_reliance_v0_4_5.sh
 
+.PHONY: verify-gold-local-minimal-profile-v0-4-6
+verify-gold-local-minimal-profile-v0-4-6:
+	bash tests/test_gold_local_minimal_profile_v0_4_6.sh
+
 .PHONY: verify-gold-all
 verify-gold-all:
 	$(MAKE) verify-gold-governed-reliance-v0-4-0
@@ -557,3 +561,4 @@ verify-gold-all:
 	$(MAKE) verify-gold-challenge-lifecycle-lite-v0-4-3
 	$(MAKE) verify-gold-reliance-package-index-v0-4-4
 	$(MAKE) verify-gold-multi-case-reliance-v0-4-5
+	$(MAKE) verify-gold-local-minimal-profile-v0-4-6
