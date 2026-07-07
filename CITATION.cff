@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use or refer to ProofRail, please cite the concept note below."
+title: "ProofRail"
+authors:
+  - family-names: "Williams"
+    given-names: "Thomas C."
+    affiliation: "Hour of First Light LLC"
+version: "1.0"
+date-released: "2026-07-06"
+doi: "10.5281/zenodo.21213740"
+url: "https://proofrail.org"
+repository-code: "https://github.com/ProofRail/proofrail"
+keywords:
+  - "agentic AI governance"
+  - "AI governance"
+  - "protected actions"
+  - "execution evidence"
+  - "governed reliance"
+  - "AI assurance"
+  - "runtime authority"
+  - "independent verification"
+  - "AI risk management"
+abstract: >-
+  ProofRail is a reference architecture and institutional grammar for
+  distinguishing protected-action evidence, independent verification, governed
+  reliance, and broader institutional legitimacy in agentic AI governance.
+preferred-citation:
+  type: report
+  title: "From Execution Evidence to Governed Reliance: A Grammar for Relying on What AI Agents Do"
+  authors:
+    - family-names: "Williams"
+      given-names: "Thomas C."
+      affiliation: "Hour of First Light LLC"
+  year: 2026
+  version: "1.0"
+  publisher:
+    name: "Zenodo"
+  doi: "10.5281/zenodo.21213740"
+  url: "https://zenodo.org/records/21213740"
