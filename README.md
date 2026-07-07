@@ -12,6 +12,8 @@ ProofRail is not a gateway, SIEM, observability platform, GRC tool, policy engin
 
 ## Current Status
 
+The ProofRail concept paper was published on Zenodo on July 7, 2026.  The pape is available at Zenodo as [DOI: 10.5281/zenodo.21213739](https://doi.org/10.5281/zenodo.21213739).
+
 Latest release: **v0.4.6 — Gold Local Minimal Profile**
 
 v0.4.6 completes the current Minimal Viable Gold line by adding the Gold Local Minimal Profile: a validator-only conformance check over the existing v0.4.0–v0.4.5 Gold artifact surface. It does not create full Gold, federation, certification, runtime mediation, or transferred reliance.
