@@ -12,7 +12,7 @@ ProofRail is not a gateway, SIEM, observability platform, GRC tool, policy engin
 
 ## Current Status
 
-The ProofRail concept paper was published on Zenodo on July 7, 2026.  The paper is available at Zenodo as [DOI: 10.5281/zenodo.21213739](https://doi.org/10.5281/zenodo.21213739).
+The ProofRail concept paper was published on Zenodo on July 6, 2026.  The paper is available at Zenodo as [DOI: 10.5281/zenodo.21213740](https://doi.org/10.5281/zenodo.21213740).
 
 Latest release: **v0.4.6 — Gold Local Minimal Profile**
 
